@@ -7,9 +7,20 @@
 #' @export
 #'
 #' @examples
+#'\dontrun{
+#' results <- factor_retention(X)
+#' summary(results)
+#'}
 summary.nfactors <- function(object, ...){
-  cat(sprintf("Number of factors by parallel analysis is: %s\n",
-              object$parallel))
+  if(!is.null(object$parallel_error)){
+    cat("Parallel analysis failed:\n")
+    cat(object$parallel_error, "\n\n")
+  } else {
+    cat(sprintf(
+      "Number of factors by parallel analysis is: %s\n",
+      object$parallel
+    ))
+  }
 
   cat(sprintf("Number of factors by scree test is: %s\n",
               object$scree))
