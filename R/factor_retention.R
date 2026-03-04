@@ -9,7 +9,12 @@
 
 #' @export
 #'
-#' @examples factor_retention(X)
+#' @examples
+#'\dontrun{
+#' data(big5, package = "qgraph")
+#' X <- scale(big5)
+#' a <- factor_retention(X)
+#'}
 factor_retention <- function(data){
   tmp <- capture.output(
     Q <- psych::fa.parallel(data, plot = F)
