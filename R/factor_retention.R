@@ -3,6 +3,10 @@
 #' @param data A NxJ matrix of standardized items.
 #'
 #' @returns Number of factors.
+
+#' @importFrom utils capture.output
+#' @importFrom stats cor
+
 #' @export
 #'
 #' @examples factor_retention(X)
