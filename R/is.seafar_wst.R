@@ -47,9 +47,9 @@ is.seafar_wst <- function(data,
   min_nzero_loading <- NA
   isvalue <- 0
   if (nfactors*(J-1) > card.length){
-    regpath <- round(seq(((J*nfactors)-1), nfactors, length = card.length))
+    regpath <- round(seq(((J*nfactors)-1), nfactors*3, length = card.length))
   } else {
-    regpath <- seq(((J*nfactors)-1), nfactors)
+    regpath <- seq(((J*nfactors)-1), nfactors*3)
   }
 
   if (show_progress == TRUE){
