@@ -16,11 +16,28 @@
 #' a <- factor_retention(X)
 #'}
 factor_retention <- function(data){
-  tmp <- capture.output(
-    Q <- psych::fa.parallel(data, plot = F)
+  # default values
+  Q_parallel <- NA
+  Q_parallel_comp <- NA
+  parallel_error <- NULL
+
+  res <- tryCatch(
+    {
+      tmp <- utils::capture.output(
+        Q <- psych::fa.parallel(data, plot = FALSE)
+      )
+      list(nfact = Q$nfact, ncomp = Q$ncomp)
+    },
+    error = function(e){
+      parallel_error <<- conditionMessage(e)
+      NULL
+    }
   )
-  Q_parallel <- Q$nfact
-  Q_parallel_comp <- Q$ncomp
+
+  if(!is.null(res)){
+    Q_parallel <- res$nfact
+    Q_parallel_comp <- res$ncomp
+  }
 
   # using scree plot
   pX <- PCAtools::pca(data, removeVar = .1)
@@ -35,6 +52,7 @@ factor_retention <- function(data){
   number_factors$parallel_comp <- Q_parallel_comp
   number_factors$scree <- Q_elbow
   number_factors$kaiser <- Q_kaiser
+  number_factors$parallel_error <- parallel_error
   attr(number_factors, "class") <- "nfactors"
 
   return(number_factors)
