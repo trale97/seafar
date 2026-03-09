@@ -1,5 +1,5 @@
 Package: seafar
-Title: What the Package Does (One Line, Title Case)
+Title: Functions to perform Sparse Exploratory Approximate Factor Analysis for High-dimensional Data.
 Version: 0.0.0.9000
 Authors@R: 
     person("Tra", "Le", , "t.t.le_1@tilburguniversity.edu", role = c("aut", "cre"))
