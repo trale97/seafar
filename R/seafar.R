@@ -391,11 +391,17 @@ summary.seafar <- function(object, disp = "loadings", ...){
   }
 
   if (disp == "loadings"){
+    cat(sprintf("\nThe number of nonzero loadings is: %s\n",
+                sum(round(object$loadings,3) != 0)))
+
     cat(sprintf("\nThe estimated loadings matrix is \n"))
-    print(round(object$loadings,3))
+    print(head(round(object$loadings,3),10))
   } else {
+    cat(sprintf("\nThe number of nonzero loadings is: %s\n",
+                sum(round(object$loadings,3) != 0)))
+
     cat(sprintf("\nThe estimated loadings matrix is \n"))
-    print(round(object$loadings,3))
+    print(head(round(object$loadings,3),10))
 
     cat(sprintf("\nThe estimated factor scores matrix is \n"))
     print(object$scores)
