@@ -111,57 +111,87 @@ is.seafar <- function(data,
                       THR) {
   J <- dim(data)[2]
 
-  cardvec <- round(seq(3,J,length.out = 100))
-  K <- length(cardvec)
-  avec <- matrix(nrow = length(cardvec), ncol = 6)
-  colnames(avec) <- c( "K", "IS", "PEV", "Prop0", "MinNonZeroL", "MaxSDL")
-  for (k in 1:K) {
-    a <- is.seafar_original(data = data,
-                            nfactors = nfactors,
-                            C = rep(cardvec[k], nfactors),
-                            maxiter = 20,
-                            eps = 10^-4,
-                            INIT = INIT,
-                            orthogonal = orthogonal,
-                            nstarts = nstarts)
-    avec[k, ] <- c(
+  col_names <- c("K", "IS", "PEV", "Prop0", "MinNonZeroL", "MaxSDL")
+  rows <- list()
+
+  # --- first set of cardinalities ---
+  cardvec <- round(seq(3, J, length.out = 100))
+
+  for (k in seq_along(cardvec)) {
+    a <- tryCatch(
+      is.seafar_original(
+        data = data,
+        nfactors = nfactors,
+        C = rep(cardvec[k], nfactors),
+        maxiter = 20,
+        eps = 10^-4,
+        INIT = INIT,
+        orthogonal = orthogonal,
+        nstarts = nstarts
+      ),
+      error = function(e) NULL
+    )
+
+    if (is.null(a)) next
+
+    rows[[length(rows) + 1]] <- c(
       cardvec[k], a$value, a$vaf, a$propzero,
       a$smallestP, a$maxsdP
     )
-    print(k)
   }
-  round(avec, 3)
 
-  if(nfactors*(J-1) > 100){
-    cardvec <- round(seq(3*nfactors, J*nfactors-1, length.out = 100))
+  K <- length(rows)
+
+  # --- second set of cardinalities ---
+  if (nfactors * (J - 1) > 100) {
+    cardvec <- round(seq(3 * nfactors, J * nfactors - 1, length.out = 100))
   } else {
-    cardvec <- seq(3*nfactors, J*nfactors-1, by = 1)
+    cardvec <- seq(3 * nfactors, J * nfactors - 1, by = 1)
   }
 
-  L <- length(cardvec)
-  avec <- rbind(avec, matrix(nrow = length(cardvec), ncol = 6))
+  for (l in seq_along(cardvec)) {
+    a <- tryCatch(
+      is.seafar_original(
+        data = data,
+        nfactors = nfactors,
+        C = cardvec[l],
+        maxiter = 20,
+        eps = 10^-4,
+        INIT = INIT,
+        orthogonal = orthogonal,
+        nstarts = nstarts
+      ),
+      error = function(e) NULL
+    )
 
-  for (l in 1:L) {
-    a <- is.seafar_original(data = data,
-                            nfactors = nfactors,
-                            C = cardvec[l],
-                            maxiter = 20,
-                            eps = 10^-4,
-                            INIT = INIT,
-                            orthogonal = orthogonal,
-                            nstarts = nstarts)
-    avec[K+l, ] <- c(
+    if (is.null(a)) next
+
+    rows[[length(rows) + 1]] <- c(
       cardvec[l], a$value, a$vaf, a$propzero,
       a$smallestP, a$maxsdP
     )
   }
-  round(avec, 4)
 
-  placeholder <- seq(1:(K + L))
+  # --- combine successful rows only ---
+  if (length(rows) > 0) {
+    avec <- do.call(rbind, rows)
+    avec <- as.matrix(avec)
+    colnames(avec) <- col_names
+    avec <- round(avec, 3)
+  } else {
+    avec <- matrix(nrow = 0, ncol = 6)
+    colnames(avec) <- col_names
+  }
+
+  round(avec,4)
+
+  KL <- dim(avec)[1]
+
+  placeholder <- seq(1:KL)
   indexnonzeroL <- placeholder[avec[, "MinNonZeroL"] < THR][1] - 1 # THR holding selection
   if (indexnonzeroL < K) {
-    placeholder2 <- placeholder[(K + 1):(K + L)]
-    indexnonzeroL2 <- placeholder2[avec[(K + 1):(K + L), "MinNonZeroL"] < THR][1] - 1 # THR holding selection
+    placeholder2 <- placeholder[(K + 1):KL]
+    indexnonzeroL2 <- placeholder2[avec[(K + 1):KL, "MinNonZeroL"] < THR][1] - 1 # THR holding selection
     if (avec[indexnonzeroL2, 1] < avec[indexnonzeroL, 1] * nfactors) {
       indexnonzeroL <- indexnonzeroL2
     } else if (avec[indexnonzeroL2, 1] == avec[indexnonzeroL, 1] * nfactors) {
@@ -189,4 +219,21 @@ is.seafar <- function(data,
   attr(selcardinality, "class") <- "is_seafar"
 
   return(selcardinality)
+}
+
+#' Display a summary of the results of \code{is.seafar()}.
+#'
+#' @param object Object of class inheriting from 'is_seafar'.
+#' @param ... Argument to be passed to or from other methods.
+#'
+#' @returns Summary of the results.
+#' @export
+#'
+#' @examples
+#'\dontrun{
+#' summary(IS_result)
+#'}
+summary.is_seafar <- function(object,...){
+  cat(sprintf("The cardinality selected by the Index of Sparseness is: %s\n",
+              object))
 }
