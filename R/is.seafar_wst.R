@@ -81,11 +81,14 @@ is.seafar_wst <- function(data,
     close(pb)
   }
 
-  IS$cardinality <- c(nrcoef, regpath)
+  cardinality <- c(nrcoef, regpath)
+
+  IS$cardinality <- cardinality
   IS$value <-isvalue
   IS$pve <- PVE
   IS$propzero <- propzero
   IS$smallestP <- min_nzero_loading
+  IS$selcard <- cardinality[which.max(isvalue)]
   attr(IS, "class") <- "ISwarmstart"
 
   return(IS)
