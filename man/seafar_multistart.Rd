@@ -10,7 +10,7 @@ seafar_multistart(
   C,
   maxiter = 50,
   eps = 10^-4,
-  INIT,
+  INIT = "mixed",
   initloadings,
   orthogonal = FALSE,
   nstarts = 50,
