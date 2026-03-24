@@ -4,13 +4,15 @@
 \alias{summary.multistart}
 \title{Display a summary of the results of \code{seafar_multistart()}.}
 \usage{
-\method{summary}{multistart}(object, disp = "loadings", ...)
+\method{summary}{multistart}(object, disp = "loadings", nrow = 10, ...)
 }
 \arguments{
 \item{object}{Object of class inheriting from 'multistart'.}
 
 \item{disp}{The default is \code{"loadings"} which returns only the estimated loadings matrix.
 Otherwise if \code{"full"}, function returns both the estimated loadings and factor scores matrices.}
+
+\item{nrow}{Number of rows of the loading matrix to be displayed, default is 10.}
 
 \item{...}{Argument to be passed to or from other methods.}
 }
