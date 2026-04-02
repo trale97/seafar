@@ -81,7 +81,7 @@ orthprocr <- function(data, loadings){
 #' @return A matrix of initial loadings.
 #' @examples
 #'\dontrun{
-#' big5_seafa <- seafar(ocean, 5, 240, INIT = "svd")
+#' initialP <- seafar_init(ocean, 5, 240, INIT = "svd")
 #'}
 #' @author Tra Le and Katrijn Van Deun
 
