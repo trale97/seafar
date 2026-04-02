@@ -263,3 +263,54 @@ pstrLoss <- function(B, Tmat, target, weights){
 
   return(Loss)
 }
+
+#' Title Loss function for LASSO
+#'
+#' @param data Data matrix of standardized items NxJ.
+#' @param scores Factor scores matrix NxQ.
+#' @param loadings Loadings matrix JxQ.
+#' @param lambda LASSO penalty tuning parameter.
+#'
+#' @returns Loss value when using LASSO penalty.
+#' @export
+#'
+#' @examples
+#'\dontrun{
+#' LOSS(X, scores, loadings, lambda)
+#'}
+LOSS <- function(data, scores, loadings, lambda){
+  XHAT <- scores%*%t(loadings)
+  res <- sum(rowSums((XHAT-data)^2))
+  penalty <- sum(abs(loadings))
+  loss <- res+lambda*penalty
+  return(loss)
+}
+
+#' Function for obtaining an initial loading matrix for LASSO penalty.
+#'
+#' @param data Data matrix of standardized items NxJ.
+#' @param nfactors Number of factors.
+#' @param INIT Methods to initialize loadings c("svd", "random", "mixed).
+#'
+#' @return A matrix of initial loadings.
+#' @examples
+#'\dontrun{
+#' initialP_lasso <- seafar_init_l1(ocean, 5, INIT = "svd")
+#'}
+seafar_init_l1 <- function(data, nfactors, INIT){
+  n <- dim(data)[1]
+  J <- dim(data)[2]
+  svd1 <- svd(data, nfactors, nfactors)
+  P1 <- matrix(rnorm(J*nfactors), ncol = nfactors, nrow = J)
+  P2 <- svd1$v %*% diag(svd1$d[1:nfactors])/sqrt(n)
+  if (INIT == 'svd'){
+    P <- P2
+  } else if (INIT == 'random'){
+    P <- P1
+  } else {
+    P <- P2*0.8 + P1*0.2
+  }
+
+  loadings <- P
+  return(loadings)
+}
