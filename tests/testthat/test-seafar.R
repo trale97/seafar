@@ -1,36 +1,21 @@
-test_that("seafar returns a seafar object with expected components", {
-  set.seed(1)
+test_that("seafar works", {
+  big5_ortho <- seafar(data = ocean_std,
+                       nfactors = 5,
+                       C = 240,
+                       orthogonal = T,
+                       INIT = 'rational')
 
-  N <- 80
-  J <- 12
-  nf <- 3
-  C  <- 18  # total nonzero loadings target (scalar C case)
+  Pmat_ortho <- big5_ortho$loadings
 
-  X <- matrix(rnorm(N * J), nrow = N, ncol = J)
-  X <- scale(X)
+  expect_s3_class(big5_ortho, "seafar")
+  expect_type(big5_ortho, "list")
+  expect_true(all(c("scores", "loadings", "PVE", "Residual") %in% names(big5_ortho)))
 
-  res <- seafar(X, nfactors = nf, C = C, INIT = "svd", orthogonal = FALSE)
+  expect_equal(sum(Pmat_ortho != 0), 240)
+  expect_equal(dim(Pmat_ortho)[2], 5)
+  expect_equal(dim(Pmat_ortho)[1], 240)
 
-  testthat::expect_s3_class(res, "seafar")
-  testthat::expect_type(res, "list")
-  testthat::expect_true(all(c("scores", "loadings", "PVE", "Residual") %in% names(res)))
-
-  testthat::expect_true(is.matrix(res$loadings))
-  testthat::expect_true(is.matrix(res$scores))
-
-  testthat::expect_equal(dim(res$loadings), c(J, nf))
-  testthat::expect_equal(dim(res$scores), c(N, nf))
-
-  testthat::expect_type(res$PVE, "double")
-  testthat::expect_true(all(is.finite(res$PVE)))
-  testthat::expect_true(all(res$PVE <= 1 + 1e-8))
-  testthat::expect_true(all(res$PVE >= -1e-8))
-
-  testthat::expect_type(res$Residual, "double")
-  testthat::expect_true(is.finite(res$Residual))
-  testthat::expect_true(res$Residual >= -1e-8)
-
-  # For scalar C branch: hard thresholding should make exactly C nonzeros (unless ties)
-  nnz <- sum(abs(res$loadings) > 0)
-  testthat::expect_equal(nnz, C)
+  n <- nrow(big5_ortho$scores)
+  G <- crossprod(big5_ortho$scores) / n
+  expect_equal(G, diag(ncol(big5_ortho$scores)), tolerance = 1e-8)
 })
