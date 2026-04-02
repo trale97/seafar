@@ -228,15 +228,11 @@ seafar_general <- function(data,
       #2.1. Update factor scores
       while(stopcritT0 == 0){
         Lossu1old <- ssres(data,scores,loadings)/ssx
-        E <- data - scores%*%t(loadings)
         for (q in 1:nfactors){
-          Er <- E + scores[,q]%*%t(loadings[,q])
-          num <- Er%*%loadings[,q]
-          scores[,q] <- sqrt(N)*num/sqrt(sum(num^2))
-          #Lossu1 <- ssres(data,scores,loadings)/ssx
-          #diffT <- c(diffT,Lossu1old-Lossu1)
-          #Lossu1old <- Lossu1
-          #Lossvec1 <- c(Lossvec1, Lossu1)
+          E <- data - scores %*% t(loadings)
+          Er <- E + scores[,q] %*% t(loadings[,q])
+          num <- Er %*% loadings[,q]
+          scores[,q] <- sqrt(N) * num / sqrt(sum(num^2))
         }
         #t(scores)%*%scores
         #Calculate loss
@@ -305,15 +301,11 @@ seafar_general <- function(data,
       #2.1. Update factor scores
       while(stopcritT0 == 0){
         Lossu1old <- ssres(data,scores,loadings)/ssx
-        E <- data - scores%*%t(loadings)
         for (q in 1:nfactors){
-          Er <- E + scores[,q]%*%t(loadings[,q])
-          num <- Er%*%loadings[,q]
-          scores[,q] <- sqrt(N)*num/sqrt(sum(num^2))
-          #Lossu1 <- ssres(data,scores,loadings)/ssx
-          #diffT <- c(diffT,Lossu1old-Lossu1)
-          #Lossu1old <- Lossu1
-          #Lossvec1 <- c(Lossvec1, Lossu1)
+          E <- data - scores %*% t(loadings)
+          Er <- E + scores[,q] %*% t(loadings[,q])
+          num <- Er %*% loadings[,q]
+          scores[,q] <- sqrt(N) * num / sqrt(sum(num^2))
         }
         #t(scores)%*%scores
         #Calculate loss
