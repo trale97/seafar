@@ -247,7 +247,7 @@ seafar_general <- function(data,
           stopcritT0 <- 1
         }
         if (abs(Losst-Lossu0) < eps){
-          convT0 <- 1
+          stopcritT0 <- 1
         }
         iter0 <- iter0 + 1
         Losst <- Lossu0
@@ -324,7 +324,7 @@ seafar_general <- function(data,
           stopcritT0 <- 1
         }
         if (abs(Losst-Lossu0) < eps){
-          convT0 <- 1
+          stopcritT0 <- 1
         }
         iter0 <- iter0 + 1
         Losst <- Lossu0
