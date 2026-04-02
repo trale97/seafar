@@ -26,7 +26,7 @@ Function for obtaining an initial loading matrix.
 }
 \examples{
 \dontrun{
-big5_seafa <- seafar(ocean, 5, 240, INIT = "svd")
+initialP <- seafar_init(ocean, 5, 240, INIT = "svd")
 }
 }
 \author{
