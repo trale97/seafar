@@ -81,9 +81,9 @@ seafar_lasso <- function(data,
     }
 
     #Calculate loss
-    Lossu <- LOSS(DATA,scores,loadings,lambda)/ssx
+    Lossu <- LOSS(data,scores,loadings,lambda)/ssx
     Lossvec <- c(Lossvec,Lossu)
-    if (iter > MaxIter) {
+    if (iter > maxiter) {
       convAO <- 1
     }
     #if (Lossc-Lossu < -1e-12) {
@@ -96,11 +96,11 @@ seafar_lasso <- function(data,
     iter <- iter + 1
     Lossc <- Lossu
   }
-  if (iter < MaxIter) {
+  if (iter < maxiter) {
     converged <- TRUE
   }
 
-  result <- list('scores' = scores, 'loadings' = loadings, 'PVE' = 1-Lossvec, 'Residual' = Lossu*ssx)
+  result <- list('scores' = scores, 'loadings' = loadings, 'PVE' = 1-Lossvec, 'Residual' = Lossu*ssx, 'converged' = converged)
 
   attr(result, "class") <- "lasso"
   return(result)
