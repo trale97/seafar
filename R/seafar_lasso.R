@@ -17,6 +17,7 @@ seafar_lasso <- function(data,
                          lambda,
                          maxiter = 50,
                          eps = 10^-4,
+                         initloadings,
                          INIT = 'mixed'){
   converged <- FALSE
   n <- dim(data)[1]
@@ -26,7 +27,13 @@ seafar_lasso <- function(data,
   iter <- 1
   Lossc <- 1
   Lossvec <- Lossc   #Used to compute convergence criterium
-  loadings <- seafar_init_l1(data, nfactors, INIT)
+  #1. Initialize loading matrix
+  if (missing(initloadings)) {
+    loadings <- seafar_init_l1(data, nfactors, INIT)
+  } else {
+    loadings <- initloadings
+  }
+
   svd1 <- svd(data, nfactors, nfactors)
   scores <- svd1$u
   diffT <- 0
@@ -132,6 +139,7 @@ seafar_lasso_multistart <- function(data,
                                     lambda,
                                     maxiter = 50,
                                     eps = 10^-4,
+                                    initloadings,
                                     INIT,
                                     nstarts){
   if(missing(nstarts)){
@@ -145,7 +153,7 @@ seafar_lasso_multistart <- function(data,
   converged <- array()
 
   for (n in 1:nstarts){
-    result <- seafar_lasso(data, nfactors, lambda, maxiter, eps, INIT)
+    result <- seafar_lasso(data, nfactors, lambda, maxiter, eps, initloadings, INIT)
 
     Pout3d[[n]] <- result$loadings
     Tout3d[[n]] <- result$scores
