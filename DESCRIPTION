@@ -1,5 +1,5 @@
 Package: seafar
-Title: Functions to perform Sparse Exploratory Approximate Factor Analysis for High-dimensional Data.
+Title: Functions to perform Sparse Exploratory Approximate Factor Analysis for High-dimensional Data
 Version: 0.0.0.9000
 Authors@R: c(person(given = "Tra", family = "Le", role = c("aut", "cre"), 
     email = "t.t.le_1@tilburguniversity.edu"), 
