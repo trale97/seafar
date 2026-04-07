@@ -20,7 +20,7 @@ seafar_lasso <- function(data,
                          initloadings,
                          INIT = 'mixed'){
   converged <- FALSE
-  n <- dim(data)[1]
+  N <- dim(data)[1]
   J <- dim(data)[2]
   ssx <- sum(data^2)
   convAO <- 0
