@@ -72,11 +72,12 @@ seafar_lasso <- function(data,
 
     #2. Update loadings
     #Lossu1old <- LOSS(DATA,scores,loadings,lambda)
-    E <- DATA - scores%*%t(loadings)
-    for (r in 1:R){
-      Er <- E+scores[,r]%*%t(loadings[,r])
-      crosstEr <- t(Er)%*%scores[,r]
-      loadings[,r]<-sign(crosstEr)*apply(cbind(abs(crosstEr)-lambda/2,0),1,max)/I
+
+    for (q in 1:nfactors){
+      E <- data - scores%*%t(loadings)
+      Er <- E+scores[,q]%*%t(loadings[,q])
+      crosstEr <- t(Er)%*%scores[,q]
+      loadings[,q]<-sign(crosstEr)*apply(cbind(abs(crosstEr)-lambda/2,0),1,max)/N
     }
 
     #Calculate loss
