@@ -6,7 +6,7 @@ Authors@R: c(person(given = "Tra", family = "Le", role = c("aut", "cre"),
     person(given = "Katrijn", family = "Van Deun", role = "aut"),
     person(given = "Stefan", family = "Kirsch", role = "ctb"))
 Description: Functions to perform Sparse Exploratory Approximate Factor Analysis for High-dimensional Data.
-License: MIT + file LICENSE
+License: GPL (>= 3)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.3
