@@ -190,3 +190,38 @@ seafar_lasso_multistart <- function(data,
 
   return(return_varselect)
 }
+
+#' Display a summary of the results of \code{seafar_lasso_multistart()}.
+#'
+#' @param object Object of class inheriting from 'lasso_multistart'.
+#' @param disp The default is \code{"loadings"} which returns only the estimated loadings matrix.
+#'             Otherwise if \code{"full"}, function returns both the estimated loadings and factor scores matrices.
+#' @param nrow Number of rows of the loading matrix to be displayed, default is 10.
+#' @param ...  Argument to be passed to or from other methods.
+#' @export
+#' @examples
+#'\dontrun{
+#' summary(big5_result, disp = "full")
+#'}
+summary.lasso_multistart<- function(object, disp = "loadings", nrow = 10, ...){
+  if (missing(disp)){
+    disp = "loadings"
+  }
+
+  if (disp == "loadings"){
+    cat(sprintf("\nThe number of nonzero loadings is: %s\n",
+                sum(round(object$loadings,3) != 0)))
+    cat(sprintf("\nThe estimated loadings matrix is \n"))
+    print(utils::head(round(object$loadings,3), nrow))
+  } else if (disp == "full") {
+    cat(sprintf("\nThe number of nonzero loadings is: %s\n",
+                sum(round(object$loadings,3) != 0)))
+
+    cat(sprintf("\nThe estimated loadings matrix is \n"))
+    print(utils::head(round(object$loadings,3),10))
+
+    cat(sprintf("\nThe estimated factor scores matrix is \n"))
+    print(object$scores)
+  }
+
+}
