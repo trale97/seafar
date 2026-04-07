@@ -10,7 +10,7 @@
 #' @return Factor loading and factor score matrices.
 #' @examples
 #'\dontrun{
-#' big5_seafa <- seafar_lasso(ocean, 5, lambda = 200, INIT = "svd", orthogonal = TRUE)
+#' big5_seafa <- seafar_lasso(ocean, 5, lambda = 200, INIT = "svd")
 #'}
 seafar_lasso <- function(data,
                          nfactors,
@@ -120,12 +120,11 @@ seafar_lasso <- function(data,
 #'
 #' @examples
 #'\dontrun{
-#' big5_result <- seafar_multistart(
+#' big5_result <- seafar_lasso_multistart(
 #'   scale(big5),
 #'   nfactors = 5,
-#'   C = 240,
+#'   lambda = 10,
 #'   INIT = 'random',
-#'   orthogonal = TRUE,
 #'   nstarts = 50)
 #'}
 seafar_lasso_multistart <- function(data,
