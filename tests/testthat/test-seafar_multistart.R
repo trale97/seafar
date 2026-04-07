@@ -1,5 +1,12 @@
+testthat::skip_if_not_installed("qgraph")
+
+data("big5", package = "qgraph")
+big5_std <- as.matrix(scale(big5))
+
+stopifnot(is.matrix(big5_std))
+
 test_that("seafar_multistart for orthogonal factors works", {
-  big5_orthogonal <- seafar_multistart(data = ocean_std,
+  big5_orthogonal <- seafar_multistart(data = big5_std,
                                        nfactors = 5,
                                        C = 240,
                                        orthogonal = T)
@@ -23,7 +30,7 @@ test_that("seafar_multistart for orthogonal factors works", {
 })
 
 test_that("seafar_multistart for correlated factors works", {
-  big5_corr <- seafar_multistart(data = ocean_std,
+  big5_corr <- seafar_multistart(data = big5_std,
                                        nfactors = 5,
                                        C = 240,
                                        nstarts = 10)
