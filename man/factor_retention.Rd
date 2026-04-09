@@ -2,23 +2,25 @@
 % Please edit documentation in R/factor_retention.R
 \name{factor_retention}
 \alias{factor_retention}
-\title{Function to retain number of factors using various methods.}
+\title{Function to retain number of factors/components using various methods.}
 \usage{
-factor_retention(data)
+factor_retention(data, large.data = FALSE)
 }
 \arguments{
 \item{data}{A NxJ matrix of standardized items.}
+
+\item{large.data}{Logical. If TRUE, use methods suitable for very large datasets.}
 }
 \value{
-Number of factors.
+Number of factors/components.
 }
 \description{
-Function to retain number of factors using various methods.
+Function to retain number of factors/components using various methods.
 }
 \examples{
 \dontrun{
 data(big5, package = "qgraph")
 X <- scale(big5)
-a <- factor_retention(X)
+a <- factor_retention(X, large.data = FALSE)
 }
 }

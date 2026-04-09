@@ -10,6 +10,7 @@ seafar_lasso_multistart(
   lambda,
   maxiter = 50,
   eps = 10^-4,
+  initloadings,
   INIT,
   nstarts
 )
@@ -41,12 +42,11 @@ Multistart procedure for seafar with the LASSO penalty.
 }
 \examples{
 \dontrun{
-big5_result <- seafar_multistart(
+big5_result <- seafar_lasso_multistart(
   scale(big5),
   nfactors = 5,
-  C = 240,
+  lambda = 10,
   INIT = 'random',
-  orthogonal = TRUE,
   nstarts = 50)
 }
 }

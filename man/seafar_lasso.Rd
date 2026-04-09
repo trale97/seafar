@@ -4,7 +4,15 @@
 \alias{seafar_lasso}
 \title{Title Sparse exploratory approximate factor analysis using LASSO penalty}
 \usage{
-seafar_lasso(data, nfactors, lambda, maxiter = 50, eps = 10^-4, INIT = "mixed")
+seafar_lasso(
+  data,
+  nfactors,
+  lambda,
+  maxiter = 50,
+  eps = 10^-4,
+  initloadings,
+  INIT = "mixed"
+)
 }
 \arguments{
 \item{data}{A data frame containing the dataset (standardized).}
@@ -27,6 +35,6 @@ Title Sparse exploratory approximate factor analysis using LASSO penalty
 }
 \examples{
 \dontrun{
-big5_seafa <- seafar_lasso(ocean, 5, lambda = 200, INIT = "svd", orthogonal = TRUE)
+big5_seafa <- seafar_lasso(ocean, 5, lambda = 200, INIT = "svd")
 }
 }
