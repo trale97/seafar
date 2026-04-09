@@ -12,20 +12,26 @@
 #' summary(results)
 #'}
 summary.nfactors <- function(object, ...){
-  if(!is.null(object$parallel_error)){
-    cat("Parallel analysis failed:\n")
-    cat(object$parallel_error, "\n\n")
+
+  if (is.null(object$kaiser)){
+    cat(sprintf(
+      "Number of components by parallel analysis (PCA) is: %s\n",
+      object$parallel))
+
+    cat(sprintf(
+      "Number of components by scree test is: %s\n",
+      object$scree))
   } else {
     cat(sprintf(
       "Number of factors by parallel analysis is: %s\n",
-      object$parallel
-    ))
+      object$parallel))
+
+    cat(sprintf(
+      "Number of factors by Kaiser rule is: %s\n",
+      object$kaiser))
+
+    cat(sprintf(
+      "Number of components by scree test is: %s\n",
+      object$scree))
   }
-
-  cat(sprintf("Number of factors by scree test is: %s\n",
-              object$scree))
-
-  cat(sprintf("Number of factors by Kaiser rule is: %s\n",
-              object$kaiser))
-
 }
