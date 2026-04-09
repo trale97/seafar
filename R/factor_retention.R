@@ -1,8 +1,9 @@
-#' Function to retain number of factors using various methods.
+#' Function to retain number of factors/components using various methods.
 #'
 #' @param data A NxJ matrix of standardized items.
+#' @param large.data Logical. If TRUE, use methods suitable for very large datasets.
 #'
-#' @returns Number of factors.
+#' @returns Number of factors/components.
 
 #' @importFrom utils capture.output
 #' @importFrom stats cor
@@ -13,50 +14,94 @@
 #'\dontrun{
 #' data(big5, package = "qgraph")
 #' X <- scale(big5)
-#' a <- factor_retention(X)
+#' a <- factor_retention(X, large.data = FALSE)
 #'}
-factor_retention <- function(data){
-  # default values
-  Q_parallel <- NA
-  Q_parallel_comp <- NA
-  parallel_error <- NULL
 
-  res <- tryCatch(
+factor_retention <- function(data,
+                             large.data = FALSE){
+
+  if(large.data == FALSE){
+    result <- factor_small(data)
+  } else {
+    result <- factor_large (data)
+  }
+
+  attr(result, "class") <- "nfactors"
+  return(result)
+
+}
+
+#' Function to retain number of factors/components for traditional size data set using various methods.
+#'
+#' @param data A NxJ matrix of standardized items.
+#'
+#' @returns Number of factors/components.
+#' @export
+#'
+#' @examples
+#'\dontrun{
+#' data(big5, package = "qgraph")
+#' X <- scale(big5)
+#' a <- factor_small(X)
+#'}
+factor_small <- function(data){
+
+  Q_parallel <- tryCatch(
     {
       tmp <- utils::capture.output(
-        Q <- psych::fa.parallel(data, plot = FALSE)
+        Q <- psych::fa.parallel(data, fa = "fa", plot = FALSE)
       )
-      list(nfact = Q$nfact, ncomp = Q$ncomp)
+      Q$nfact
     },
     error = function(e){
-      parallel_error <<- conditionMessage(e)
-      NULL
+      NA
     }
   )
 
-  if(!is.null(res)){
-    Q_parallel <- res$nfact
-    Q_parallel_comp <- res$ncomp
-  }
+  # scree
+  pX <- PCAtools::pca(data, removeVar = 0.1)
+  Q_elbow <- PCAtools::findElbowPoint(pX$variance)
 
-  # using scree plot
-  pX <- PCAtools::pca(data, removeVar = .1)
   # Kaiser
   kaiser <- EFA.dimensions::EMPKC(data, verbose = FALSE)
   Q_kaiser <- kaiser$NfactorsEMPKC
+
+  number_factors <- list(
+    parallel = Q_parallel,
+    scree = Q_elbow,
+    kaiser = Q_kaiser
+  )
+
+  return(number_factors)
+}
+
+#' Function to retain number of factors/components for very large data set using various methods.
+#'
+#' @param data A NxJ matrix of standardized items.
+#'
+#' @returns Number of factors/components.
+#' @export
+#'
+#' @examples
+#'\dontrun{
+#' data(big5, package = "qgraph")
+#' X <- scale(big5)
+#' a <- factor_large(X)
+#'}
+factor_large <- function(data){
+
+  # parallel analysis components
+  horn <- PCAtools::parallelPCA(data)
+  Q_parallel_comp <- horn$n
+
+  # scree
+  pX <- PCAtools::pca(data, removeVar = 0.1)
   Q_elbow <- PCAtools::findElbowPoint(pX$variance)
 
-  # factors retention using kaiser rule
-  ev <- eigen(cor(data))$values
-  Q_kaiser <- sum(ev > 1)
-
-  number_factors <- list()
-  number_factors$parallel <- Q_parallel
-  number_factors$parallel_comp <- Q_parallel_comp
-  number_factors$scree <- Q_elbow
-  number_factors$kaiser <- Q_kaiser
-  number_factors$parallel_error <- parallel_error
-  attr(number_factors, "class") <- "nfactors"
+  number_factors <- list(
+    parallel = Q_parallel_comp,
+    scree = Q_elbow
+  )
 
   return(number_factors)
 }
