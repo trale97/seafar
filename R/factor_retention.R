@@ -41,6 +41,9 @@ factor_retention <- function(data){
 
   # using scree plot
   pX <- PCAtools::pca(data, removeVar = .1)
+  # Kaiser
+  kaiser <- EFA.dimensions::EMPKC(data, verbose = FALSE)
+  Q_kaiser <- kaiser$NfactorsEMPKC
   Q_elbow <- PCAtools::findElbowPoint(pX$variance)
 
   # factors retention using kaiser rule
