@@ -110,6 +110,6 @@ summary.ISwarmstart <- function(object, ...){
   cat(sprintf("The cardinality selected by the Index of Sparseness is: %s\n",
               object$cardinality[which.max(object$value)]))
 
-  cat(sprintf("The PVE of this cardinality is: %.3f\n",
+  cat(sprintf("The PEV with this cardinality is: %.3f\n",
               object$pve[which.max(object$value)]))
 }
