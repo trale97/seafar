@@ -92,8 +92,6 @@ seafar_orthogonal <- function(data,
     loadings <- initloadings
   }
 
-
-
   if (sum(length(C)) > 1) {
     C_c <- J - C
 
