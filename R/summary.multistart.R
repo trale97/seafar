@@ -15,17 +15,19 @@ summary.multistart <- function(object, disp = "loadings", nrow = 10, ...){
     disp = "loadings"
   }
 
+  load_fmt <- formatC(object$loadings, format = "f", digits = 3, drop0trailing = TRUE)
+
   if (disp == "loadings"){
     cat(sprintf("\nThe number of nonzero loadings is: %s\n",
                 sum(round(object$loadings,3) != 0)))
     cat(sprintf("\nThe estimated loadings matrix is \n"))
-    print(utils::head(round(object$loadings,3), nrow))
+    print(noquote(utils::head(load_fmt, nrow)))
   } else if (disp == "full") {
     cat(sprintf("\nThe number of nonzero loadings is: %s\n",
                 sum(round(object$loadings,3) != 0)))
 
     cat(sprintf("\nThe estimated loadings matrix is \n"))
-    print(utils::head(round(object$loadings,3),10))
+    print(noquote(utils::head(load_fmt, nrow)))
 
     cat(sprintf("\nThe estimated factor scores matrix is \n"))
     print(object$scores)
