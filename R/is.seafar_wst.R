@@ -112,4 +112,7 @@ summary.ISwarmstart <- function(object, ...){
 
   cat(sprintf("The PEV with this cardinality is: %.3f\n",
               object$pve[which.max(object$value)]))
+
+  cat(sprintf("The PEV of the unconstrained model (no zero loadings) is: %.3f\n",
+              object$pve[1]))
 }
