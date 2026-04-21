@@ -188,7 +188,7 @@ data(ocean_std)
 #| eval: false
 #| echo: true
 library(seafar)
-data(ocean_std)
+data("big5", package = "qgraph")
 ```
 
 ### Number of factors
@@ -197,7 +197,7 @@ In line with the design of the questionnaire used to collect the data, we assume
 #| eval: true
 #| echo: true
 #| message: false
-Q <- factor_retention(data = ocean_std)
+Q <- factor_retention(data = big5)
 summary(Q)
 ```
 
@@ -206,7 +206,7 @@ Given the design of the questionnaire (with each of the items constructed to mea
 ```{r}
 #| eval: true
 #| echo: true
-big5_multistart <- seafar_multistart(data = ocean_std, 
+big5_multistart <- seafar_multistart(data = big5, 
                                      nfactors = 5, 
                                      C = 240)
 ```
@@ -241,7 +241,7 @@ The above analyses were done using a multi-start procedure. The package also off
 ```{r}
 #| eval: false
 #| echo: true
-big5_result <- seafar(data = ocean_std, 
+big5_result <- seafar(data = big5, 
                       nfactors = 5,
                       C = 240,
                       INIT = 'svd')
@@ -259,7 +259,7 @@ Often in an exploratory setting, the number of nonzero loadings is not known bef
 ```{r}
 #| eval: false
 #| echo: true
-model_selection <- is.seafar(data = ocean_std,
+model_selection <- is.seafar(data = big5,
                              nfactors = 5,
                              INIT = 'rational',
                              nstarts = 10,
@@ -270,7 +270,7 @@ When the dataset is large, this model selection procedure can be computationally
 ```{r}
 #| eval: true
 #| echo: true
-model_selection_wst <- is.seafar_wst(data = ocean_std,
+model_selection_wst <- is.seafar_wst(data = big5,
                                      nfactors = 5, 
                                      INIT = "rational", 
                                      card.length = 200)
