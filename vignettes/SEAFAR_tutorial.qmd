@@ -402,7 +402,7 @@ results_plot <- data.frame(cardinality = model_selection_wst$cardinality,
                            IS = model_selection_wst$value,
                            PEV = model_selection_wst$pve)
 library(ggplot2)
-ggplot(results_plot, aes(x = cardinality)) +
+p <- ggplot(results_plot, aes(x = cardinality)) +
   geom_line(aes(y = IS, linetype = "IS")) + 
   geom_line(aes(y = PEV/4, linetype = "PEV")) + 
   scale_y_continuous(sec.axis = sec_axis(~.*4, name = "PEV")) + 
@@ -418,7 +418,7 @@ ggplot(results_plot, aes(x = cardinality)) +
     axis.title = element_text(size = 16)
   )
 
-ggsave("_IS-PEV.pdf", width = 8, height = 5, dpi = 600, plot = results_plot)
+ggsave("_IS-PEV.pdf", width = 8, height = 5, plot = p)
 ```
 \begin{figure}[!tb]
     \caption{Index of sparseness (IS) and proportion of explained variance (PEV) against cardinality level}
