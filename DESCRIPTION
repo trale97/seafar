@@ -15,6 +15,8 @@ Imports:
     PCAtools,
     EFA.dimensions
 Suggests: 
+    ggforce,
+    ggplot2,
     knitr,
     qgraph,
     rmarkdown,

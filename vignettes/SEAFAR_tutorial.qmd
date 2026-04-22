@@ -324,35 +324,45 @@ autism_multistart <- seafar_multistart(
 :::
 In this analysis, the factor scores were extracted for subsequent analysis, by using command `autism_multistart$scores`. Figure \ref{fig:gene} shows a plot when Factor 2 and Factor 3 were plotted against each other. As can be seen, Factor 2 clearly separated the control group and the two autistic groups. This reflects the same results by @nishimura2007genome, without having to use a filtering step (i.e., @nishimura2007genome conducted an ANOVA to select a subset of 293 probes which then be used in a PCA). 
 ```{r}
-#| eval: false
-#| echo: false
+#| eval: true
+#| include: false
+
+library(ggplot2)
+library(ggforce)
+
+
+
 # extract factor scores
 autism_scores <- as.data.frame(autism_multistart$scores)
-# 3D plot factor scores
-library(ggforce)
-library(ggalt)
 groups <- c(rep("dup15", 7), rep("FMR1", 6), rep("control", 14))
-autism_scores <- cbind(autism_scores, groups)
-colnames(autism_scores) <- c("eta1", "eta2", "eta3", "Groups")
-ggplot(autism_scores, aes(x = eta2, y = eta3, shape = Groups)) +
-  geom_mark_hull(concavity = 5, expand = 0, radius = 0, aes(fill = Groups, linetype = Groups)) +
+autism_scores$Groups <- groups
+colnames(autism_scores)[1:3] <- c("eta1", "eta2", "eta3")
+
+
+
+p <- ggplot(autism_scores, aes(x = eta2, y = eta3, shape = Groups)) +
+  geom_mark_hull(
+   concavity = 5,
+   expand = 0,
+   radius = 0,
+   aes(fill = Groups, linetype = Groups)
+  ) +
   scale_fill_grey(
-    start = 0.2,
-    end = 0.8,
-    na.value = "red",
-    aesthetics = "fill"
+   start = 0.2,
+   end = 0.8,
+   na.value = "red"
   ) +
   geom_point(size = 3) +
   labs(y = "Factor 3", x = "Factor 2") +
   theme_bw()
 
-ggsave("genetic_plot.png")
+ggsave("_genetic_plot.pdf", plot = p)
 ```
 
 \begin{figure}[!tb]
     \caption{Factor scores plot}
     \label{fig:gene}
-    \fitfigure{genetic_plot.png}
+    \fitfigure{_genetic_plot.pdf}
 \end{figure}
 
 # Conclusions
