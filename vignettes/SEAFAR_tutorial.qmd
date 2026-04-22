@@ -396,11 +396,12 @@ summary(model_selection_wst)
 The `summary(model_selection_wst)` function displays the chosen cardinality and the proportion of explained variance (PEV) of the data associated with this level of cardinality, \textcolor{red}{as well as the PEV of the unconstrained model (i.e., no zero loading).} Figure \ref{fig:ISPEV} \textcolor{red}{shows the evolution of PEV against the cardinality levels.} 
 :::
 ```{r}
-#| eval: false
-#| echo: false
+#| eval: true
+#| include: false
 results_plot <- data.frame(cardinality = model_selection_wst$cardinality,
                            IS = model_selection_wst$value,
                            PEV = model_selection_wst$pve)
+library(ggplot2)
 ggplot(results_plot, aes(x = cardinality)) +
   geom_line(aes(y = IS, linetype = "IS")) + 
   geom_line(aes(y = PEV/4, linetype = "PEV")) + 
@@ -417,12 +418,12 @@ ggplot(results_plot, aes(x = cardinality)) +
     axis.title = element_text(size = 16)
   )
 
-ggsave("IS-PEV.png", width = 8, height = 5, dpi = 600)
+ggsave("_IS-PEV.pdf", width = 8, height = 5, dpi = 600, plot = results_plot)
 ```
 \begin{figure}[!tb]
     \caption{Index of sparseness (IS) and proportion of explained variance (PEV) against cardinality level}
     \label{fig:ISPEV}
-    \fitfigure{IS-PEV.png}
+    \fitfigure{_IS-PEV.pdf}
 \end{figure}
   
 ## Analysis 2: Analysis of factor scores in Autism genetic data
