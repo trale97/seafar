@@ -196,7 +196,7 @@ The Big Five dataset can be obtained directly from the *qgraph* package in R [@e
 #| eval: true
 #| echo: false
 devtools::load_all()
-required_pkgs <- c("qgraph", "ggforce", "ggalt", "flextable", "tibble", "dplyr")
+required_pkgs <- c("ggplot2", "qgraph", "ggforce", "flextable", "tibble", "dplyr")
 
 missing_pkgs <- required_pkgs[!vapply(required_pkgs, requireNamespace, logical(1), quietly = TRUE)]
 
