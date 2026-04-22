@@ -1,5 +1,5 @@
 ---
-title: "seafar: Sparse Exploratory Approximate Factor Analysis for High-dimensional Data in R"
+title: "Sparse Exploratory Approximate Factor Analysis: A Tutorial for the R package seafar"
 shorttitle: "Sparse Exploratory Approximate Factor Analysis"
 author:
   - name: Tra Le
@@ -18,13 +18,6 @@ author:
         department: Research Service Department
         city: Tilburg
         country: The Netherlands
-  - name: Jeroen Vermunt
-    orcid: 0000-0001-9053-9330
-    affiliations:
-      - name: Tilburg University
-        department: Department of Methodology and Statistics
-        city: Tilburg
-        country: The Netherlands
   - name: Katrijn Van Deun
     orcid: 0000-0002-2271-793X
     affiliations:
@@ -40,13 +33,13 @@ author-note:
     study-registration: ~
     data-sharing: ~
     related-report: ~
-    conflict-of-interest: ~
-    financial-support: ~
+    conflict-of-interest: "The authors have no conflicts of interest to declare that are relevant to the content of this article."
+    financial-support: "This publication is part of the project SEM2.0 (with project number NWO 406.22.GO.022) of the Open Competition research program which is financed by the Dutch Research Council (NWO)."
     gratitude: ~
     authorship-agreements: ~
 abstract: "This manuscript provides a tutorial for the package seafar in the statistical software R to perform a Sparse Exploratory Approximate Factor Analysis for high-dimensional data. The methods used in this package make use of the approximate factor model together with cardinality constraint. This helps deal with exploratory high-dimensional settings and complex models characterized by many parameters for a limited sample size, in which most latent variable methods fail. The objectives of this package are two-fold: i) provide users with easy control over the exact number of nonzero/zero loadings for the simple structure of the factor loadings; ii) model selection procedure to help inform users about the simple structure in an exploratory setting with little to no prior information; iii) extract factor scores which can be used in further analyses. The use of seafar package is demonstrated using two empirical data sets."
-impact-statement: "This template helps you get started."
-keywords: [exploratory factor analysis, high-dimensional data, regularization, R package]
+impact-statement: ~
+keywords: [exploratory factor analysis, high-dimensional data,  tutorial, R package]
 floatsintext: true
 bibliography: bibliography.bib
 
@@ -70,61 +63,68 @@ format:
           \raggedbottom
           \usepackage{xcolor}
           \usepackage{hyperref}
+          \definecolor{myred}{RGB}{200,0,0}
+          \newcommand{\red}[1]{\textcolor{myred}{#1}}
 ---
 
 
-Studying latent constructs, such as personality, intelligence, and well-being, is at the core of behavioral research. However, it is met with new challenges introduced by the “Big Data” era, characterized by intensive data collection and technologically advanced measurement tools. Specifically, researchers often need to deal with data sets that have more variables than the number of observations, or so-called high-dimensional low-sample-size (HDLSS) data. Furthermore, new types of data (e.g., GPS or physiological data collected using smart watches) are often exploratory in nature with limited or no prior theoretical knowledge, which can lead to complex models with many unknown parameters relative to the number of observations. Thus, existing (exploratory) latent variable methods often fail to work in these settings, yielding unstable and/or improper solutions or having non-convergent issues. We refrain from discussing in detail these methods and their issues in this paper; however, interested readers are referred to [@le2026exploratory] for comparative overviews.
+Studying latent constructs, such as personality, intelligence, and well-being, is at the core of behavioral research. However, it is met with new challenges introduced by the “Big Data” era, characterized by intensive data collection and technologically advanced measurement tools. Specifically, researchers often need to deal with data sets that have more variables than the number of observations, or so-called high-dimensional low-sample-size (HDLSS) data. Furthermore, new types of data (e.g., GPS or physiological data collected using smart watches) are often exploratory in nature with limited or no prior theoretical knowledge, which can lead to complex models with many unknown parameters relative to the number of observations. Thus, existing (exploratory) latent variable methods often fail to work in these settings, yielding unstable and/or improper solutions or having non-convergent issues. We refrain from discussing in detail these methods and their issues in this paper; however, interested readers are referred to @le2026exploratory for comparative overviews.
 
 Regularized ESEM [@le2026exploratory] was proposed to solve the abovementioned issues. This two-stage method relies on the approximate factor analysis framework [citation] to extract latent factors underlying high-dimensional data. In the first stage, Regularized ESEM imposes simple structure on the loading matrix through cardinality constraint for orthogonal factors and the LASSO penalty for the non-orthogonal factors. The authors proposed a sequential model selection strategy to tune the algorithm: first, the number of factors is determined, after which the number of nonzero loadings (cardinality value or LASSO penalty parameter) is chosen to maximize the Index of Sparseness [@gu2019variable; @gajjar2017selection; @trendafilov2014simple]. The current manuscript introduces an R package called *seafar* to implement this first stage with a few modifications. Firstly, instead of having two types of regularization (i.e., cardinality constraint and LASSO penalty) separately for orthogonal and non-orthogonal factors, *seafar* implements a unified algorithm that uses cardinality constraint for both orthogonal and non-orthogonal factors. Secondly, *seafar* offers the original model selection procedure with the Index of Sparseness and an alternative procedure using warm starts [@JSSv033i01] which can help reduce the computational time.
 
-The rest of the paper is structured as follows: first, we introduce the Sparse Approximate Factor Analysis (SEAFA) model and its model selection procedures; next, the use of the *seafar* package is demonstrated using two empirical data sets. The paper is concluded with some remarks.
+The rest of the paper is structured as follows: first, we introduce the Sparse Exploratory Approximate Factor Analysis (SEAFA) model and its model selection procedures; next, the use of the *seafar* package is demonstrated using two empirical data sets. The paper is concluded with some remarks.
 
 # Method 
-In this section, we will introduce the SEAFA model, its estimation, and model selection procedures.
+In this section, we will introduce the notation used in this paper, the SEAFA model, its estimation, and model selection procedures.
+
+## Data and notation 
+\textcolor{red}{Here, we introduce the notation used throughout this paper. Matrices are denoted by bold uppercase letters and vectors by bold lowercase letters. Transposes are indicated by the superscript $^T$, and scalars are denoted by lowercase italic letters. For a matrix $\mathbf{A}$, $\mathrm{Card}(\mathbf{A})$ denotes the number of nonzero elements in $\mathbf{A}$.}
+
+\textcolor{red}{Let $\mathbf{Y} \in \mathbb{R}^{N \times J}$ be the data matrix of interest consisting of $J$ standardized items (i.e., items are mean-centered and scaled to unit variance) for $N$ observations. The squared Frobenius norm of $\mathbf{Y}$ is denoted as $||\mathbf{Y}||^2_2 = \sum_{i=1}^N\sum_{j=1}^Jy_{ij}^2$.}
 
 ## The SEAFA model 
-Let $\mathbf{y}$ be a $N \times 1$ vector of standardized items (i.e., items are mean-centered and scaled to unit variance), $\mathbf{P}$ be a $J \times P$ matrix of factor loading matrix, and $\boldsymbol{\eta}$ be a $Q \times 1$ vector of factor scores, we have the SEAFA model as follows:
+\textcolor{red}{It is important to point out that the SEAFA model is essentially the measurement model of Regularized ESEM [@le2026exploratory]. Here, we outline the details of the model again. Let $\mathbf{y}$ be a $J \times 1$ vector of $J$ standardized items}, $\mathbf{P}$ be a $J \times Q$ matrix of factor loading matrix, and $\boldsymbol{\eta}$ be a $Q \times 1$ vector of factor scores, we have the SEAFA model as follows:
 \begin{align}
 \label{eqn:model}
 \mathbf{y} = \mathbf{P}\boldsymbol{\eta} + \boldsymbol{\epsilon}
 \end{align}
-where $\boldsymbol{\epsilon}$ is the $J \times 1$ vector of residuals. Model \eqref{eqn:model} is subject to two identification constraints: 1) $\mathbf{P}$ is assumed to show simple structure (i.e., not all items load on all factors but some/many have zero loadings), and 2) factor scores $\boldsymbol{\eta}$ are subject to length restriction. Furthermore, the residuals $\boldsymbol{\epsilon}$ are assumed to have mean zero and uncorrelated with the factor scores. Here, $\boldsymbol{\epsilon}$ are allowed to be weakly correlated, which is an assumption that we relax from the common factor model. With this assumption, the model 
+where $\boldsymbol{\epsilon}$ is the $J \times 1$ vector of residuals. Model \eqref{eqn:model} is subject to two identification constraints: 1) $\mathbf{P}$ is assumed to show simple structure (i.e., not all items load on all factors but some/many have zero loadings), and 2) factor scores $\boldsymbol{\eta}$ are subject to length restriction \textcolor{red}{(i.e., each factor $\boldsymbol{\eta}_q$ is restricted to have the same length equal to $\sqrt{N}$)}. Furthermore, the residuals $\boldsymbol{\epsilon}$ are assumed to have mean zero and to be uncorrelated with the factor scores. Here, $\boldsymbol{\epsilon}$ are allowed to be weakly correlated, \textcolor{red}{in contrast to the common factor model where residuals are assumed to be uncorrelated.}
 
-There are several ways to estimate the approximate factor model (e.g., maximum likelihood-based [@bai2016maximum], covariance matrix estimation [@fan2021robust]). Here, we chose to use a least-squares approach as it has been shown to have good properties when dealing with high-dimensional data [@fan2021robust]. Let $p_{jq}$ denote the loading of variable $j$ on factor $q$ and $\eta_{iq}$ denote the score of person $i$ on factor $q$, our objective function is as follows:
-  
+\textcolor{red}{As discussed in @le2026exploratory, a least-squares approach is used to estimate the approximate factor model in \eqref{eqn:model}, as it has favorable properties in high-dimensional settings @fan2021robust. Let $p_{jq}$ denote the loading of variable $j$ on factor $q$ and $\eta_{iq}$ denote the score of person $i$ on factor $q$, the least-squares objective function is as follows:}
+\begin{align*}
+\label{eqn:1}
+\arg \min_{\eta, p}&\sum_{j=1}^J\sum_{i=1}^N \big(y_{ij} - \sum_q\eta_{iq}p_{jq}\big)^2 \numberthis \\
+\textrm{subject to } &\sum_i\eta_{iq}^2 = N \quad \forall q = 1,...,Q,\\
+\textrm{and } &\mathbf{P} \textrm{ showing simple structure.}
+\end{align*}
+\textcolor{red}{Regularized ESEM [@le2026exploratory] chose to obtain simple structure for $\mathbf{P}$ in two ways: i) imposing a hard constraint on $\mathbf{P}$ to have exactly $C$ nonzero loadings (for orthogonal factors); ii) using the LASSO penalty to shrink (many) loadings toward zeros (for non-orthogonal factors). Here, SEAFA unifies these approaches by enforcing simple structure solely through a cardinality constraint on $\mathbf{P}$, for both orthogonal and non-orthogonal factors.} Thus, the objective function of SEAFA is as follows:
 \begin{align*}
 \label{eqn:1}
 \arg \min_{\eta, p}&\sum_{j=1}^J\sum_{i=1}^N \big(y_{ij} - \sum_q\eta_{iq}p_{jq}\big)^2 \numberthis \\
 \textrm{subject to } &\sum_i\eta_{iq}^2 = N \quad \forall q = 1,...,Q,\\
 \textrm{and } &\textrm{Card}(\mathbf{P}) = C,
 \end{align*}
-or in matrix form:
-\begin{align}
-\label{eqn:2}
-\arg \min_{\mathbf{H}, \mathbf{P}}&||\mathbf{Y} - \mathbf{HP}^T||_2^2, \numberthis \\
-\textrm{subject to } &\boldsymbol{\eta}_q^T \boldsymbol{\eta}_q = N, \notag \\
-\textrm{and } &\textrm{Card}(\mathbf{P}) = C,\notag
-\end{align}
-with Card($\mathbf{P}$) being the number of nonzero elements in the loading matrix $\mathbf{P}$. To solve \eqref{eqn:2}, we use an alternating optimization (AO) scheme: factor scores $\mathbf{H}$ and loadings $\mathbf{P}$ are updated in turn based on fixed values of the other. Specifically, with fixed $\mathbf{P}$, $\widehat{\mathbf{H}}$ (subject to norm constraint) is obtained using the method of Lagrange multipliers. $\widehat{\mathbf{P}}$ is estimated with fixed $\mathbf{H}$ via the cardinality-constrained linear regression problem:
+or in matrix form
+\begin{align*}
+    \label{eqn:2}
+    \arg \min_{\mathbf{H}, \mathbf{P}}&||\mathbf{Y} - \mathbf{HP}^T||_F^2, \numberthis \\
+    \textrm{subject to } &\boldsymbol{\eta}_q^T\boldsymbol{\eta}_q = N \quad \forall q=1,...,Q, \\
+    \textrm{and } &\textrm{Card}(\mathbf{P}) = C.
+\end{align*}
+To solve \eqref{eqn:2}, we use an alternating optimization (AO) scheme: factor scores $\mathbf{H}$ and loadings $\mathbf{P}$ are updated alternately while holding the other fixed. Specifically, with fixed $\mathbf{P}$, $\widehat{\mathbf{H}}$ (subject to norm constraint) is obtained using the method of Lagrange multipliers. $\widehat{\mathbf{P}}$ is estimated with fixed $\mathbf{H}$ via the cardinality-constrained linear regression problem:
 \begin{align*}
 \widehat{\mathbf{P}} = \arg \min_{\mathbf{P}} &||\textrm{vec}(\mathbf{Y}) - (\mathbf{I}\otimes \mathbf{H})\textrm{vec}(\mathbf{P}^T)||_2^2, \numberthis\\
 \textrm{subject to } &\textrm{Card}(\mathbf{P}) = C,
 \end{align*} 
-where $\otimes$ is the Kronecker product. $\widehat{\mathbf{P}}$ is updated using a numerical solution proposed by @adachi2017sparse (i.e., special case of a MM procedure) as:
+\textcolor{red}{where $\otimes$ is the Kronecker product. $\widehat{\mathbf{P}}$ is updated using a numerical solution proposed by @adachi2017sparse as:
 \begin{align}
 \label{eqn:general}
-\textrm{vec}(\mathbf{P}^u) = T_C(\textrm{vec}(\mathbf{P}^T_{old} - \frac{1}{N\alpha}(\mathbf{H}^T\mathbf{H}\mathbf{P}^T_{old} - \mathbf{H}^T\mathbf{Y}))),
+\mathbf{P}_{new} = \mathbf{B} \textrm{ whose elements, except for the } C \textrm{ largest (in absolute value), are set to zero,} 
 \end{align}
-with $\alpha$ being the maximum eigenvalue of $\mathbf{H}^T\mathbf{H}$ and $T_C$ denotes the vector whose $C$ elements with the smallest absolute values are put to zeros. One can also see this update as a solution to a projected gradient scheme with fixed step size $\alpha^{-1}$. Since the main complexity here involves sorting the loading matrix $\mathbf{P}$ of size $J \times Q$, the update can efficiently scale up to high-dimensional setting with very large $J$. 
+where $\mathbf{B} = \mathbf{P}_{old} - \alpha^{-1}(\mathbf{P}_{old}\mathbf{H}^T\mathbf{H} - \mathbf{Y}^T\mathbf{H})$
+with $\alpha$ being the largest eigenvalue of $\mathbf{H}^T\mathbf{H}$. The detailed derivation of $\mathbf{B}$ can be found in} @apx-a. \textcolor{red}{This update can be seen as a solution to a projected gradient scheme with fixed step size $\alpha^{-1}$} [@guerra2023sparsifying]. \textcolor{red}{In the special case of orthogonal factors, that is, when $\mathbf{H}^T\mathbf{H} = N\mathbf{I}$, @adachi2016sparse proposed a computationally efficient update of $\mathbf{H}$ and $\mathbf{P}$ as follows: given $\mathbf{P}$, $\widehat{\mathbf{H}}$ is the solution to the Orthogonal Procrustes problem; Given $\mathbf{H}$, $\widehat{\mathbf{P}}$ is updated in a similar manner as in \eqref{eqn:general}, but with $\mathbf{B} = N^{-1}\mathbf{Y}^T\mathbf{H}$.}
 
-In the special case of orthogonal factors, that is, $\mathbf{H}^T\mathbf{H} = N\mathbf{I}$, @adachi2016sparse proposed a computationally efficient update of $\mathbf{H}$ and $\mathbf{P}$ as follows: given $\mathbf{P}$, $\widehat{\mathbf{H}}$ is the solution to the Orthogonal Procrustes problem; given $\mathbf{H}$, $\widehat{\mathbf{P}}$ is updated as follows:
-\begin{equation}
-\label{eqn:ortho}
-\mathbf{P} = T_C(\frac{1}{N}\mathbf{Y}^T\mathbf{H}).
-\end{equation}
-In both \eqref{eqn:general} and \eqref{eqn:ortho}, the main complexity involves sorting a matrix of size $J \times Q$, thus, the update can efficiently scale up to high-dimensional setting with very large $J$. 
-
-The AO procedure results in a non-increasing sequence of loss values and converges to a stationary point.  However, as \eqref{eqn:2} is not a convex problem, the algorithm is subjected to local minima. Thus, we implement the algorithm with a multi-start procedure and recommend this option whenever possible: the algorithm is run several times with different starting values and solution with the lowest value is retained as the final solution. The implementation of SEAFA is summarized in Algorithm \ref{alg:1}. 
+The AO procedure results in a non-increasing sequence of loss values and converges to a stationary point.  However, as \eqref{eqn:2} is not a convex problem, the algorithm is subject to local minima. Thus, we implement the algorithm with a multi-start procedure: the algorithm is run several times with different starting values and solution with the lowest value is retained as the final solution. The implementation of SEAFA is summarized in Algorithm \ref{alg:1}. 
 
 \begin{algorithm}
 \DontPrintSemicolon
@@ -134,14 +134,14 @@ The AO procedure results in a non-increasing sequence of loss values and converg
 \KwIn{$\mathbf{Y}, Q, C, MaxIter, \epsilon$}
 \KwOut{$\widehat{\mathbf{P}}, \widehat{\mathbf{H}}$}
 
-Initialize loading matrix $\mathbf{P}^{(0)}$ having \textit{C} nonzero loadings\;
+Initialize loading matrix $\mathbf{P}^{(0)}$ having *C* nonzero loadings\;
 
-\While{$\Delta \text{lossfunction} > \epsilon$ \text{ or } $iteration == MaxIter$}{
+\While{$\Delta \text{lossfunction} > \epsilon$ \text{ or } $iteration \neq MaxIter$}{
     \eIf{$\boldsymbol{\eta}_q$ are orthogonal}{
       $\mathbf{H} \gets \sqrt{N}\mathbf{UV}$ from the SVD of $N^{-1/2}\mathbf{YP} = \mathbf{USV}^T$\;
       $\mathbf{A} \gets N^{-1}\mathbf{Y}^T\mathbf{H}$\;
     }{
-      \While{$\Delta lossfunction2 > \epsilon$ or $iteration == MaxIter$}{
+      \While{$\Delta lossfunction2 > \epsilon$ or $iteration \neq MaxIter$}{
     
     \For{$q \gets 1$ to $Q$}                  
 {$\mathbf{E}_q \gets \mathbf{Y} - \mathbf{HP}^T + \bm \eta_q\mathbf{p}_q^T$\;
@@ -160,12 +160,10 @@ $\bm \eta_q \gets \frac{\sqrt{N}\mathbf{E}_q\mathbf{p}_q}{\sqrt{(\mathbf{E}_q\ma
 
 \end{algorithm}
 
-
-
 ## Model selection 
-Algorithm \ref{alg:1} requires six inputs: a matrix of standardized items $\mathbf{Y}$, number of factors $Q$, number of nonzero loadings $C$, and two stopping criteria. While all inputs can be user-specified, the number of factors and nonzero loadings may be unknown beforehand. Thus, we propose a sequential data-driven strategy to choose these two inputs:
+Algorithm \ref{alg:1} requires five inputs: a matrix of standardized items $\mathbf{Y}$, number of factors $Q$, number of nonzero loadings $C$, and two stopping criteria. While all inputs can be user-specified, the number of factors and nonzero loadings may be unknown beforehand. Thus, we propose a sequential data-driven strategy similar to @le2026exploratory to choose these two inputs:
 
-- Step 1: Number of factors $Q$ can be specified either based on prior knowledge or by using different factor retention methods such as parallel analysis [@horn1965rationale], scree plot [@cattell1966scree], Kaiser-Guttman rule [@kaiser1960application], or a machine learning method [@goretzko2020one]. The *seafar* package implements the first three methods. 
+- Step 1: tep 1: Number of factors $Q$ can be specified either based on prior knowledge or by using different factor retention methods such as parallel analysis [@horn1965rationale], scree plot [@cattell1966scree], Kaiser-Guttman rule [@kaiser1960application], or a machine learning method [@goretzko2020one]. 
 
 - Step 2: Based on the selected number of factors, the number of nonzero loadings $C$ is chosen using the Index of Sparseness [@gajjar2017selection;@trendafilov2014simple]. That is, the algorithm searches through a sequence of candidate values for $C$ and chooses the one that maximizes the Index of Sparseness (IS), which is defined as follows:
 \begin{align}
@@ -178,22 +176,46 @@ Note that here in Step 2, $PEV_{SEAFA}$ is obtained by fitting SEAFA for each ca
 :::
 
 # The seafar package 
-In this section, we demonstrate the use of our package in R using two empirical datasets. The first analysis focuses on recovering the loading patterns of the Big Five dataset (low-dimensional scenario), while the second analysis explores the factor scores of the Autism Genetic dataset from @nishimura2007genome (ultra-high-dimensional scenario). 
+In this section, we demonstrate the use of our package in R using two empirical datasets. The first analysis focuses on recovering the loading patterns of the Big Five dataset (low-dimensional scenario), while the second analysis explores the factor scores of the Autism Genetic dataset from @nishimura2007genome (ultra-high-dimensional scenario). \textcolor{red}{First, install and load the \textit{seafar} package as follows:}
+```{r}
+#| eval: false
+#| echo: true
+# Install devtools if needed
+if (!requireNamespace("devtools", quietly = TRUE)) {
+  install.packages("devtools")
+}
+devtools::install_github("trale97/seafar")
+library(seafar)
+```
 
-## Analysis 1: Recovering loading patterns 
+## Analysis 1: Factor loading structure of the Big Five
 
 ### Data pre-processing
-The Big Five dataset is originally obtained from the *qgraph* package in R [@epskamp2012qgraph], but can be directly loaded from our package. The dataset contains scores of 500 observations on the 240 items of the personality questionnaire. All functions in *seafar* work with standardized items, thus, each variable is standardized to have a mean of zero and unit variance before the analysis:
+The Big Five dataset can be obtained directly from the *qgraph* package in R [@epskamp2012qgraph]. The dataset contains scores of 500 observations on the 240 items of the personality questionnaire. All functions in *seafar* work with standardized items, thus, each variable is standardized to have a mean of zero and unit variance before the analysis:
+```{r}
+#| eval: true
+#| echo: false
+devtools::load_all()
+required_pkgs <- c("qgraph", "ggforce", "ggalt", "flextable", "tibble", "dplyr")
 
+missing_pkgs <- required_pkgs[!vapply(required_pkgs, requireNamespace, logical(1), quietly = TRUE)]
+
+if (length(missing_pkgs) > 0) {
+  stop(
+    "To render this document, install these packages: ",
+    paste(missing_pkgs, collapse = ", ")
+  )
+}
+```
 ```{r}
 #| eval: true
 #| echo: true
 data("big5", package = "qgraph")
-big5_std <- scale(big5)
+big5_std <- scale(big5, center = TRUE, scale = TRUE)
 ```
 
 ### Number of factors
-In line with the design of the questionnaire used to collect the data, we assume five factors in correspondence with the five personality traits. Alternatively, one can use data-driven different methods to extract number of factors by using the `factor_retention()` function in the `seafar` package. The results can be inspected by calling `summary()` as below:
+In line with the design of the questionnaire used to collect the data, we assume five factors in correspondence with the five personality traits. Alternatively, one can use different data-driven methods to extract number of factors by using the `factor_retention()` function in the *seafar* package. [This function calls on existing R implementations of the three factor retention methods, namely parallel analysis from package *psych* [@psych] and *PCAtools* [@pcatools], scree plot from *PCAtools*, and Kaiser-Guttman rule from *EFA.dimensions* [@efadimensions].]{.red}. The results can be inspected by calling `summary()` as below:
 ```{r}
 #| eval: true
 #| echo: true
@@ -204,27 +226,36 @@ summary(Q)
 ```
 
 ### Analysis with known cardinality
-Given the design of the questionnaire (with each of the items constructed to measure one trait), we first focus on a solution with 240 nonzero loadings and the remaining 960 zero. We perform a SEAFAR analysis using a preset cardinality of 240 with a multi-start procedure:
+Given the design of the questionnaire (with each of the items constructed to measure one trait), we first focus on a solution with 240 nonzero loadings and the remaining 960 zero. We perform a SEAFA analysis using a preset cardinality of 240 with a multi-start procedure:
+```{r}
+#| echo: false
+set.seed(1997)
+```
 ```{r}
 #| eval: true
 #| echo: true
 big5_multistart <- seafar_multistart(
   data = big5_std,
   nfactors = 5,
-  C = 240
+  C = 240,
+  INIT = 'rational'
 )
 ```
 :::{.NoIndent}
 Note that here, we did not restrict the five factors to be orthogonal. Users can specify `orthogonal = TRUE` to impose orthogonality on the factors. The default number of starting values is 50, which can be modified by option `nstarts =`. Users can also specify the number of nonzero loadings *per* factor instead of across all factors. Since the questionnaire was designed to measure each trait with 48 items, we indicate a cardinality of 48 nonzero loadings per factor by changing the input `C = rep(48,5)`. Furthermore, users can choose the method to initialize the loading matrix by specifying the option `INIT = ` with the following choices:
 
-- `INIT = rational`: the initialization is based on the approach by @ding2004k: the SVD-based loading matrix is first computed, which are then used to cluster the variables. The resulting cluster structure is then used as a target for rotation. The final rotated loading matrix is used as the intial loading matrix for SEAFA.
+- `INIT = mixed`: the initial loading matrix is a mixed between the random starts (30%) and starting values based on the Singular Value Decomposition (SVD) of the items (70%). \textcolor{red}{This is the default option when nothing is specified.}
+
+- `INIT = rational`: the initialization is inspired by the approach by @ding2004k where principal components can be interpreted as continuous relaxations of cluster membership indicators. Here, for the initialization of $\mathbf{P}$, an SVD-based loading matrix is first computed, which are then used to cluster the variables into $Q$ clusters. The resulting cluster structure is then used as a target for rotation, yielding a loading matrix with a simple structure with no cross-loadings. This choice is motivated by the common assumption in questionnaire data that items primarily load on a single latent factor with no cross-loadings \textcolor{red}{(NEEDS CITATION)}. The resulting rotated loading matrix is used as the initial loading matrix for SEAFA. 
 
 - `INIT = random`: the initial loading matrix have complete random values sampled from a multivariate normal distribution $MVN(\mathbf{0}, \mathbf{I})$.
-
-- `INIT = mixed`: the initial loading matrix is a mixed between the random starts (30%) and starting values based on the Singular Value Decomposition (SVD) of the items (70%), which is the default option.
 :::
 :::{.NoIndent}
-The results can be summarized using \verb|summary()| function with options as below:
+\textcolor{red}{The results can be summarized using `summary()` function with option `disp = ` with two values:} 
+
+- `disp = "loadings"` only prints the first ten rows of the loading matrix.
+
+- `disp = "full"` prints both the factor score and loading matrices.
 :::
 ```{r}
 #| eval: true
@@ -232,15 +263,86 @@ The results can be summarized using \verb|summary()| function with options as be
 summary(big5_multistart, disp = "loadings")
 ```
 :::{.NoIndent}
-The option `disp = ` takes two values: 
-
-- `disp = "loadings"` only summarizes the loading matrix.
-
-- `disp = "full"` summarizes both the factor score and loading matrices.
+The full factor score and loading matrices can be extracted by calling `big5_multistart$scores` and `big5_multistart$loadings`, respectively. This is useful when users wish to use the full factor scores and/or loadings for further analyses, for instance, plot a heat map for the loadings. \textcolor{red}{As can be seen, with the rational starting values for the loading matrix, each item only loads on one factor and there is no cross-loading.} @tbl-ocean-loadings \textcolor{red}{shows the number of nonzero loadings per factor corresponding for each of the five personality traits.} 
 :::
-:::{.NoIndent}
-The full factor score and loading matrices can be extracted by indicating \verb|big5_multistart$scores| and \verb|big5_multistart$loadings|, respectively. This is useful when users wish to use the full factor scores and/or loadings for further analyses, for instance, plot a heat map for the loadings.
-:::
+```{r}
+#| eval: true
+#| echo: false 
+#| label: tbl-ocean-loadings
+#| tbl-cap: The number of nonzero loadings per factor corresponding to each personality trait
+#| tbl-pos: tb
+#| ft.align: left
+#| apa-note: The factors were ordered in such that the largest number of nonzero loadings is on the diagonal.
+# function to count nonzero loadings by first letter per column
+# P = loading matrix
+# rownames(P) should be item names like O1, C3, E2, A5, N4
+
+count_ocean <- function(P, traits = c("O", "C", "E", "A", "N")) {
+  count_mat <- sapply(seq_len(ncol(P)), function(j) {
+    nz_items <- rownames(P)[P[, j] != 0]
+    first_letters <- substring(nz_items, 1, 1)
+    as.numeric(table(factor(first_letters, levels = traits)))
+  })
+  
+  rownames(count_mat) <- c("Openness", "Concientiousness", "Extraversion", "Agreeableness", "Neuroticism")
+  colnames(count_mat) <- colnames(P)
+  count_mat
+}
+
+all_perms <- function(x) {
+  if (length(x) == 1) return(list(x))
+  out <- list()
+  k <- 1
+  for (i in seq_along(x)) {
+    rest <- x[-i]
+    perms_rest <- all_perms(rest)
+    for (p in perms_rest) {
+      out[[k]] <- c(x[i], p)
+      k <- k + 1
+    }
+  }
+  out
+}
+
+reorder_factors_ocean <- function(P, traits = c("O", "C", "E", "A", "N")) {
+  count_mat <- count_ocean(P, traits)   # rows = OCEAN, cols = factors
+  
+  perms <- all_perms(seq_len(ncol(count_mat)))
+  
+  best_perm <- perms[[1]]
+  best_score <- -Inf
+  
+  for (perm in perms) {
+    score <- sum(diag(count_mat[, perm, drop = FALSE]))
+    if (score > best_score) {
+      best_score <- score
+      best_perm <- perm
+    }
+  }
+  
+  count_mat[, best_perm, drop = FALSE]
+}
+
+df <- reorder_factors_ocean(big5_multistart$loadings)
+
+colnames(df) <- paste0("Factor ", 1:5)
+
+library(flextable)
+library(tibble)
+library(dplyr)
+
+tmp <- df |>
+  as.data.frame() |>
+  rownames_to_column("Traint")
+
+flextable(tmp) |>
+  theme_apa() |>
+  width(j = 1, width = 1.6) |>
+  align(j = 1, align = "left", part = "all") |>        
+  align(j = 2:ncol(tmp), align = "center", part = "all") |>  
+  colformat_num(j = 2:ncol(tmp), digits = 0)
+```
+
 The above analyses were done using a multi-start procedure. The package also offers a single-start procedure by using the `seafar()` function as follows:
 ```{r}
 #| eval: false
@@ -257,7 +359,7 @@ Here, the `INIT =` input offers an extra options for starting values in addition
 
 - `INIT = svd`: for starting values based on the Singular Value Decomposition of the items.
 
-The single-procedure is computationally faster than the multi-start one, especially when the items matrix is large. However, it does not guarantee to work well in all scenarios but rather is heavily dependent on the type of intput data itself. Users are advised to use it with caution.
+The single-start procedure is computationally faster than the multi-start one, especially when the items matrix is large. However, it does not guarantee to work well in all scenarios but rather is heavily dependent on the type of intput data itself. Users are advised to use it with caution.
 :::
 
 ### Analysis with unknown cardinality
@@ -276,6 +378,10 @@ model_selection <- is.seafar(
 ```
 When the dataset is large, this model selection procedure can be computationally instensive. Thus, users can use the `is.seafar_wst()` function that makes use of warm-starts as implemented by the *glmnet* package [@JSSv033i01] to speed up the computation time. This function also allows users to specify the number of candidate values to be tested within this range; here, we chose 200 values. 
 ```{r}
+#| echo: false
+set.seed(1997)
+```
+```{r}
 #| eval: true
 #| echo: true
 model_selection_wst <- is.seafar_wst(
@@ -287,20 +393,47 @@ model_selection_wst <- is.seafar_wst(
 summary(model_selection_wst)
 ```
 :::{.NoIndent}
-The chosen cardinality can be extracted using `summary(model_selection_wst)`, which can then be used in the similar manner as earlier with the `seafar_multistart()` function (or `seafar()` for a single start). 
+The `summary(model_selection_wst)` function displays the chosen cardinality and the proportion of explained variance (PEV) of the data associated with this level of cardinality, \textcolor{red}{as well as the PEV of the unconstrained model (i.e., no zero loading).} Figure \ref{fig:ISPEV} \textcolor{red}{shows the evolution of PEV against the cardinality levels.} 
 :::
+```{r}
+#| eval: false
+#| echo: false
+results_plot <- data.frame(cardinality = model_selection_wst$cardinality,
+                           IS = model_selection_wst$value,
+                           PEV = model_selection_wst$pve)
+ggplot(results_plot, aes(x = cardinality)) +
+  geom_line(aes(y = IS, linetype = "IS")) + 
+  geom_line(aes(y = PEV/4, linetype = "PEV")) + 
+  scale_y_continuous(sec.axis = sec_axis(~.*4, name = "PEV")) + 
+  scale_linetype_manual(values=c("solid", "dashed")) + 
+  labs(y = "IS",
+              x = "Cardinality", linetype = " ") +
+  theme_grey() +
+  theme(
+    plot.title = element_text(size = 20, hjust = 0.5),
+    legend.position = c(0.82, 0.82),
+    legend.text = element_text(size = 16),
+    axis.text = element_text(size = 16),
+    axis.title = element_text(size = 16)
+  )
+
+ggsave("IS-PEV.png", width = 8, height = 5, dpi = 600)
+```
+\begin{figure}[!tb]
+    \caption{Index of sparseness (IS) and proportion of explained variance (PEV) against cardinality level}
+    \label{fig:ISPEV}
+    \fitfigure{IS-PEV.png}
+\end{figure}
   
-## Analysis 2: Investigating the factor scores
-As the `seafar` package was developed to specifically deal with high-dimensional setting, we also demonstrate how the it can be used to analyze the Autism Genetic data set [@nishimura2007genome]. The data is publicly available at \href{https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE7329}{https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE7329} and can be loaded with the *seafar* package as follows:
+## Analysis 2: Analysis of factor scores in Autism genetic data
+As the `seafar` package was developed to specifically deal with high-dimensional setting, we also demonstrate how the it can be used to analyze the Autism Genetic data set [@nishimura2007genome]. The data is publicly available at \href{https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE7329}{https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE7329}. \textcolor{red}{The R code used to download and pre-process the data is shown in} @apx-b. \textcolor{red}{The pre-processing involved removing three individuals who were mislabeled and standardizing each column of the data to have a mean of zero and a variance of one} [as done in @guerra2023sparsifying]. The resulting data set contains 43893 genetic marker variables for 27 subjects, in which 14 individuals are in the control group, six are in the FMR1-FM autism group, and seven are in the dup15q autism group. We chose three factors as indicated in the original paper by @nishimura2007genome. Due to the size of the data set, we perform a model selection with warm-start to determine the number of nonzero loadings from 200 candidate values:
 ```{r}
 #| eval: true
 #| echo: true
 library(seafar)
 data("autism")
 ```
-:::{.NoIndent}
-Note that the data set loaded from the *seafar* package has already been standardized; otherwise, users need to standardize the raw data set prior to the analyses. This data set contains 43893 genetic marker variables for 27 subjects, in which 14 individuals are in the control group, six are in the FMR1-FM autism group, and seven are in the dup15q autism group. We chose three factors as indicated in the original paper by @nishimura2007genome. Due to the size of the data set, we perform a model selection with warm-start to determine the number of nonzero loadings from 200 candidate values:
-:::
+
 ```{r}
 #| eval: true
 #| echo: true
@@ -315,7 +448,7 @@ selcard <- autism_cardinality$selcard
 summary(autism_cardinality)
 ```
 :::{.NoIndent}
-Using this value of cardinality (i.e., `{r} selcard`), we run a SEAFAR analysis with multiple starting values
+As can be seen, the chosen cardinality is `r format(selcard, scientific = FALSE)` nonzero loadings, which is less than a third of the total number of loadings (i.e., $43893 \times 3$ number of loadings). Using this value of cardinality, we run a SEAFA analysis with multiple starting values
 ```{r}
 #| eval: true
 #| echo: true
@@ -328,7 +461,7 @@ autism_multistart <- seafar_multistart(
 )
 ```
 :::
-In this analysis, the factor scores were extracted for subsequent analysis, by using command `autism_multistart$scores`. Figure \ref{fig:gene} shows a plot when Factor 2 and Factor 3 were plotted against each other. As can be seen, Factor 2 clearly separated the control group and the two autistic groups. This reflects the same results by @nishimura2007genome, without having to use a filtering step (i.e., @nishimura2007genome conducted an ANOVA to select a subset of 293 probes which then be used in a PCA). 
+In this analysis, the factor scores were extracted for subsequent analysis, by using command `autism_multistart$scores`. Figure \ref{fig:gene} shows a plot of Factor 2 and Factor 3 plotted against each other. As can be seen, Factor 2 clearly separated the control group and the two autistic groups. This reflects the same results by @nishimura2007genome, without having to use a filtering step (i.e., @nishimura2007genome conducted an ANOVA to select a subset of 293 probes \textcolor{red}{that maximally discriminated between the three groups}, which were then used in a PCA). 
 ```{r}
 #| eval: true
 #| include: false
@@ -364,15 +497,16 @@ p <- ggplot(autism_scores, aes(x = eta2, y = eta3, shape = Groups)) +
 
 ggsave("_genetic_plot.pdf", plot = p)
 ```
-
 \begin{figure}[!tb]
     \caption{Factor scores plot}
     \label{fig:gene}
     \fitfigure{_genetic_plot.pdf}
 \end{figure}
 
-# Conclusions
-In this tutorial, we demonstrated how to perform exploratory factor analysis for complex models and high-dimensional data using the R package *seafar*. The underlying algorithm builds on the approximate factor model and extends the recently proposed Regularized ESEM approach [@le2026exploratory]. In particular, *seafar* employs a cardinality constraint to impose simple structure on the loading matrix for both orthogonal and non-orthogonal factors. This constraint offers several advantages. First, it yields exact zero loadings, in contrast to rotation-based methods that rely on post hoc thresholding of small but nonzero values. Second, it provides direct control over the number of nonzero loadings, whereas with the LASSO penalty, for instance, users do not know beforehand how many (non)zero loadings are associated with which level of penalty. 
+# Discussion and Conclusions
+In this tutorial, we demonstrated how to perform exploratory factor analysis for complex models and high-dimensional data using the R package *seafar*. The underlying algorithm builds on the approximate factor model and extends the recently proposed Regularized ESEM approach [@le2026exploratory]. In particular, *seafar* employs a cardinality constraint to impose simple structure on the loading matrix for both orthogonal and non-orthogonal factors. This constraint offers several advantages. First, it yields exact zero loadings, in contrast to rotation-based methods that rely on post hoc thresholding of small but nonzero values. Second, it provides direct control over the number of nonzero loadings, whereas with the LASSO penalty, for instance, users do not know beforehand how many (non)zero loadings are associated with which level of penalty.
+
+\textcolor{red}{talk about limitation of sorting big matrix and maybe the LASSO still needed.}
 
 The *seafar* package provides a user-friendly implementation of sparse exploratory factor analysis with minimal input requirements, along with built-in model selection procedures based on the Index of Sparseness. These procedures, suggested by RegularizedSCA [@gu2019variable] and Regularized ESEM [@le2026exploratory], allow users to determine the appropriate number of (non)zero loadings in the absence of strong prior theoretical guidance. The proposed package can be extended to accommodate categorical variables, further broadening its applicability.
 
@@ -425,4 +559,75 @@ As pointed out by [@adachi2017sparse], \eqref{eqn:vec} can be majorized as follo
     \label{eqn:mm}
     ||\textrm{vec}(\mathbf{Y}) - (\mathbf{I}\otimes \mathbf{H})\textrm{vec}(\mathbf{P}^T)||_2^2 \leq c + \alpha||\mathbf{b} - \textrm{vec}(\mathbf{P})||_2^2,
 \end{align}
-where the right-hand side function is also known as the surrogate function. Here, $c$ is a constant with respect to $\mathbf{P}$, $\alpha$ is the maximum eigenvalue of $\mathbf{H}^T\mathbf{H}$, and $\mathbf{b} = \textrm{vec}(\mathbf{P}^T - \frac{1}{N\alpha}(\mathbf{H}^T\mathbf{H}\mathbf{P}^T- \mathbf{H}^T\mathbf{Y})))$. The surrogate function in \eqref{eqn:mm} is minimized when $\textrm{vec}(\mathbf{P}) = T_C(\mathbf{b})$, where $T_C(\cdot)$ denotes the vector whose $C$ elements with the smallest absolute values are put to zeros.
+where the right-hand side function is also known as the surrogate function. Here, $c$ is a constant with respect to $\mathbf{P}$, $\alpha$ is the maximum eigenvalue of $\mathbf{H}^T\mathbf{H}$. $\mathbf{b}$ is derived as follows:
+\begin{align*}
+\mathbf{b} &= \textrm{vec}(\mathbf{P}^T) - \frac{1}{\alpha}\left((\mathbf{I} \otimes \mathbf{H})^T(\mathbf{I} \otimes \mathbf{H})\textrm{vec}(\mathbf{P}^T) - (\mathbf{I} \otimes \mathbf{H})^T \textrm{vec}(\mathbf{Y})\right)\\
+&=\textrm{vec}(\mathbf{P}^T) - \frac{1}{\alpha}\left((\mathbf{I} \otimes \mathbf{H}^T)(\mathbf{I}\otimes \mathbf{H})\textrm{vec}(\mathbf{P}^T) - (\mathbf{I} \otimes \mathbf{H}^T)\textrm{vec}(\mathbf{Y})\right) \\
+&=\textrm{vec}(\mathbf{P}^T) - \frac{1}{\alpha}\left(\mathbf{I} \otimes (\mathbf{H}^T\mathbf{H})\textrm{vec}(\mathbf{P}^T) - \textrm{vec}(\mathbf{H}^T\mathbf{Y})\right)\\
+&=\textrm{vec}(\mathbf{P}^T) - \frac{1}{\alpha}\left(\textrm{vec}(\mathbf{H}^T\mathbf{HP}^T) - \textrm{vec}(\mathbf{H}^T\mathbf{Y})\right) \\ 
+&= \textrm{vec}\left(\mathbf{P}^T - \frac{1}{\alpha}(\mathbf{H}^T\mathbf{HP}^T - \mathbf{H}^T\mathbf{Y})\right),
+\end{align*}
+or in matrix form as 
+\begin{equation}
+\mathbf{B} = \mathbf{P} - \frac{1}{\alpha}(\mathbf{P}\mathbf{H}^T\mathbf{H} - \mathbf{Y}^T\mathbf{H}),
+\end{equation}
+where $b = \textrm{vec}(\mathbf{B}^T)$. Let $k =J\times Q - C$ be the number of zero loadings in $\mathbf{P}$ and $|b|_{(k)}$ is the $k$-th smallest element of $\mathbf{B}$. Then the update of $\mathbf{P} = (p_{jq})$ is 
+\begin{equation}
+p_{jq} = \begin{cases}
+    b_{jq}, \textrm{ if } |b_{jq}| \leq |b|_{(k)},\\
+    0, \textrm{ otherwise}
+\end{cases}
+\end{equation}
+
+# Obtaining the Autism Genetic Data {#apx-b}
+The original data set from @nishimura2007genome is publicly available and can be downloaded from \href{https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE7329}{https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE7329}. We followed the steps done by @guerra2023sparsifying to obtain and process the data prior to the analyses in this manuscript. The steps are as follows:
+
+## Step 1: Download the raw data set
+```{r}
+#| eval: false
+#| echo: true
+data_link= 'https://ftp.ncbi.nlm.nih.gov/geo/series/GSE7nnn/GSE7329/matrix/GSE7329_series_matrix.txt.gz'
+destfile= paste0(getwd(),"/GSE7329_series_matrix.txt.gz")
+download.file(data_link,destfile)
+```
+
+## Step 2: Process data 
+The needed data was extracted from the full data set. Three individuals that were mislabeled were removed from the data set, and genetic markers with missing values were also removed. The data was then standardized and ready for analyses. 
+```{r}
+#| eval: false
+#| echo: true
+full_data=gzfile('GSE7329_series_matrix.txt.gz','rt')  
+full_data=read.csv(full_data,header=F,sep = '\t')
+
+col_names= c()
+for (i in 736:751) {
+  col_names=c(col_names,sapply(full_data[i,], as.character))
+} 
+
+# extract data needed for the analysis
+matrix1= full_data[752:703647,]
+matrix2= matrix(rep(0, prod(dim(matrix1))), ncol = dim(matrix1)[2])
+for(i in 1:nrow(matrix1) ){
+  matrix2[i,]= as.numeric(sapply(matrix1[i,],as.character))
+}
+
+# put extracted data in a matrix with column names
+Data_Autism=matrix(data = t(matrix2),byrow = TRUE, ncol = length(col_names))
+colnames(Data_Autism)=col_names 
+
+# remove first (index) column and last column (all NA)
+Data_Autism=Data_Autism[,-c(1,dim(Data_Autism)[2])] 
+
+# remove mislabel individuals 
+Data_Autism=Data_Autism[,-c(12,13,27)] 
+
+# transpose data matrix so rows are subjects, columns are gene expression
+Data_Autism= t(Data_Autism)
+
+# remove NAs
+Data_Autism = Data_Autism[,-which(colSums(Data_Autism)==0)]
+
+# standardized data 
+Data_Autism=scale(Data_Autism, center = TRUE, scale = TRUE)
+Data_Autism=as.data.frame(Data_Autism)
+```
