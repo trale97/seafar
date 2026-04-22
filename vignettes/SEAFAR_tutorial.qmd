@@ -467,18 +467,13 @@ In this analysis, the factor scores were extracted for subsequent analysis, by u
 #| eval: true
 #| include: false
 
-library(ggplot2)
 library(ggforce)
-
-
 
 # extract factor scores
 autism_scores <- as.data.frame(autism_multistart$scores)
 groups <- c(rep("dup15", 7), rep("FMR1", 6), rep("control", 14))
 autism_scores$Groups <- groups
 colnames(autism_scores)[1:3] <- c("eta1", "eta2", "eta3")
-
-
 
 p <- ggplot(autism_scores, aes(x = eta2, y = eta3, shape = Groups)) +
   geom_mark_hull(
