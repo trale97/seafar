@@ -207,9 +207,11 @@ Given the design of the questionnaire (with each of the items constructed to mea
 ```{r}
 #| eval: true
 #| echo: true
-big5_multistart <- seafar_multistart(data = big5_std, 
-                                     nfactors = 5, 
-                                     C = 240)
+big5_multistart <- seafar_multistart(
+  data = big5_std,
+  nfactors = 5,
+  C = 240
+)
 ```
 :::{.NoIndent}
 Note that here, we did not restrict the five factors to be orthogonal. Users can specify `orthogonal = TRUE` to impose orthogonality on the factors. The default number of starting values is 50, which can be modified by option `nstarts =`. Users can also specify the number of nonzero loadings *per* factor instead of across all factors. Since the questionnaire was designed to measure each trait with 48 items, we indicate a cardinality of 48 nonzero loadings per factor by changing the input `C = rep(48,5)`. Furthermore, users can choose the method to initialize the loading matrix by specifying the option `INIT = ` with the following choices:
@@ -242,10 +244,12 @@ The above analyses were done using a multi-start procedure. The package also off
 ```{r}
 #| eval: false
 #| echo: true
-big5_result <- seafar(data = big5_std, 
-                      nfactors = 5,
-                      C = 240,
-                      INIT = 'svd')
+big5_result <- seafar(
+  data = big5_std,
+  nfactors = 5,
+  C = 240,
+  INIT = "svd"
+)
 ```
 :::{.NoIndent}
 Here, the `INIT =` input offers an extra options for starting values in addition to the starting configurations above:
@@ -260,21 +264,25 @@ Often in an exploratory setting, the number of nonzero loadings is not known bef
 ```{r}
 #| eval: false
 #| echo: true
-model_selection <- is.seafar(data = big5_std,
-                             nfactors = 5,
-                             INIT = 'rational',
-                             nstarts = 10,
-                             TOL = 3,
-                             THR = .2)
+model_selection <- is.seafar(
+  data = big5_std,
+  nfactors = 5,
+  INIT = "rational",
+  nstarts = 10,
+  TOL = 3,
+  THR = .2
+)
 ```
 When the dataset is large, this model selection procedure can be computationally instensive. Thus, users can use the `is.seafar_wst()` function that makes use of warm-starts as implemented by the *glmnet* package [@JSSv033i01] to speed up the computation time. This function also allows users to specify the number of candidate values to be tested within this range; here, we chose 200 values. 
 ```{r}
 #| eval: true
 #| echo: true
-model_selection_wst <- is.seafar_wst(data = big5_std,
-                                     nfactors = 5, 
-                                     INIT = "rational", 
-                                     card.length = 200)
+model_selection_wst <- is.seafar_wst(
+  data = big5_std,
+  nfactors = 5,
+  INIT = "rational",
+  card.length = 200
+)
 summary(model_selection_wst)
 ```
 :::{.NoIndent}
@@ -295,11 +303,13 @@ Note that the data set loaded from the *seafar* package has already been standar
 ```{r}
 #| eval: true
 #| echo: true
-autism_cardinality <- is.seafar_wst(data = autism,
-                                    nfactors = 3,
-                                    INIT = 'rational',
-                                    orthogonal = TRUE,
-                                    card.length = 200)
+autism_cardinality <- is.seafar_wst(
+  data = autism,
+  nfactors = 3,
+  INIT = "rational",
+  orthogonal = TRUE,
+  card.length = 200
+)
 selcard <- autism_cardinality$selcard
 summary(autism_cardinality)
 ```
@@ -308,11 +318,13 @@ Using this value of cardinality (i.e., `{r} selcard`), we run a SEAFAR analysis 
 ```{r}
 #| eval: true
 #| echo: true
-autism_multistart <- seafar_multistart(data = autism,
-                                       nfactors = 3,
-                                       C = selcard,
-                                       orthogonal = TRUE,
-                                       nstarts = 25)
+autism_multistart <- seafar_multistart(
+  data = autism,
+  nfactors = 3,
+  C = selcard,
+  orthogonal = TRUE,
+  nstarts = 25
+)
 ```
 :::
 In this analysis, the factor scores were extracted for subsequent analysis, by using command `autism_multistart$scores`. Figure \ref{fig:gene} shows a plot when Factor 2 and Factor 3 were plotted against each other. As can be seen, Factor 2 clearly separated the control group and the two autistic groups. This reflects the same results by @nishimura2007genome, without having to use a filtering step (i.e., @nishimura2007genome conducted an ANOVA to select a subset of 293 probes which then be used in a PCA). 
@@ -324,20 +336,20 @@ autism_scores <- as.data.frame(autism_multistart$scores)
 # 3D plot factor scores
 library(ggforce)
 library(ggalt)
-groups <- c(rep("dup15",7), rep("FMR1", 6), rep("control", 14))
+groups <- c(rep("dup15", 7), rep("FMR1", 6), rep("control", 14))
 autism_scores <- cbind(autism_scores, groups)
 colnames(autism_scores) <- c("eta1", "eta2", "eta3", "Groups")
-ggplot(autism_scores,aes(x=eta2,y=eta3,shape=Groups))+
-    geom_mark_hull(concavity = 5,expand=0,radius=0,aes(fill=Groups,linetype =Groups))+
-    scale_fill_grey(
-        start = 0.2,
-        end = 0.8,
-        na.value = "red",
-        aesthetics = "fill"
-    )+
-    geom_point(size=3)+
-    labs(y = "Factor 3", x = "Factor 2")+
-    theme_bw()
+ggplot(autism_scores, aes(x = eta2, y = eta3, shape = Groups)) +
+  geom_mark_hull(concavity = 5, expand = 0, radius = 0, aes(fill = Groups, linetype = Groups)) +
+  scale_fill_grey(
+    start = 0.2,
+    end = 0.8,
+    na.value = "red",
+    aesthetics = "fill"
+  ) +
+  geom_point(size = 3) +
+  labs(y = "Factor 3", x = "Factor 2") +
+  theme_bw()
 
 ggsave("genetic_plot.png")
 ```
