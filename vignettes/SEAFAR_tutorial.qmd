@@ -182,7 +182,6 @@ The Big Five dataset is originally obtained from the *qgraph* package in R [@eps
 ```{r}
 #| eval: true
 #| echo: true
-library(seafar)
 data("big5", package = "qgraph")
 big5_std <- scale(big5)
 ```
@@ -193,6 +192,7 @@ In line with the design of the questionnaire used to collect the data, we assume
 #| eval: true
 #| echo: true
 #| message: false
+library(seafar)
 Q <- factor_retention(data = big5_std)
 summary(Q)
 ```
