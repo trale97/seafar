@@ -178,14 +178,9 @@ In this section, we demonstrate the use of our package in R using two empirical 
 
 ### Data pre-processing
 The Big Five dataset is originally obtained from the *qgraph* package in R [@epskamp2012qgraph], but can be directly loaded from our package. The dataset contains scores of 500 observations on the 240 items of the personality questionnaire. All functions in *seafar* work with standardized items, thus, each variable is standardized to have a mean of zero and unit variance before the analysis:
+
 ```{r}
 #| eval: true
-#| echo: false
-devtools::load_all()
-data(ocean_std)
-```
-```{r}
-#| eval: false
 #| echo: true
 library(seafar)
 data("big5", package = "qgraph")
