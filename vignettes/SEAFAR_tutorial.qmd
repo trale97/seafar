@@ -49,6 +49,12 @@ impact-statement: "This template helps you get started."
 keywords: [exploratory factor analysis, high-dimensional data, regularization, R package]
 floatsintext: true
 bibliography: bibliography.bib
+
+vignette: >
+  %\VignetteIndexEntry{seafar}
+  %\VignetteEngine{quarto::format}
+  %\VignetteEncoding{UTF-8}
+
 format:
   apaquarto-pdf:
     documentmode: man
