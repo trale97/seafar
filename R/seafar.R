@@ -21,7 +21,7 @@ seafar <- function(data,
                    C,
                    eps = 1e-4,
                    maxiter = 50,
-                   initloadings,
+                   initloadings = NULL,
                    INIT,
                    orthogonal = FALSE) {
   if (orthogonal == TRUE) {
@@ -73,7 +73,7 @@ seafar_orthogonal <- function(data,
                               C,
                               eps = 1e-4,
                               maxiter = 50,
-                              initloadings,
+                              initloadings = NULL,
                               INIT) {
   N <- dim(data)[1]
   J <- dim(data)[2]
@@ -86,7 +86,7 @@ seafar_orthogonal <- function(data,
 
   tdata <- t(data)
   #1. Initialize loading matrix
-  if (missing(initloadings)) {
+  if (is.null(initloadings)) {
     loadings <- seafar_init(data, nfactors, C, INIT)
   } else {
     loadings <- initloadings
@@ -193,7 +193,7 @@ seafar_general <- function(data,
                            C,
                            eps = 1e-4,
                            maxiter = 50,
-                           initloadings,
+                           initloadings = NULL,
                            INIT) {
   N <- dim(data)[1]
   J <- dim(data)[2]
@@ -202,7 +202,7 @@ seafar_general <- function(data,
   scores <- svd1$u
 
   #1. Initialize loading matrix
-  if (missing(initloadings)) {
+  if (is.null(initloadings)) {
     loadings <- seafar_init(data, nfactors, C, INIT)
   } else {
     loadings <- initloadings
@@ -376,7 +376,7 @@ seafar_general <- function(data,
 #' summary(results, display = "full")
 #'}
 summary.seafar <- function(object, disp = "loadings", ...){
-  if (missing(disp)) {
+  if (is.null(disp)) {
     disp <- "loadings"
   }
 

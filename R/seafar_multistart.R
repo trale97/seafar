@@ -35,7 +35,7 @@ seafar_multistart <- function(data,
                               maxiter = 50,
                               eps = 10^-4,
                               INIT = 'mixed',
-                              initloadings,
+                              initloadings = NULL,
                               orthogonal = FALSE,
                               nstarts = 50,
                               show_progress = FALSE) {
