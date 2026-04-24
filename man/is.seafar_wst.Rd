@@ -47,8 +47,9 @@ Model selection for SEAFAR using Index of Sparseness with warm start
 IS_result <- is.seafar_wst(
   data = X,
   nfactors = 5,
-  INIT = 'random',
+  INIT = "random",
   orthogonal = TRUE,
-  card.length = 100)
+  card.length = 100
+)
 }
 }

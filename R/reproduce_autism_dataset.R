@@ -12,8 +12,8 @@
 #' @return Invisibly returns the processed matrix `autism`.
 #' @export
 reproduce_autism_dataset <- function(
-    source_url = "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE7nnn/GSE7329/matrix/GSE7329_series_matrix.txt.gz",
-    envir = parent.frame()
+  source_url = "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE7nnn/GSE7329/matrix/GSE7329_series_matrix.txt.gz",
+  envir = parent.frame()
 ) {
   autism <- .read_autism_matrix_from_source(source_url)
   autism <- .extract_autism_labels_and_values(autism)

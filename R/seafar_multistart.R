@@ -12,59 +12,60 @@
 #' @param show_progress Option of print progress bar, default is FALSE.
 #'
 #' @returns
-#'\item{loadings}{The best estimated loading matrix.}
-#'\item{scores}{The best estimated factor score matrix.}
-#'\item{PVE}{A list of vectors of PVE of each starting value.}
-#'\item{Loss}{A vector of loss values of the best starting value.}
+#' \item{loadings}{The best estimated loading matrix.}
+#' \item{scores}{The best estimated factor score matrix.}
+#' \item{PVE}{A list of vectors of PVE of each starting value.}
+#' \item{Loss}{A vector of loss values of the best starting value.}
 #'
 #' @export
 #'
 #' @examples
-#'\dontrun{
+#' \dontrun{
 #' big5_result <- seafar_multistart(
 #'   scale(big5),
 #'   nfactors = 5,
 #'   C = 240,
-#'   INIT = 'random',
+#'   INIT = "random",
 #'   orthogonal = TRUE,
-#'   nstarts = 50)
-#'}
+#'   nstarts = 50
+#' )
+#' }
 seafar_multistart <- function(data,
                               nfactors,
                               C,
                               maxiter = 50,
                               eps = 10^-4,
-                              INIT = 'mixed',
+                              INIT = "mixed",
                               initloadings = NULL,
                               orthogonal = FALSE,
                               nstarts = 50,
                               show_progress = FALSE) {
-
   Pout3d <- list()
   Hout3d <- list()
   LOSS <- array()
   PVE <- list()
   LOSSvec <- list()
-  if (show_progress == TRUE){
+  if (show_progress == TRUE) {
     pb <- txtProgressBar(min = 0, max = nstarts, style = 3)
   }
 
 
-  valid_index <- 0  # counts only successful runs
+  valid_index <- 0 # counts only successful runs
 
   for (n in 1:nstarts) {
-
     # catch when seafar throws an error to skip that start
     result <- tryCatch(
       {
-        seafar(data = data,
-               nfactors = nfactors,
-               C = C,
-               maxiter = maxiter,
-               eps = eps,
-               INIT = INIT,
-               initloadings = initloadings,
-               orthogonal = orthogonal)
+        seafar(
+          data = data,
+          nfactors = nfactors,
+          C = C,
+          maxiter = maxiter,
+          eps = eps,
+          INIT = INIT,
+          initloadings = initloadings,
+          orthogonal = orthogonal
+        )
       },
       error = function(e) {
         return(NULL)
@@ -92,7 +93,7 @@ seafar_multistart <- function(data,
 
   # choose solution with lowest loss value
   k <- which(LOSS == min(LOSS))
-  if (length(k)>1){
+  if (length(k) > 1) {
     pos <- sample(1:length(k), 1)
     k <- k[pos]
   }
@@ -107,4 +108,3 @@ seafar_multistart <- function(data,
 
   return(return_varselect)
 }
-

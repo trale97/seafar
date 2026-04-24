@@ -48,10 +48,11 @@ Model selection for SEAFAR using modified Index of Sparseness
 selcard <- is.seafar(
   data = X,
   nfactors = 5,
-  INIT = 'random',
+  INIT = "random",
   orthogonal = TRUE,
   nstarts = 50,
   TOL = 2,
-  THR = 0.15)
+  THR = 0.15
+)
 }
 }

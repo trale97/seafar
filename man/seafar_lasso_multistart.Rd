@@ -46,7 +46,8 @@ big5_result <- seafar_lasso_multistart(
   scale(big5),
   nfactors = 5,
   lambda = 10,
-  INIT = 'random',
-  nstarts = 50)
+  INIT = "random",
+  nstarts = 50
+)
 }
 }
