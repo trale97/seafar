@@ -192,10 +192,10 @@ library(seafar)
 
 ### Data pre-processing
 The Big Five dataset can be obtained directly from the *qgraph* package in R [@epskamp2012qgraph]. The dataset contains scores of 500 observations on the 240 items of the personality questionnaire. All functions in *seafar* work with standardized items, thus, each variable is standardized to have a mean of zero and unit variance before the analysis:
+
 ```{r}
 #| eval: true
-#| echo: false
-devtools::load_all()
+#| include: false
 required_pkgs <- c("ggplot2", "qgraph", "ggforce", "flextable", "tibble", "dplyr")
 
 missing_pkgs <- required_pkgs[!vapply(required_pkgs, requireNamespace, logical(1), quietly = TRUE)]
@@ -207,6 +207,7 @@ if (length(missing_pkgs) > 0) {
   )
 }
 ```
+
 ```{r}
 #| eval: true
 #| echo: true
