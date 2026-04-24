@@ -42,6 +42,12 @@ impact-statement: ~
 keywords: [exploratory factor analysis, high-dimensional data,  tutorial, R package]
 floatsintext: true
 bibliography: bibliography.bib
+
+vignette: >
+  %\VignetteIndexEntry{seafar}
+  %\VignetteEngine{quarto::format}
+  %\VignetteEncoding{UTF-8}
+
 format:
   apaquarto-pdf:
     documentmode: man
@@ -190,7 +196,7 @@ The Big Five dataset can be obtained directly from the *qgraph* package in R [@e
 #| eval: true
 #| echo: false
 devtools::load_all()
-required_pkgs <- c("qgraph", "ggforce", "ggalt", "flextable", "tibble", "dplyr")
+required_pkgs <- c("ggplot2", "qgraph", "ggforce", "flextable", "tibble", "dplyr")
 
 missing_pkgs <- required_pkgs[!vapply(required_pkgs, requireNamespace, logical(1), quietly = TRUE)]
 
@@ -214,6 +220,7 @@ In line with the design of the questionnaire used to collect the data, we assume
 #| eval: true
 #| echo: true
 #| message: false
+library(seafar)
 Q <- factor_retention(data = big5_std)
 summary(Q)
 ```
@@ -227,10 +234,12 @@ set.seed(1997)
 ```{r}
 #| eval: true
 #| echo: true
-big5_multistart <- seafar_multistart(data = big5_std, 
-                                     nfactors = 5, 
-                                     C = 240,
-                                     INIT = 'rational')
+big5_multistart <- seafar_multistart(
+  data = big5_std,
+  nfactors = 5,
+  C = 240,
+  INIT = "rational"
+)
 ```
 :::{.NoIndent}
 Note that here, we did not restrict the five factors to be orthogonal. Users can specify `orthogonal = TRUE` to impose orthogonality on the factors. The default number of starting values is 50, which can be modified by option `nstarts =`. Users can also specify the number of nonzero loadings *per* factor instead of across all factors. Since the questionnaire was designed to measure each trait with 48 items, we indicate a cardinality of 48 nonzero loadings per factor by changing the input `C = rep(48,5)`. Furthermore, users can choose the method to initialize the loading matrix by specifying the option `INIT = ` with the following choices:
@@ -258,7 +267,7 @@ The full factor score and loading matrices can be extracted by calling `big5_mul
 :::
 ```{r}
 #| eval: true
-#| echo: false 
+#| echo: false
 #| label: tbl-ocean-loadings
 #| tbl-cap: The number of nonzero loadings per factor corresponding to each personality trait
 #| tbl-pos: tb
@@ -274,14 +283,16 @@ count_ocean <- function(P, traits = c("O", "C", "E", "A", "N")) {
     first_letters <- substring(nz_items, 1, 1)
     as.numeric(table(factor(first_letters, levels = traits)))
   })
-  
+
   rownames(count_mat) <- c("Openness", "Concientiousness", "Extraversion", "Agreeableness", "Neuroticism")
   colnames(count_mat) <- colnames(P)
   count_mat
 }
 
 all_perms <- function(x) {
-  if (length(x) == 1) return(list(x))
+  if (length(x) == 1) {
+    return(list(x))
+  }
   out <- list()
   k <- 1
   for (i in seq_along(x)) {
@@ -296,13 +307,13 @@ all_perms <- function(x) {
 }
 
 reorder_factors_ocean <- function(P, traits = c("O", "C", "E", "A", "N")) {
-  count_mat <- count_ocean(P, traits)   # rows = OCEAN, cols = factors
-  
+  count_mat <- count_ocean(P, traits) # rows = OCEAN, cols = factors
+
   perms <- all_perms(seq_len(ncol(count_mat)))
-  
+
   best_perm <- perms[[1]]
   best_score <- -Inf
-  
+
   for (perm in perms) {
     score <- sum(diag(count_mat[, perm, drop = FALSE]))
     if (score > best_score) {
@@ -310,7 +321,7 @@ reorder_factors_ocean <- function(P, traits = c("O", "C", "E", "A", "N")) {
       best_perm <- perm
     }
   }
-  
+
   count_mat[, best_perm, drop = FALSE]
 }
 
@@ -329,8 +340,8 @@ tmp <- df |>
 flextable(tmp) |>
   theme_apa() |>
   width(j = 1, width = 1.6) |>
-  align(j = 1, align = "left", part = "all") |>        
-  align(j = 2:ncol(tmp), align = "center", part = "all") |>  
+  align(j = 1, align = "left", part = "all") |>
+  align(j = 2:ncol(tmp), align = "center", part = "all") |>
   colformat_num(j = 2:ncol(tmp), digits = 0)
 ```
 
@@ -338,10 +349,12 @@ The above analyses were done using a multi-start procedure. The package also off
 ```{r}
 #| eval: false
 #| echo: true
-big5_result <- seafar(data = big5_std, 
-                      nfactors = 5,
-                      C = 240,
-                      INIT = 'svd')
+big5_result <- seafar(
+  data = big5_std,
+  nfactors = 5,
+  C = 240,
+  INIT = "svd"
+)
 ```
 :::{.NoIndent}
 Here, the `INIT =` input offers an extra options for starting values in addition to the starting configurations above:
@@ -356,12 +369,14 @@ Often in an exploratory setting, the number of nonzero loadings is not known bef
 ```{r}
 #| eval: false
 #| echo: true
-model_selection <- is.seafar(data = big5_std,
-                             nfactors = 5,
-                             INIT = 'rational',
-                             nstarts = 10,
-                             TOL = 3,
-                             THR = .2)
+model_selection <- is.seafar(
+  data = big5_std,
+  nfactors = 5,
+  INIT = "rational",
+  nstarts = 10,
+  TOL = 3,
+  THR = .2
+)
 ```
 When the dataset is large, this model selection procedure can be computationally instensive. Thus, users can use the `is.seafar_wst()` function that makes use of warm-starts as implemented by the *glmnet* package [@JSSv033i01] to speed up the computation time. This function also allows users to specify the number of candidate values to be tested within this range; here, we chose 200 values. 
 ```{r}
@@ -371,28 +386,35 @@ set.seed(1997)
 ```{r}
 #| eval: true
 #| echo: true
-model_selection_wst <- is.seafar_wst(data = big5_std,
-                                     nfactors = 5, 
-                                     INIT = "rational",
-                                     card.length = 200)
+model_selection_wst <- is.seafar_wst(
+  data = big5_std,
+  nfactors = 5,
+  INIT = "rational",
+  card.length = 200
+)
 summary(model_selection_wst)
 ```
 :::{.NoIndent}
 The `summary(model_selection_wst)` function displays the chosen cardinality and the proportion of explained variance (PEV) of the data associated with this level of cardinality, \textcolor{red}{as well as the PEV of the unconstrained model (i.e., no zero loading).} Figure \ref{fig:ISPEV} \textcolor{red}{shows the evolution of PEV against the cardinality levels.} 
 :::
 ```{r}
-#| eval: false
-#| echo: false
-results_plot <- data.frame(cardinality = model_selection_wst$cardinality,
-                           IS = model_selection_wst$value,
-                           PEV = model_selection_wst$pve)
-ggplot(results_plot, aes(x = cardinality)) +
-  geom_line(aes(y = IS, linetype = "IS")) + 
-  geom_line(aes(y = PEV/4, linetype = "PEV")) + 
-  scale_y_continuous(sec.axis = sec_axis(~.*4, name = "PEV")) + 
-  scale_linetype_manual(values=c("solid", "dashed")) + 
-  labs(y = "IS",
-              x = "Cardinality", linetype = " ") +
+#| eval: true
+#| include: false
+results_plot <- data.frame(
+  cardinality = model_selection_wst$cardinality,
+  IS = model_selection_wst$value,
+  PEV = model_selection_wst$pve
+)
+library(ggplot2)
+p <- ggplot(results_plot, aes(x = cardinality)) +
+  geom_line(aes(y = IS, linetype = "IS")) +
+  geom_line(aes(y = PEV / 4, linetype = "PEV")) +
+  scale_y_continuous(sec.axis = sec_axis(~ . * 4, name = "PEV")) +
+  scale_linetype_manual(values = c("solid", "dashed")) +
+  labs(
+    y = "IS",
+    x = "Cardinality", linetype = " "
+  ) +
   theme_grey() +
   theme(
     plot.title = element_text(size = 20, hjust = 0.5),
@@ -402,12 +424,12 @@ ggplot(results_plot, aes(x = cardinality)) +
     axis.title = element_text(size = 16)
   )
 
-ggsave("IS-PEV.png", width = 8, height = 5, dpi = 600)
+ggsave("_IS-PEV.pdf", width = 8, height = 5, plot = p)
 ```
 \begin{figure}[!tb]
     \caption{Index of sparseness (IS) and proportion of explained variance (PEV) against cardinality level}
     \label{fig:ISPEV}
-    \fitfigure{IS-PEV.png}
+    \fitfigure{_IS-PEV.pdf}
 \end{figure}
   
 ## Analysis 2: Analysis of factor scores in Autism genetic data
@@ -422,11 +444,13 @@ data("autism")
 ```{r}
 #| eval: true
 #| echo: true
-autism_cardinality <- is.seafar_wst(data = autism,
-                                    nfactors = 3,
-                                    INIT = 'rational',
-                                    orthogonal = TRUE,
-                                    card.length = 200)
+autism_cardinality <- is.seafar_wst(
+  data = autism,
+  nfactors = 3,
+  INIT = "rational",
+  orthogonal = TRUE,
+  card.length = 200
+)
 selcard <- autism_cardinality$selcard
 summary(autism_cardinality)
 ```
@@ -435,43 +459,50 @@ As can be seen, the chosen cardinality is `r format(selcard, scientific = FALSE)
 ```{r}
 #| eval: true
 #| echo: true
-autism_multistart <- seafar_multistart(data = autism,
-                                       nfactors = 3,
-                                       C = selcard,
-                                       orthogonal = TRUE,
-                                       nstarts = 25)
+autism_multistart <- seafar_multistart(
+  data = autism,
+  nfactors = 3,
+  C = selcard,
+  orthogonal = TRUE,
+  nstarts = 25
+)
 ```
 :::
 In this analysis, the factor scores were extracted for subsequent analysis, by using command `autism_multistart$scores`. Figure \ref{fig:gene} shows a plot of Factor 2 and Factor 3 plotted against each other. As can be seen, Factor 2 clearly separated the control group and the two autistic groups. This reflects the same results by @nishimura2007genome, without having to use a filtering step (i.e., @nishimura2007genome conducted an ANOVA to select a subset of 293 probes \textcolor{red}{that maximally discriminated between the three groups}, which were then used in a PCA). 
 ```{r}
-#| eval: false
-#| echo: false
+#| eval: true
+#| include: false
+
+library(ggforce)
+
 # extract factor scores
 autism_scores <- as.data.frame(autism_multistart$scores)
-# 3D plot factor scores
-library(ggforce)
-library(ggalt)
-groups <- c(rep("dup15",7), rep("FMR1", 6), rep("control", 14))
-autism_scores <- cbind(autism_scores, groups)
-colnames(autism_scores) <- c("eta1", "eta2", "eta3", "Groups")
-ggplot(autism_scores,aes(x=eta2,y=eta3,shape=Groups))+
-    geom_mark_hull(concavity = 5,expand=0,radius=0,aes(fill=Groups,linetype =Groups))+
-    scale_fill_grey(
-        start = 0.2,
-        end = 0.8,
-        na.value = "red",
-        aesthetics = "fill"
-    )+
-    geom_point(size=3)+
-    labs(y = "Factor 3", x = "Factor 2")+
-    theme_bw()
+groups <- c(rep("dup15", 7), rep("FMR1", 6), rep("control", 14))
+autism_scores$Groups <- groups
+colnames(autism_scores)[1:3] <- c("eta1", "eta2", "eta3")
 
-ggsave("genetic_plot.png")
+p <- ggplot(autism_scores, aes(x = eta2, y = eta3, shape = Groups)) +
+  geom_mark_hull(
+    concavity = 5,
+    expand = 0,
+    radius = 0,
+    aes(fill = Groups, linetype = Groups)
+  ) +
+  scale_fill_grey(
+    start = 0.2,
+    end = 0.8,
+    na.value = "red"
+  ) +
+  geom_point(size = 3) +
+  labs(y = "Factor 3", x = "Factor 2") +
+  theme_bw()
+
+ggsave("_genetic_plot.pdf", plot = p)
 ```
 \begin{figure}[!tb]
     \caption{Factor scores plot}
     \label{fig:gene}
-    \fitfigure{genetic_plot.png}
+    \fitfigure{_genetic_plot.pdf}
 \end{figure}
 
 # Discussion and Conclusions
@@ -557,9 +588,9 @@ The original data set from @nishimura2007genome is publicly available and can be
 ```{r}
 #| eval: false
 #| echo: true
-data_link= 'https://ftp.ncbi.nlm.nih.gov/geo/series/GSE7nnn/GSE7329/matrix/GSE7329_series_matrix.txt.gz'
-destfile= paste0(getwd(),"/GSE7329_series_matrix.txt.gz")
-download.file(data_link,destfile)
+data_link <- "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE7nnn/GSE7329/matrix/GSE7329_series_matrix.txt.gz"
+destfile <- paste0(getwd(), "/GSE7329_series_matrix.txt.gz")
+download.file(data_link, destfile)
 ```
 
 ## Step 2: Process data 
@@ -567,38 +598,38 @@ The needed data was extracted from the full data set. Three individuals that wer
 ```{r}
 #| eval: false
 #| echo: true
-full_data=gzfile('GSE7329_series_matrix.txt.gz','rt')  
-full_data=read.csv(full_data,header=F,sep = '\t')
+full_data <- gzfile("GSE7329_series_matrix.txt.gz", "rt")
+full_data <- read.csv(full_data, header = F, sep = "\t")
 
-col_names= c()
+col_names <- c()
 for (i in 736:751) {
-  col_names=c(col_names,sapply(full_data[i,], as.character))
-} 
+  col_names <- c(col_names, sapply(full_data[i, ], as.character))
+}
 
 # extract data needed for the analysis
-matrix1= full_data[752:703647,]
-matrix2= matrix(rep(0, prod(dim(matrix1))), ncol = dim(matrix1)[2])
-for(i in 1:nrow(matrix1) ){
-  matrix2[i,]= as.numeric(sapply(matrix1[i,],as.character))
+matrix1 <- full_data[752:703647, ]
+matrix2 <- matrix(rep(0, prod(dim(matrix1))), ncol = dim(matrix1)[2])
+for (i in 1:nrow(matrix1)) {
+  matrix2[i, ] <- as.numeric(sapply(matrix1[i, ], as.character))
 }
 
 # put extracted data in a matrix with column names
-Data_Autism=matrix(data = t(matrix2),byrow = TRUE, ncol = length(col_names))
-colnames(Data_Autism)=col_names 
+Data_Autism <- matrix(data = t(matrix2), byrow = TRUE, ncol = length(col_names))
+colnames(Data_Autism) <- col_names
 
 # remove first (index) column and last column (all NA)
-Data_Autism=Data_Autism[,-c(1,dim(Data_Autism)[2])] 
+Data_Autism <- Data_Autism[, -c(1, dim(Data_Autism)[2])]
 
-# remove mislabel individuals 
-Data_Autism=Data_Autism[,-c(12,13,27)] 
+# remove mislabel individuals
+Data_Autism <- Data_Autism[, -c(12, 13, 27)]
 
 # transpose data matrix so rows are subjects, columns are gene expression
-Data_Autism= t(Data_Autism)
+Data_Autism <- t(Data_Autism)
 
 # remove NAs
-Data_Autism = Data_Autism[,-which(colSums(Data_Autism)==0)]
+Data_Autism <- Data_Autism[, -which(colSums(Data_Autism) == 0)]
 
-# standardized data 
-Data_Autism=scale(Data_Autism, center = TRUE, scale = TRUE)
-Data_Autism=as.data.frame(Data_Autism)
+# standardized data
+Data_Autism <- scale(Data_Autism, center = TRUE, scale = TRUE)
+Data_Autism <- as.data.frame(Data_Autism)
 ```
