@@ -53,8 +53,9 @@ big5_result <- seafar_multistart(
   scale(big5),
   nfactors = 5,
   C = 240,
-  INIT = 'random',
+  INIT = "random",
   orthogonal = TRUE,
-  nstarts = 50)
+  nstarts = 50
+)
 }
 }

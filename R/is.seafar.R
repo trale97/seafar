@@ -12,24 +12,25 @@
 #' @importFrom stats sd
 #'
 #' @returns A list with
-#'\item{value}{IS value.}
-#'\item{vaf}{Variance accounted for.}
-#'\item{propzero}{Proportion of zero loadings.}
-#'\item{smallestP}{Smallest nonzero loading.}
-#'\item{maxsdP}{Maximum standard deviation of loading.}
+#' \item{value}{IS value.}
+#' \item{vaf}{Variance accounted for.}
+#' \item{propzero}{Proportion of zero loadings.}
+#' \item{smallestP}{Smallest nonzero loading.}
+#' \item{maxsdP}{Maximum standard deviation of loading.}
 #'
 #' @export
 #'
 #' @examples
-#'\dontrun{
+#' \dontrun{
 #' IS <- is.seafar_original(
 #'   data = X,
 #'   nfactors = 5,
 #'   C = 240,
-#'   INIT = 'random',
+#'   INIT = "random",
 #'   orthogonal = TRUE,
-#'   nstarts = 50)
-#'}
+#'   nstarts = 50
+#' )
+#' }
 #'
 is.seafar_original <- function(data,
                                nfactors,
@@ -40,15 +41,17 @@ is.seafar_original <- function(data,
                                orthogonal = FALSE,
                                nstarts) {
   J <- dim(data)[2]
-  seafar_result <- seafar_multistart(data = data,
-                                     nfactors = nfactors,
-                                     C = C,
-                                     maxiter = maxiter,
-                                     eps = eps,
-                                     INIT = INIT,
-                                     orthogonal= orthogonal,
-                                     nstarts=nstarts,
-                                     show_progress = FALSE)
+  seafar_result <- seafar_multistart(
+    data = data,
+    nfactors = nfactors,
+    C = C,
+    maxiter = maxiter,
+    eps = eps,
+    INIT = INIT,
+    orthogonal = orthogonal,
+    nstarts = nstarts,
+    show_progress = FALSE
+  )
   Hmat <- seafar_result$scores
   Pmat <- seafar_result$loadings
 
@@ -56,16 +59,16 @@ is.seafar_original <- function(data,
   d <- svd(data)$d
   va <- sum((d[1:nfactors])^2)
   vs <- sum((Hmat %*% t(Pmat))^2)
-  nrzeqcoef <- sum(round(Pmat,3) == 0)
-  nrcoef <- J*nfactors
+  nrzeqcoef <- sum(round(Pmat, 3) == 0)
+  nrcoef <- J * nfactors
 
   IS <- list()
-  IS$value <- va*vs/vzero^2*nrzeqcoef/nrcoef
-  IS$vaf <- vs/vzero
-  IS$propzero <- nrzeqcoef/nrcoef
+  IS$value <- va * vs / vzero^2 * nrzeqcoef / nrcoef
+  IS$vaf <- vs / vzero
+  IS$propzero <- nrzeqcoef / nrcoef
 
-  IS$smallestP <- ifelse(sum(rowSums(Pmat!= 0)) < sum(C),
-                         0, min(abs(Pmat[Pmat != 0]))
+  IS$smallestP <- ifelse(sum(rowSums(Pmat != 0)) < sum(C),
+    0, min(abs(Pmat[Pmat != 0]))
   )
   IS$maxsdP <- max(apply(Pmat, 2, sd))
 
@@ -90,16 +93,17 @@ is.seafar_original <- function(data,
 #' @export
 #'
 #' @examples
-#'\dontrun{
+#' \dontrun{
 #' selcard <- is.seafar(
 #'   data = X,
 #'   nfactors = 5,
-#'   INIT = 'random',
+#'   INIT = "random",
 #'   orthogonal = TRUE,
 #'   nstarts = 50,
 #'   TOL = 2,
-#'   THR = 0.15)
-#'}
+#'   THR = 0.15
+#' )
+#' }
 is.seafar <- function(data,
                       nfactors,
                       maxiter = 50,
@@ -183,7 +187,7 @@ is.seafar <- function(data,
     colnames(avec) <- col_names
   }
 
-  round(avec,4)
+  round(avec, 4)
 
   KL <- dim(avec)[1]
 
@@ -205,7 +209,7 @@ is.seafar <- function(data,
     selcardinality <- c(rep(avec[indexnonzeroL, 1], nfactors))
   }
 
-  #TOL = 2
+  # TOL = 2
   samepve <- round(avec[, 3], TOL) == round(avec[indexnonzeroL, 3], TOL)
 
   index <- indexnonzeroL
@@ -230,10 +234,12 @@ is.seafar <- function(data,
 #' @export
 #'
 #' @examples
-#'\dontrun{
+#' \dontrun{
 #' summary(IS_result)
-#'}
-summary.is_seafar <- function(object,...){
-  cat(sprintf("The cardinality selected by the Index of Sparseness is: %s\n",
-              object))
+#' }
+summary.is_seafar <- function(object, ...) {
+  cat(sprintf(
+    "The cardinality selected by the Index of Sparseness is: %s\n",
+    object
+  ))
 }

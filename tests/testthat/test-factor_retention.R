@@ -15,5 +15,4 @@ test_that("factor retention works", {
   expect_true(all(c("parallel", "parallel_comp", "scree", "kaiser") %in% names(Q)))
 
   expect_true(all(vapply(Q, is.numeric, logical(1))))
-
 })
