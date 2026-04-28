@@ -8,13 +8,13 @@
 #' @author Katrijn Van Deun
 #'
 #' @examples
-#'\dontrun{
+#' \dontrun{
 #' hardthr(loadings, C_c)
-#'}
-hardthr <- function(loadings, C_c){
-  ind <- sort(abs(loadings), index.return = TRUE)#without replacement
+#' }
+hardthr <- function(loadings, C_c) {
+  ind <- sort(abs(loadings), index.return = TRUE) # without replacement
   loadings[ind$ix[1:C_c]] <- 0
-  #loadings <- as(loadings, "sparseMatrix")
+  # loadings <- as(loadings, "sparseMatrix")
 
   loadings
 }
@@ -31,12 +31,12 @@ hardthr <- function(loadings, C_c){
 #' @author Katrijn Van Deun.
 #'
 #' @examples
-#'\dontrun{
+#' \dontrun{
 #' ssres(X, scores, loadings)
-#'}
-ssres <- function(data, scores, loadings){
-  XHAT <- scores%*%t(loadings)
-  res <- sum(rowSums((XHAT-data)^2))
+#' }
+ssres <- function(data, scores, loadings) {
+  XHAT <- scores %*% t(loadings)
+  res <- sum(rowSums((XHAT - data)^2))
   return(res)
 }
 
@@ -51,13 +51,13 @@ ssres <- function(data, scores, loadings){
 #' @author Katrijn Van Deun.
 #'
 #' @examples
-#'\dontrun{
+#' \dontrun{
 #' orthprocr(X, loadings)
-#'}
-orthprocr <- function(data, loadings){
+#' }
+orthprocr <- function(data, loadings) {
   N <- dim(data)[1]
   Q <- dim(loadings)[2]
-  XP <- data%*%loadings/(sqrt(N))
+  XP <- data %*% loadings / (sqrt(N))
   svdXP <- svd(XP, Q, Q)
   scores <- sqrt(N) * svdXP$u %*% t(svdXP$v)
 
@@ -80,9 +80,9 @@ orthprocr <- function(data, loadings){
 #'
 #' @return A matrix of initial loadings.
 #' @examples
-#'\dontrun{
+#' \dontrun{
 #' initialP <- seafar_init(ocean, 5, 240, INIT = "svd")
-#'}
+#' }
 #' @author Tra Le and Katrijn Van Deun
 
 seafar_init <- function(data,
@@ -92,36 +92,36 @@ seafar_init <- function(data,
   n <- dim(data)[1]
   J <- dim(data)[2]
   svd1 <- svd(data, nfactors, nfactors)
-  P1 <- matrix(rnorm(J*nfactors), ncol = nfactors, nrow = J)
-  P2 <- svd1$v %*% diag(svd1$d[1:nfactors])/sqrt(n)
-  if (INIT == 'svd'){
+  P1 <- matrix(rnorm(J * nfactors), ncol = nfactors, nrow = J)
+  P2 <- svd1$v %*% diag(svd1$d[1:nfactors]) / sqrt(n)
+  if (INIT == "svd") {
     P <- P2
-  } else if (INIT == 'random'){
+  } else if (INIT == "random") {
     P <- P1
-  } else if (INIT == 'rational') {
+  } else if (INIT == "rational") {
     P <- P2
-    #1.2 Clustering of pca loadings
+    # 1.2 Clustering of pca loadings
     c <- kmeans(P, nfactors, nstart = 5)
     TARGET <- matrix(0, nrow = J, ncol = nfactors)
     for (q in 1:nfactors) {
       TARGET[c$cluster == q, q] <- 1
     }
-    #1.3 Rotate pca solution to cluster structure
+    # 1.3 Rotate pca solution to cluster structure
     WEIGHTS <- TARGET
     B <- pstr(P, TARGET, WEIGHTS, 50, 1e-4)
     P <- P %*% B$Bmatrix
   } else {
-    P <- P2*0.8 + P1*0.2
+    P <- P2 * 0.8 + P1 * 0.2
   }
-  if (length(C)>1){
-    C_c <- J-C
-    for (q in 1:nfactors){
-      ind <- sort(abs(P[,q]), index.return = TRUE)
-      P[ind$ix[1:C_c[q]],q] <- 0
+  if (length(C) > 1) {
+    C_c <- J - C
+    for (q in 1:nfactors) {
+      ind <- sort(abs(P[, q]), index.return = TRUE)
+      P[ind$ix[1:C_c[q]], q] <- 0
     }
   } else {
-    C_c <- J*nfactors-C
-    if (C_c == 0){
+    C_c <- J * nfactors - C
+    if (C_c == 0) {
       P <- P
     } else {
       ind <- sort(abs(P), index.return = TRUE)
@@ -142,10 +142,10 @@ seafar_init <- function(data,
 #' @param eps Convergence criterion based on difference in loss between iterates.
 #' @return Rotation matrix and loss of the pstr criterion.
 #' @examples
-#'\dontrun{
+#' \dontrun{
 #' ocean_pstr <- pstr(pcaloadings, target, weights)
-#'}
-pstr <- function(loadings, target, weights, maxiter=50,eps=1e-4){
+#' }
+pstr <- function(loadings, target, weights, maxiter = 50, eps = 1e-4) {
   n <- dim(loadings)[1]
   m <- dim(loadings)[2]
 
@@ -153,13 +153,12 @@ pstr <- function(loadings, target, weights, maxiter=50,eps=1e-4){
   Bmat <- list()
   REFL <- reflexmat(m) # requires reflexmat.R
 
-  for(i in 1: dim(REFL)[1]){
-
-    k <-which(REFL[i, ] == -1)
+  for (i in 1:dim(REFL)[1]) {
+    k <- which(REFL[i, ] == -1)
     Binit <- diag(m)
-    Binit[, k] <- -1*Binit[, k]
+    Binit[, k] <- -1 * Binit[, k]
 
-    B1 <- t(loadings) %*% loadings  #ask katrijn
+    B1 <- t(loadings) %*% loadings # ask katrijn
     alpha <- max(eigen(B1)$values)
     iter <- 1
 
@@ -168,22 +167,21 @@ pstr <- function(loadings, target, weights, maxiter=50,eps=1e-4){
     Bcurrent <- Binit
     Lossc <- pstrLoss(Binit, loadings, target, weights)
 
-    while(stop == 0){
-
+    while (stop == 0) {
       Pw <- weights * target + loadings %*% Bcurrent - weights * (loadings %*% Bcurrent)
       A <- -2 * t(Pw) %*% loadings
       Fmat <- A + 2 * t(Bcurrent) %*% t(B1) - 2 * alpha * t(Bcurrent)
       F_svd <- svd(-Fmat)
       B <- F_svd$v %*% t(F_svd$u)
 
-      if (iter == maxiter){
+      if (iter == maxiter) {
         stop <- 1
       }
 
       Loss <- pstrLoss(B, loadings, target, weights)
       Diff <- Lossc - Loss
 
-      if(abs(Diff) < eps){
+      if (abs(Diff) < eps) {
         stop <- 1
       }
 
@@ -217,19 +215,16 @@ pstr <- function(loadings, target, weights, maxiter=50,eps=1e-4){
 #'
 #' @author Katrijn Van Deun and Zhengguo Gu.
 #' @examples
-#'\dontrun{
+#' \dontrun{
 #' matrix <- reflexmat(5)
-#'}
-reflexmat <- function(m){
-
+#' }
+reflexmat <- function(m) {
   mat <- rep(1, m)
 
-  for(i in 1:(m-1)){
-
+  for (i in 1:(m - 1)) {
     B <- utils::combn(1:m, i)
 
-    for(j in 1:dim(B)[2]){
-
+    for (j in 1:dim(B)[2]) {
       v <- rep(1, m)
       v[t(B[, j])] <- -1
 
@@ -252,11 +247,10 @@ reflexmat <- function(m){
 #' @export
 #'
 #' @examples
-#'\dontrun{
+#' \dontrun{
 #' loss <- pstrLoss(B, Tmat, target, weights)
-#'}
-pstrLoss <- function(B, Tmat, target, weights){
-
+#' }
+pstrLoss <- function(B, Tmat, target, weights) {
   DEV <- Tmat %*% B - target
   wDEV <- weights * DEV
   Loss <- sum(wDEV^2)
@@ -275,14 +269,14 @@ pstrLoss <- function(B, Tmat, target, weights){
 #' @export
 #'
 #' @examples
-#'\dontrun{
+#' \dontrun{
 #' LOSS(X, scores, loadings, lambda)
-#'}
-LOSS <- function(data, scores, loadings, lambda){
-  XHAT <- scores%*%t(loadings)
-  res <- sum(rowSums((XHAT-data)^2))
+#' }
+LOSS <- function(data, scores, loadings, lambda) {
+  XHAT <- scores %*% t(loadings)
+  res <- sum(rowSums((XHAT - data)^2))
   penalty <- sum(abs(loadings))
-  loss <- res+lambda*penalty
+  loss <- res + lambda * penalty
   return(loss)
 }
 
@@ -294,21 +288,21 @@ LOSS <- function(data, scores, loadings, lambda){
 #'
 #' @return A matrix of initial loadings.
 #' @examples
-#'\dontrun{
+#' \dontrun{
 #' initialP_lasso <- seafar_init_l1(ocean, 5, INIT = "svd")
-#'}
-seafar_init_l1 <- function(data, nfactors, INIT){
+#' }
+seafar_init_l1 <- function(data, nfactors, INIT) {
   n <- dim(data)[1]
   J <- dim(data)[2]
   svd1 <- svd(data, nfactors, nfactors)
-  P1 <- matrix(rnorm(J*nfactors), ncol = nfactors, nrow = J)
-  P2 <- svd1$v %*% diag(svd1$d[1:nfactors])/sqrt(n)
-  if (INIT == 'svd'){
+  P1 <- matrix(rnorm(J * nfactors), ncol = nfactors, nrow = J)
+  P2 <- svd1$v %*% diag(svd1$d[1:nfactors]) / sqrt(n)
+  if (INIT == "svd") {
     P <- P2
-  } else if (INIT == 'random'){
+  } else if (INIT == "random") {
     P <- P1
   } else {
-    P <- P2*0.8 + P1*0.2
+    P <- P2 * 0.8 + P1 * 0.2
   }
 
   loadings <- P

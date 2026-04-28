@@ -15,8 +15,11 @@ Imports:
     PCAtools,
     EFA.dimensions
 Suggests: 
+    ggforce,
+    ggplot2,
     knitr,
     qgraph,
+    quarto,
     rmarkdown,
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
@@ -25,3 +28,4 @@ BugReports: https://github.com/trale97/seafar/issues
 Depends: 
     R (>= 3.5)
 LazyData: true
+VignetteBuilder: quarto

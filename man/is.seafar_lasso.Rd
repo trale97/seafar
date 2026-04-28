@@ -2,42 +2,46 @@
 % Please edit documentation in R/is.seafar_lasso.R
 \name{is.seafar_lasso}
 \alias{is.seafar_lasso}
-\title{Model selection for SEAFAR with LASSO penalty using the Index of Sparseness.}
+\title{Model selection procedure with IS to choose the LASSO penalty paramter.}
 \usage{
-is.seafar_lasso(data, nfactors, lambda, maxiter, eps, INIT, nstarts)
+is.seafar_lasso(
+  data,
+  nfactors,
+  max_lambda,
+  maxiter = 50,
+  eps = 10^-4,
+  INIT,
+  nstarts
+)
 }
 \arguments{
-\item{data}{A data frame containing the dataset (standardized).}
+\item{data}{Data matrix of standardized items NxJ.}
 
 \item{nfactors}{The number of factors.}
 
-\item{lambda}{LASSO penalty tuning parameter.}
+\item{max_lambda}{Maximum LASSO penalty parameter.}
 
 \item{maxiter}{Maximum number of iterations of the AO procedure.}
 
 \item{eps}{Convergence criterion based on difference in loss between iterates.}
 
-\item{INIT}{Method to initialize loadings.}
+\item{INIT}{Method to initialize loading matrix.}
+
+\item{nstarts}{Number of starts.}
 }
 \value{
-A list with
-\item{value}{IS value.}
-\item{vaf}{Variance accounted for.}
-\item{propzero}{Proportion of zero loadings.}
-\item{smallestP}{Smallest nonzero loading.}
-\item{maxsdP}{Maximum standard deviation of loading.}
+The selected LASSO penalty parameter.
 }
 \description{
-Model selection for SEAFAR with LASSO penalty using the Index of Sparseness.
+Model selection procedure with IS to choose the LASSO penalty paramter.
 }
 \examples{
 \dontrun{
-IS <- is.seafar_lasso(
+lambda <- is.seafar_lasso(
   data = X,
   nfactors = 5,
-  lambda = 100,
+  max_lambda = 100,
   INIT = 'mixed',
   nstarts = 50)
 }
-
 }

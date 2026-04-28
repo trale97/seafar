@@ -11,24 +11,21 @@
 #' @export
 #'
 #' @examples
-#'\dontrun{
+#' \dontrun{
 #' data(big5, package = "qgraph")
 #' X <- scale(big5)
 #' a <- factor_retention(X, large.data = FALSE)
-#'}
-
+#' }
 factor_retention <- function(data,
-                             large.data = FALSE){
-
-  if(large.data == FALSE){
+                             large.data = FALSE) {
+  if (large.data == FALSE) {
     result <- factor_small(data)
   } else {
-    result <- factor_large (data)
+    result <- factor_large(data)
   }
 
   attr(result, "class") <- "nfactors"
   return(result)
-
 }
 
 #' Function to retain number of factors/components for traditional size data set using various methods.
@@ -39,13 +36,12 @@ factor_retention <- function(data,
 #' @export
 #'
 #' @examples
-#'\dontrun{
+#' \dontrun{
 #' data(big5, package = "qgraph")
 #' X <- scale(big5)
 #' a <- factor_small(X)
-#'}
-factor_small <- function(data){
-
+#' }
+factor_small <- function(data) {
   Q_parallel <- tryCatch(
     {
       tmp <- utils::capture.output(
@@ -53,7 +49,7 @@ factor_small <- function(data){
       )
       Q$nfact
     },
-    error = function(e){
+    error = function(e) {
       NA
     }
   )
@@ -83,13 +79,12 @@ factor_small <- function(data){
 #' @export
 #'
 #' @examples
-#'\dontrun{
+#' \dontrun{
 #' data(big5, package = "qgraph")
 #' X <- scale(big5)
 #' a <- factor_large(X)
-#'}
-factor_large <- function(data){
-
+#' }
+factor_large <- function(data) {
   # parallel analysis components
   horn <- PCAtools::parallelPCA(data)
   Q_parallel_comp <- horn$n
@@ -105,5 +100,3 @@ factor_large <- function(data){
 
   return(number_factors)
 }
-
-
