@@ -10,7 +10,7 @@ seafar(
   C,
   eps = 1e-04,
   maxiter = 50,
-  initloadings,
+  initloadings = NULL,
   INIT,
   orthogonal = FALSE
 )

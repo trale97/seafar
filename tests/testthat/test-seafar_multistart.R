@@ -6,13 +6,15 @@ big5_std <- as.matrix(scale(big5))
 stopifnot(is.matrix(big5_std))
 
 test_that("seafar_multistart for orthogonal factors works", {
-  big5_orthogonal <- seafar_multistart(data = big5_std,
-                                       nfactors = 5,
-                                       C = 240,
-                                       orthogonal = T)
+  big5_orthogonal <- seafar_multistart(
+    data = big5_std,
+    nfactors = 5,
+    C = 240,
+    orthogonal = T
+  )
 
 
-  #summary(big5_multistart)
+  # summary(big5_multistart)
 
   Pmat_orthogonal <- big5_orthogonal$loadings
 
@@ -30,13 +32,15 @@ test_that("seafar_multistart for orthogonal factors works", {
 })
 
 test_that("seafar_multistart for correlated factors works", {
-  big5_corr <- seafar_multistart(data = big5_std,
-                                       nfactors = 5,
-                                       C = 240,
-                                       nstarts = 10)
+  big5_corr <- seafar_multistart(
+    data = big5_std,
+    nfactors = 5,
+    C = 240,
+    nstarts = 10
+  )
 
 
-  #summary(big5_multistart)
+  # summary(big5_multistart)
 
   Pmat_corr <- big5_corr$loadings
 
@@ -47,11 +51,4 @@ test_that("seafar_multistart for correlated factors works", {
   expect_equal(sum(Pmat_corr != 0), 240)
   expect_equal(dim(Pmat_corr)[2], 5)
   expect_equal(dim(Pmat_corr)[1], 240)
-
 })
-
-
-
-
-
-

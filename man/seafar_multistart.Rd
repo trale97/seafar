@@ -11,7 +11,7 @@ seafar_multistart(
   maxiter = 50,
   eps = 10^-4,
   INIT = "mixed",
-  initloadings,
+  initloadings = NULL,
   orthogonal = FALSE,
   nstarts = 50,
   show_progress = FALSE
@@ -53,8 +53,9 @@ big5_result <- seafar_multistart(
   scale(big5),
   nfactors = 5,
   C = 240,
-  INIT = 'random',
+  INIT = "random",
   orthogonal = TRUE,
-  nstarts = 50)
+  nstarts = 50
+)
 }
 }

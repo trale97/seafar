@@ -7,31 +7,35 @@
 #' @export
 #'
 #' @examples
-#'\dontrun{
+#' \dontrun{
 #' results <- factor_retention(X)
 #' summary(results)
-#'}
-summary.nfactors <- function(object, ...){
-
-  if (is.null(object$kaiser)){
+#' }
+summary.nfactors <- function(object, ...) {
+  if (is.null(object$kaiser)) {
     cat(sprintf(
       "Number of components by parallel analysis (PCA) is: %s\n",
-      object$parallel))
+      object$parallel
+    ))
 
     cat(sprintf(
       "Number of components by scree test is: %s\n",
-      object$scree))
+      object$scree
+    ))
   } else {
     cat(sprintf(
       "Number of factors by parallel analysis is: %s\n",
-      object$parallel))
+      object$parallel
+    ))
 
     cat(sprintf(
       "Number of factors by Kaiser rule is: %s\n",
-      object$kaiser))
+      object$kaiser
+    ))
 
     cat(sprintf(
       "Number of components by scree test is: %s\n",
-      object$scree))
+      object$scree
+    ))
   }
 }

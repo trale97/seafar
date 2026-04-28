@@ -13,35 +13,39 @@
 #' @param orthogonal Orthogonal or non-orthogonal factors, default is FALSE.
 #' @return Factor loading and factor score matrices
 #' @examples
-#'\dontrun{
+#' \dontrun{
 #' big5_seafa <- seafar(ocean, 5, 240, INIT = "svd", orthogonal = TRUE)
-#'}
+#' }
 seafar <- function(data,
                    nfactors,
                    C,
                    eps = 1e-4,
                    maxiter = 50,
-                   initloadings,
+                   initloadings = NULL,
                    INIT,
                    orthogonal = FALSE) {
   if (orthogonal == TRUE) {
-    result <- seafar_orthogonal(data = data,
-                                nfactors = nfactors,
-                                C = C,
-                                eps = eps,
-                                maxiter = maxiter,
-                                initloadings,
-                                INIT = INIT)
+    result <- seafar_orthogonal(
+      data = data,
+      nfactors = nfactors,
+      C = C,
+      eps = eps,
+      maxiter = maxiter,
+      initloadings,
+      INIT = INIT
+    )
   } else {
-    result <- seafar_general(data = data,
-                             nfactors = nfactors,
-                             C = C,
-                             eps = eps,
-                             maxiter = maxiter,
-                             initloadings,
-                             INIT = INIT)
+    result <- seafar_general(
+      data = data,
+      nfactors = nfactors,
+      C = C,
+      eps = eps,
+      maxiter = maxiter,
+      initloadings,
+      INIT = INIT
+    )
   }
-  #3. Return output
+  # 3. Return output
   attr(result, "class") <- "seafar"
   return(result)
 }
@@ -58,22 +62,22 @@ seafar <- function(data,
 #' @param INIT Method to initialize loadings.
 #'
 #' @returns
-#'\item{loadings}{The best estimated loading matrix.}
-#'\item{scores}{The best estimated factor score matrix.}
-#'\item{PVE}{A vector of PVE in each iteration of the AO procedure.}
+#' \item{loadings}{The best estimated loading matrix.}
+#' \item{scores}{The best estimated factor score matrix.}
+#' \item{PVE}{A vector of PVE in each iteration of the AO procedure.}
 #'
 #' @export
 #'
 #' @examples
-#'\dontrun{
+#' \dontrun{
 #' big5_seafa <- seafar(ocean, 5, 240, INIT = "svd")
-#'}
+#' }
 seafar_orthogonal <- function(data,
                               nfactors,
                               C,
                               eps = 1e-4,
                               maxiter = 50,
-                              initloadings,
+                              initloadings = NULL,
                               INIT) {
   N <- dim(data)[1]
   J <- dim(data)[2]
@@ -85,8 +89,8 @@ seafar_orthogonal <- function(data,
   iter <- 1
 
   tdata <- t(data)
-  #1. Initialize loading matrix
-  if (missing(initloadings)) {
+  # 1. Initialize loading matrix
+  if (is.null(initloadings)) {
     loadings <- seafar_init(data, nfactors, C, INIT)
   } else {
     loadings <- initloadings
@@ -96,65 +100,64 @@ seafar_orthogonal <- function(data,
     C_c <- J - C
 
     while (stopcrit == 0) {
-      #2.1 Update factor scores
+      # 2.1 Update factor scores
       scores <- orthprocr(data, loadings)
       A <- tdata %*% scores / N
-      #check monotonicity AO: can be removed later on
-      Lossu <- ssres(data,scores,loadings)/ssx
+      # check monotonicity AO: can be removed later on
+      Lossu <- ssres(data, scores, loadings) / ssx
 
-      #2.2 Update factor loadings
-      if (sum(C_c) == 0){
+      # 2.2 Update factor loadings
+      if (sum(C_c) == 0) {
         loadings <- A
       } else {
-        for (q in 1:nfactors){
-          ind <- sort(abs(A[,q]), index.return = TRUE)
-          A[ind$ix[1:C_c[q]],q] <- 0
+        for (q in 1:nfactors) {
+          ind <- sort(abs(A[, q]), index.return = TRUE)
+          A[ind$ix[1:C_c[q]], q] <- 0
           loadings <- A
         }
       }
 
-      #2.3 Check stopping criteria
-      #Calculate loss
-      Lossu <- ssres(data,scores,loadings)/ssx
-      Lossvec <- c(Lossvec,Lossu)
+      # 2.3 Check stopping criteria
+      # Calculate loss
+      Lossu <- ssres(data, scores, loadings) / ssx
+      Lossvec <- c(Lossvec, Lossu)
       if (iter > maxiter) {
         stopcrit <- 1
       }
 
-      if (Lossc-Lossu < eps) {
+      if (Lossc - Lossu < eps) {
         stopcrit <- 1
       }
       iter <- iter + 1
       Lossc <- Lossu
     }
-
   } else {
-    C_c <- J*nfactors - C
-    #2. Alternating optimization scheme
+    C_c <- J * nfactors - C
+    # 2. Alternating optimization scheme
     while (stopcrit == 0) {
-      #2.1 Update factor scores
+      # 2.1 Update factor scores
       scores <- orthprocr(data, loadings)
       A <- tdata %*% scores / N
-      #check monotonicity AO: can be removed later on
-      Lossu <- ssres(data,scores,loadings)/ssx
+      # check monotonicity AO: can be removed later on
+      Lossu <- ssres(data, scores, loadings) / ssx
 
 
-      #2.2 Update factor loadings
-      if (C_c == 0){
+      # 2.2 Update factor loadings
+      if (C_c == 0) {
         loadings <- A
       } else {
         loadings <- hardthr(A, C_c)
       }
 
-      #2.3 Check stopping criteria
-      #Calculate loss
-      Lossu <- ssres(data,scores,loadings)/ssx
-      Lossvec <- c(Lossvec,Lossu)
+      # 2.3 Check stopping criteria
+      # Calculate loss
+      Lossu <- ssres(data, scores, loadings) / ssx
+      Lossvec <- c(Lossvec, Lossu)
       if (iter > maxiter) {
         stopcrit <- 1
       }
 
-      if (Lossc-Lossu < eps) {
+      if (Lossc - Lossu < eps) {
         stopcrit <- 1
       }
       iter <- iter + 1
@@ -162,8 +165,8 @@ seafar_orthogonal <- function(data,
     }
   }
 
-  #3. Return output
-  result <- list('scores' = scores, 'loadings' = loadings, 'PVE' = 1-Lossvec, 'Residual' = Lossu*ssx)
+  # 3. Return output
+  result <- list("scores" = scores, "loadings" = loadings, "PVE" = 1 - Lossvec, "Residual" = Lossu * ssx)
 }
 
 #' Function for exploratory approximate factor analysis resulting in a sparse
@@ -178,22 +181,22 @@ seafar_orthogonal <- function(data,
 #' @param INIT Method to initialize loadings.
 #'
 #' @returns
-#'\item{loadings}{The best estimated loading matrix.}
-#'\item{scores}{The best estimated factor score matrix.}
-#'\item{PVE}{A vector of PVE in each iteration of the AO procedure.}
+#' \item{loadings}{The best estimated loading matrix.}
+#' \item{scores}{The best estimated factor score matrix.}
+#' \item{PVE}{A vector of PVE in each iteration of the AO procedure.}
 #'
 #' @export
 #'
 #' @examples
-#'\dontrun{
+#' \dontrun{
 #' big5_seafa <- seafar(ocean, 5, 240, INIT = "svd")
-#'}
+#' }
 seafar_general <- function(data,
                            nfactors,
                            C,
                            eps = 1e-4,
                            maxiter = 50,
-                           initloadings,
+                           initloadings = NULL,
                            INIT) {
   N <- dim(data)[1]
   J <- dim(data)[2]
@@ -201,8 +204,8 @@ seafar_general <- function(data,
   svd1 <- svd(data, nfactors, nfactors)
   scores <- svd1$u
 
-  #1. Initialize loading matrix
-  if (missing(initloadings)) {
+  # 1. Initialize loading matrix
+  if (is.null(initloadings)) {
     loadings <- seafar_init(data, nfactors, C, INIT)
   } else {
     loadings <- initloadings
@@ -213,7 +216,7 @@ seafar_general <- function(data,
   Lossc <- 1
   iter <- 1
 
-  #2. Alternating optimization scheme
+  # 2. Alternating optimization scheme
   tdata <- t(data)
   if (sum(length(C)) > 1) {
     C_c <- J - C
@@ -222,143 +225,141 @@ seafar_general <- function(data,
       Losst <- 1
       Lossvec0 <- c()
       stopcritT0 <- 0
-      #Lossvec1 <- 1
-      #2.1. Update factor scores
-      while(stopcritT0 == 0){
-        Lossu1old <- ssres(data,scores,loadings)/ssx
-        for (q in 1:nfactors){
+      # Lossvec1 <- 1
+      # 2.1. Update factor scores
+      while (stopcritT0 == 0) {
+        Lossu1old <- ssres(data, scores, loadings) / ssx
+        for (q in 1:nfactors) {
           E <- data - scores %*% t(loadings)
-          Er <- E + scores[,q] %*% t(loadings[,q])
-          num <- Er %*% loadings[,q]
-          scores[,q] <- sqrt(N) * num / sqrt(sum(num^2))
+          Er <- E + scores[, q] %*% t(loadings[, q])
+          num <- Er %*% loadings[, q]
+          scores[, q] <- sqrt(N) * num / sqrt(sum(num^2))
         }
-        #t(scores)%*%scores
-        #Calculate loss
-        Lossu0 <- ssres(data,scores,loadings)/ssx
-        Lossvec0 <- c(Lossvec0,Lossu0)
+        # t(scores)%*%scores
+        # Calculate loss
+        Lossu0 <- ssres(data, scores, loadings) / ssx
+        Lossvec0 <- c(Lossvec0, Lossu0)
         # check convergence
         if (iter0 > maxiter) {
           stopcritT0 <- 1
         }
-        if (abs(Losst-Lossu0) < eps){
+        if (abs(Losst - Lossu0) < eps) {
           stopcritT0 <- 1
         }
         iter0 <- iter0 + 1
         Losst <- Lossu0
       }
-      #Loss <- ssres(DATA, scores, loadings)/ssx
-      Lossu <- ssres(data,scores,loadings)/ssx
-      #if (Lossc-Lossu < -1e-12) {
+      # Loss <- ssres(DATA, scores, loadings)/ssx
+      Lossu <- ssres(data, scores, loadings) / ssx
+      # if (Lossc-Lossu < -1e-12) {
       #  warning('Increase in Loss: update scores')
       #  break
-      #}
-      svdTT <- svd(t(scores)%*%scores/N)
+      # }
+      svdTT <- svd(t(scores) %*% scores / N)
       alpha <- svdTT$d[1]
-      A <- t(loadings) - (t(scores)%*%scores%*%t(loadings) - t(scores)%*%data)/(N*alpha)
+      A <- t(loadings) - (t(scores) %*% scores %*% t(loadings) - t(scores) %*% data) / (N * alpha)
       A <- t(A)
 
-      #2.2 Update factor loadings
-      if (sum(C_c) == 0){
+      # 2.2 Update factor loadings
+      if (sum(C_c) == 0) {
         loadings <- A
       } else {
-        for (q in 1:nfactors){
-          ind <- sort(abs(A[,q]), index.return = TRUE)
-          A[ind$ix[1:C_c[q]],q] <- 0
+        for (q in 1:nfactors) {
+          ind <- sort(abs(A[, q]), index.return = TRUE)
+          A[ind$ix[1:C_c[q]], q] <- 0
           loadings <- A
         }
       }
 
-      #loadings <- A
+      # loadings <- A
 
-      #2.3 Check stopping criteria
-      #Calculate loss
-      Lossu <- ssres(data,scores,loadings)/ssx
-      Lossvec <- c(Lossvec,Lossu)
+      # 2.3 Check stopping criteria
+      # Calculate loss
+      Lossu <- ssres(data, scores, loadings) / ssx
+      Lossvec <- c(Lossvec, Lossu)
       if (iter > maxiter) {
         stopcrit <- 1
       }
-      #if (Lossc-Lossu < -1e-12) {
+      # if (Lossc-Lossu < -1e-12) {
       #  warning('Increase in Loss')
       #  break
-      #}
-      if (Lossc-Lossu < eps) {
+      # }
+      if (Lossc - Lossu < eps) {
         stopcrit <- 1
       }
       iter <- iter + 1
       Lossc <- Lossu
-
     }
   } else {
-    C_c <- J*nfactors - C
+    C_c <- J * nfactors - C
     while (stopcrit == 0) {
       iter0 <- 1
       Losst <- 1
       Lossvec0 <- c()
       stopcritT0 <- 0
-      #Lossvec1 <- 1
-      #2.1. Update factor scores
-      while(stopcritT0 == 0){
-        Lossu1old <- ssres(data,scores,loadings)/ssx
-        for (q in 1:nfactors){
+      # Lossvec1 <- 1
+      # 2.1. Update factor scores
+      while (stopcritT0 == 0) {
+        Lossu1old <- ssres(data, scores, loadings) / ssx
+        for (q in 1:nfactors) {
           E <- data - scores %*% t(loadings)
-          Er <- E + scores[,q] %*% t(loadings[,q])
-          num <- Er %*% loadings[,q]
-          scores[,q] <- sqrt(N) * num / sqrt(sum(num^2))
+          Er <- E + scores[, q] %*% t(loadings[, q])
+          num <- Er %*% loadings[, q]
+          scores[, q] <- sqrt(N) * num / sqrt(sum(num^2))
         }
-        #t(scores)%*%scores
-        #Calculate loss
-        Lossu0 <- ssres(data,scores,loadings)/ssx
-        Lossvec0 <- c(Lossvec0,Lossu0)
+        # t(scores)%*%scores
+        # Calculate loss
+        Lossu0 <- ssres(data, scores, loadings) / ssx
+        Lossvec0 <- c(Lossvec0, Lossu0)
         # check convergence
         if (iter0 > maxiter) {
           stopcritT0 <- 1
         }
-        if (abs(Losst-Lossu0) < eps){
+        if (abs(Losst - Lossu0) < eps) {
           stopcritT0 <- 1
         }
         iter0 <- iter0 + 1
         Losst <- Lossu0
       }
-      #Loss <- ssres(DATA, scores, loadings)/ssx
-      Lossu <- ssres(data,scores,loadings)/ssx
-      if (Lossc-Lossu < -1e-12) {
-        warning('Increase in Loss: update scores')
-        #break
+      # Loss <- ssres(DATA, scores, loadings)/ssx
+      Lossu <- ssres(data, scores, loadings) / ssx
+      if (Lossc - Lossu < -1e-12) {
+        warning("Increase in Loss: update scores")
+        # break
       }
-      svdTT <- svd(t(scores)%*%scores/N)
+      svdTT <- svd(t(scores) %*% scores / N)
       alpha <- svdTT$d[1]
-      A <- t(loadings) - (t(scores)%*%scores%*%t(loadings) - t(scores)%*%data)/(N*alpha)
+      A <- t(loadings) - (t(scores) %*% scores %*% t(loadings) - t(scores) %*% data) / (N * alpha)
       A <- t(A)
 
-      #2.2 Update factor loadings
-      if (C_c == 0){
+      # 2.2 Update factor loadings
+      if (C_c == 0) {
         loadings <- A
       } else {
         loadings <- hardthr(A, C_c)
       }
 
-      #2.3 Check stopping criteria
-      #Calculate loss
-      Lossu <- ssres(data,scores,loadings)/ssx
-      Lossvec <- c(Lossvec,Lossu)
+      # 2.3 Check stopping criteria
+      # Calculate loss
+      Lossu <- ssres(data, scores, loadings) / ssx
+      Lossvec <- c(Lossvec, Lossu)
       if (iter > maxiter) {
         stopcrit <- 1
       }
-      if (Lossc-Lossu < -1e-12) {
-        warning('Increase in Loss')
+      if (Lossc - Lossu < -1e-12) {
+        warning("Increase in Loss")
         # break
       }
-      if (Lossc-Lossu < eps) {
+      if (Lossc - Lossu < eps) {
         stopcrit <- 1
       }
       iter <- iter + 1
       Lossc <- Lossu
-
     }
   }
 
-  #3. Return output
-  result <- list('scores' = scores, 'loadings' = loadings, 'PVE' = 1-Lossvec, 'Residual' = Lossu*ssx)
+  # 3. Return output
+  result <- list("scores" = scores, "loadings" = loadings, "PVE" = 1 - Lossvec, "Residual" = Lossu * ssx)
 }
 
 #' Display a summary of the results of \code{seafar()}.
@@ -371,35 +372,33 @@ seafar_general <- function(data,
 #' @export
 #'
 #' @examples
-#'\dontrun{
+#' \dontrun{
 #' results <- seafar(X)
 #' summary(results, display = "full")
-#'}
-summary.seafar <- function(object, disp = "loadings", ...){
-  if (missing(disp)) {
+#' }
+summary.seafar <- function(object, disp = "loadings", ...) {
+  if (is.null(disp)) {
     disp <- "loadings"
   }
 
-  if (disp == "loadings"){
-    cat(sprintf("\nThe number of nonzero loadings is: %s\n",
-                sum(round(object$loadings,3) != 0)))
+  if (disp == "loadings") {
+    cat(sprintf(
+      "\nThe number of nonzero loadings is: %s\n",
+      sum(round(object$loadings, 3) != 0)
+    ))
 
     cat(sprintf("\nThe estimated loadings matrix is \n"))
-    print(utils::head(round(object$loadings,3),10))
+    print(utils::head(round(object$loadings, 3), 10))
   } else {
-    cat(sprintf("\nThe number of nonzero loadings is: %s\n",
-                sum(round(object$loadings,3) != 0)))
+    cat(sprintf(
+      "\nThe number of nonzero loadings is: %s\n",
+      sum(round(object$loadings, 3) != 0)
+    ))
 
     cat(sprintf("\nThe estimated loadings matrix is \n"))
-    print(utils::head(round(object$loadings,3),10))
+    print(utils::head(round(object$loadings, 3), 10))
 
     cat(sprintf("\nThe estimated factor scores matrix is \n"))
     print(object$scores)
   }
-
 }
-
-
-
-
-

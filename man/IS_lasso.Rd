@@ -38,8 +38,8 @@ IS <- IS_lasso(
   data = X,
   nfactors = 5,
   lambda = 100,
-  INIT = 'mixed',
-  nstarts = 50)
+  INIT = "mixed",
+  nstarts = 50
+)
 }
-
 }
