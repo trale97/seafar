@@ -1,4 +1,5 @@
 # seafar: Sparse Exploratory Approximate Factor Analysis for High-dimensional Data in R
+The package contains functions to perform a Sparse Exploratory Approximate Factor Analysis (SEAFA). These methods are implementations and extensions of the Regularized ESEM method ([Le et al. (2026)](https://doi.org/10.3758/s13428-026-02960-y)) that uses approximate factor model with regularization (cardinality constraint and the LASSO penalty) to obtain simple structure for the loading matrix. A vignette was created as a tutorial paper for interested users.  
 
 ## Installation instructions
 
@@ -12,7 +13,7 @@ remotes::install_github("trale97/seafar")
 
 ## Reproducibility statement
 
-The publication can be recreated from source by following the steps below
+The vignette can be recreated from source by following the steps below
 
 1. Install Quarto
 
@@ -28,9 +29,7 @@ quarto preview SEAFAR_tutorial.qmd --to apaquarto-pdf --no-watch-inputs --no-bro
 
 ## Terms of use
 
-The code of this packaged is licensed under ...
-
-The manuscript is licensed under ...
+This package is licensed under the GPL-3.0 License.
 
 The autism dataset is licensed under the terms specified in data/README.md
 
