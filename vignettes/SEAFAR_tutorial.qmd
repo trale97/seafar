@@ -176,15 +176,17 @@ Note that here in Step 2, $PEV_{SEAFA}$ is obtained by fitting SEAFA for each ca
 :::
 
 # The seafar package 
-In this section, we demonstrate the use of our package in R using two empirical datasets. The first analysis focuses on recovering the loading patterns of the Big Five dataset (low-dimensional scenario), while the second analysis explores the factor scores of the Autism Genetic dataset from @nishimura2007genome (ultra-high-dimensional scenario). \textcolor{red}{First, install and load the \textit{seafar} package as follows:}
+In this section, we demonstrate the use of our package in R using two empirical datasets. The first analysis focuses on recovering the loading patterns of the Big Five dataset (low-dimensional scenario), while the second analysis explores the factor scores of the Autism Genetic dataset from @nishimura2007genome (ultra-high-dimensional scenario).
+
+Our package requires *PCAtools* which at the time of writing was not available via CRAN. This can lead to problems when installing *seafar* from GitHub. We therefore recommend installing *PCAtools* from BiocManager before installing *seafar*.
+
 ```{r}
 #| eval: false
 #| echo: true
-# Install devtools if needed
-if (!requireNamespace("devtools", quietly = TRUE)) {
-  install.packages("devtools")
-}
-devtools::install_github("trale97/seafar")
+install.packages("BiocManager")
+BiocManager::install("PCAtools")
+install.packages("remotes")
+remotes::install_github("trale97/seafar")
 library(seafar)
 ```
 
