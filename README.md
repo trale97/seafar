@@ -29,7 +29,7 @@ quarto preview SEAFAR_tutorial.qmd --to apaquarto-pdf --no-watch-inputs --no-bro
 
 ## Terms of use
 
-This package is licensed under the GPL-3.0 License.
+This package is licensed under the MIT License.
 
 The autism dataset is licensed under the terms specified in data/README.md
 
