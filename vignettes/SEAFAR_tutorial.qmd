@@ -255,7 +255,7 @@ big5_multistart <- seafar_multistart(
 )
 ```
 :::{.NoIndent}
-Note that here, we did not restrict the five factors to be orthogonal. Users can specify `orthogonal = TRUE` to impose orthogonality on the factors. The default number of starting values is 50, which can be modified by option `nstarts =`. Users can also specify the number of nonzero loadings *per* factor instead of across all factors. Since the questionnaire was designed to measure each trait with 48 items, we indicate a cardinality of 48 nonzero loadings per factor by changing the input `C = rep(48,5)`. Furthermore, users can choose the method to initialize the loading matrix by specifying the option `INIT = ` with the following choices:
+Note that here, we did not restrict the five factors to be orthogonal. Users can specify `orthogonal = TRUE` to impose orthogonality on the factors. The default number of starting values is 50, which can be modified by option `nstarts`. Users can also specify the number of nonzero loadings *per* factor instead of across all factors. Since the questionnaire was designed to measure each trait with 48 items, we indicate a cardinality of 48 nonzero loadings per factor by changing the input `C = rep(48,5)`. Furthermore, users can choose the method to initialize the loading matrix by specifying the option `INIT` with the following choices:
 
 - `INIT = mixed`: the initial loading matrix is a mixed between the random starts (30%) and starting values based on the Singular Value Decomposition (SVD) of the items (70%). \textcolor{red}{This is the default option when nothing is specified.}
 
@@ -370,7 +370,7 @@ big5_result <- seafar(
 )
 ```
 :::{.NoIndent}
-Here, the `INIT =` input offers an extra option for starting values in addition to the starting configurations above:
+Here, the `INIT` input offers an extra option for starting values in addition to the starting configurations above:
 
 - `INIT = svd`: for starting values based on the Singular Value Decomposition of the items.
 
