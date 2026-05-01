@@ -62,12 +62,12 @@ format:
           \newcommand\numberthis{\addtocounter{equation}{1}\tag{\theequation}}
           \raggedbottom
           \usepackage{xcolor}
-          \usepackage{hyperref}
           \definecolor{myred}{RGB}{200,0,0}
           \newcommand{\red}[1]{\textcolor{myred}{#1}}
+          \AtBeginDocument{\ifdefined\normalem\normalem\fi} % ensure *text* shows as italics
+          \RecustomVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\},baselinestretch=1}
 
 ---
-
 
 The increasing availability of large-scale data and technologically advanced measurement tools has led to data sets containing more variables than observations, often referred to as low-sample-size high-dimensional data. In behavioral research, such data frequently motivate questions about the latent constructs underlying the observed variables. A natural framework for addressing these questions is exploratory factor analysis (EFA), which seeks to identify latent constructs that account for the covariance structure among observed variables [@morin2014esem]. Traditional EFA methods, however, may perform poorly in complex settings characterized by many unknown parameters relative to the sample size, particularly when little prior theoretical information is available and/or the sample size is limited. As a result, there has been growing interest in regularization-based methods that enable estimation in such situations. Examples include Penalized Factor Analysis in R [penfa, @geminiani2021single; @penfa], Penalized Structural Equation Modeling in Mplus [@asparouhov2024penalized], and Penalized Likelihood SEM in R [lslx, @huang2017penalized; @JSSv093i07], among others.
 
@@ -405,6 +405,7 @@ model_selection_wst <- is.seafar_wst(
   INIT = "rational",
   card.length = 200
 )
+
 summary(model_selection_wst)
 ```
 :::{.NoIndent}
@@ -464,6 +465,7 @@ autism_cardinality <- is.seafar_wst(
   orthogonal = TRUE,
   card.length = 200
 )
+
 selcard <- autism_cardinality$selcard
 summary(autism_cardinality)
 ```

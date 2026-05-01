@@ -22,14 +22,18 @@ The tutorial paper can be recreated from source by following the steps below:
 
 1. Install [Quarto](https://quarto.org/docs/get-started/).
 
-2. Install TinyTeX
+2. If you don't have a LaTeX distribution yet, we recommend TinyTeX:
 
 ```r
 install.packages("tinytex")
 tinytex::install_tinytex()
 ```
 
-3. Navigate into `vignette/`
+3. Navigate into `vignettes/`
+
+```bash
+cd vignettes
+```
 
 4. Render the document by running the following command:
 
