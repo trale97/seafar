@@ -31,7 +31,7 @@ tinytex::install_tinytex()
 
 3. Navigate into `vignettes/`
 
-```r
+```bash
 cd vignettes
 ```
 
