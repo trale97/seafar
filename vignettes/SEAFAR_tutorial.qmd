@@ -65,6 +65,7 @@ format:
           \definecolor{myred}{RGB}{200,0,0}
           \newcommand{\red}[1]{\textcolor{myred}{#1}}
           \AtBeginDocument{\ifdefined\normalem\normalem\fi} % ensure *text* shows as italics
+          \RecustomVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\},baselinestretch=1}
 
 ---
 
@@ -404,6 +405,7 @@ model_selection_wst <- is.seafar_wst(
   INIT = "rational",
   card.length = 200
 )
+
 summary(model_selection_wst)
 ```
 :::{.NoIndent}
@@ -463,6 +465,7 @@ autism_cardinality <- is.seafar_wst(
   orthogonal = TRUE,
   card.length = 200
 )
+
 selcard <- autism_cardinality$selcard
 summary(autism_cardinality)
 ```
