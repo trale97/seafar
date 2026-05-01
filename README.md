@@ -10,7 +10,9 @@ install.packages("BiocManager")
 BiocManager::install("PCAtools")
 
 install.packages("remotes")
-remotes::install_github("trale97/seafar")
+# install the latest release of `seafar`
+remotes::install_github("trale97/seafar@*release")
+
 library(seafar)
 ```
 
