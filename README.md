@@ -3,28 +3,38 @@ The package contains functions to perform a Sparse Exploratory Approximate Facto
 
 ## Installation instructions
 
-This package requires `PCAtools` which is not available via CRAN, which can lead to problems when installing it from GitHub. We therefore recommend installing `PCAtools` from BiocManager before installing `seafar`.
+This package requires `PCAtools` which was not available on [CRAN](https://cran.r-project.org/) at the time of writing. This can lead to problems when installing `seafar` from GitHub. We therefore recommend installing `PCAtools` from [Bioconductor ](https://cran.r-project.org/web/packages/BiocManager/vignettes/BiocManager.html) before installing `seafar`.
 
 ```r
 install.packages("BiocManager")
 BiocManager::install("PCAtools")
+
+install.packages("remotes")
 remotes::install_github("trale97/seafar")
+library(seafar)
 ```
 
 ## Reproducibility statement
 
-The vignette can be recreated from source by following the steps below
+The tutorial paper can be recreated from source by following the steps below:
 
-1. Install Quarto
+1, Make sure you have `seafar` installed.
 
-2. Install Tinytex
+1. Install [Quarto](https://quarto.org/docs/get-started/).
+
+2. Install TinyTeX
+
+```r
+install.packages("tinytex")
+tinytex::install_tinytex()
+```
 
 3. Navigate into `vignette/`
 
 4. Render the document by running the following command:
 
 ```bash
-quarto preview SEAFAR_tutorial.qmd --to apaquarto-pdf --no-watch-inputs --no-browse
+quarto render SEAFAR_tutorial.qmd --to apaquarto-pdf
 ```
 
 ## Terms of use

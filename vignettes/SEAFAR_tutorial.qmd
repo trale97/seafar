@@ -15,7 +15,7 @@ author:
     orcid: 0009-0009-6939-411X
     affiliations:
       - name: Tilburg University
-        department: Research Service Department
+        department: Research Support Team
         city: Tilburg
         country: The Netherlands
   - name: Katrijn Van Deun
@@ -185,15 +185,18 @@ Since the IS has a preference for parsimonious models at the cost of fit, we use
 :::
 
 # The seafar package 
-In this section, we demonstrate the use of our package in R using two empirical datasets. The first analysis focuses on recovering the loading patterns of the Big Five dataset (low-dimensional scenario), while the second analysis explores the factor scores of the Autism Genetic dataset from @nishimura2007genome (ultra-high-dimensional scenario). \textcolor{red}{First, install and load the *seafar* package as follows:}
+In this section, we demonstrate the use of our package in R using two empirical datasets. The first analysis focuses on recovering the loading patterns of the Big Five dataset (low-dimensional scenario), while the second analysis explores the factor scores of the Autism Genetic dataset from @nishimura2007genome (ultra-high-dimensional scenario).
+
+Our package requires *PCAtools* which was not available on CRAN at the time of writing. This can lead to problems when installing *seafar* from GitHub. We therefore recommend installing *PCAtools* from BiocManager before installing *seafar*.
+
 ```{r}
 #| eval: false
 #| echo: true
-# Install devtools if needed
-if (!requireNamespace("devtools", quietly = TRUE)) {
-  install.packages("devtools")
-}
-devtools::install_github("trale97/seafar")
+install.packages("BiocManager")
+BiocManager::install("PCAtools")
+
+install.packages("remotes")
+remotes::install_github("trale97/seafar")
 library(seafar)
 ```
 
@@ -201,10 +204,10 @@ library(seafar)
 
 ### Data pre-processing
 The Big Five dataset can be obtained directly from the *qgraph* package in R [@epskamp2012qgraph]. The dataset contains scores of 500 observations on the 240 items of the personality questionnaire. All functions in *seafar* work with standardized items, thus, each variable is standardized to have a mean of zero and unit variance before the analysis:
+
 ```{r}
 #| eval: true
-#| echo: false
-devtools::load_all()
+#| include: false
 required_pkgs <- c("ggplot2", "qgraph", "ggforce", "flextable", "tibble", "dplyr")
 
 missing_pkgs <- required_pkgs[!vapply(required_pkgs, requireNamespace, logical(1), quietly = TRUE)]
@@ -216,6 +219,7 @@ if (length(missing_pkgs) > 0) {
   )
 }
 ```
+
 ```{r}
 #| eval: true
 #| echo: true
@@ -251,7 +255,7 @@ big5_multistart <- seafar_multistart(
 )
 ```
 :::{.NoIndent}
-Note that here, we did not restrict the five factors to be orthogonal. Users can specify `orthogonal = TRUE` to impose orthogonality on the factors. The default number of starting values is 50, which can be modified by option `nstarts =`. Users can also specify the number of nonzero loadings *per* factor instead of across all factors. Since the questionnaire was designed to measure each trait with 48 items, we indicate a cardinality of 48 nonzero loadings per factor by changing the input `C = rep(48,5)`. Furthermore, users can choose the method to initialize the loading matrix by specifying the option `INIT = ` with the following choices:
+Note that here, we did not restrict the five factors to be orthogonal. Users can specify `orthogonal = TRUE` to impose orthogonality on the factors. The default number of starting values is 50, which can be modified by option `nstarts`. Users can also specify the number of nonzero loadings *per* factor instead of across all factors. Since the questionnaire was designed to measure each trait with 48 items, we indicate a cardinality of 48 nonzero loadings per factor by changing the input `C = rep(48,5)`. Furthermore, users can choose the method to initialize the loading matrix by specifying the option `INIT` with the following choices:
 
 - `INIT = mixed`: the initial loading matrix is a mixed between the random starts (30%) and starting values based on the Singular Value Decomposition (SVD) of the items (70%). \textcolor{red}{This is the default option when nothing is specified.}
 
@@ -366,7 +370,7 @@ big5_result <- seafar(
 )
 ```
 :::{.NoIndent}
-Here, the `INIT =` input offers an extra option for starting values in addition to the starting configurations above:
+Here, the `INIT` input offers an extra option for starting values in addition to the starting configurations above:
 
 - `INIT = svd`: for starting values based on the Singular Value Decomposition of the items.
 
@@ -374,7 +378,7 @@ The single-start procedure is computationally faster than the multi-start one, e
 :::
 
 ### Analysis with unknown cardinality
-Often in an exploratory setting, the number of nonzero loadings is not known beforehand. Here, users can use the *is.seafar()* function for model selection based on the modified Index of Sparseness [@van2025regularized]. \textcolor{red}{The function requires similar inputs as above with two additional ones: `TOL` and `THR`. First, 100 candidate solutions are inspected in increasing order of cardinality. In each solution, the smallest nonzero loading is compared to the user-defined threshold `THR`. If it is smaller than `THR`, the previous cardinality is taken as a preliminary upper bound. Next, among all candidate solutions with approximately equal PEV to this preliminary solution, the final cardinality is chosen as the one with the highest IS value. Approximate equality of PEV is determined by rounding the PEV values to `TOL` decimal places. In the example below, we use THR = 0.2 and TOL = 3, corresponding to a minimum loading of 0.2 and comparison of PEV up to three decimal points.}
+Often in an exploratory setting, the number of nonzero loadings is not known beforehand. Here, users can use the `is.seafar()` function for model selection based on the modified Index of Sparseness [@van2025regularized]. \textcolor{red}{The function requires similar inputs as above with two additional ones: `TOL` and `THR`. First, 100 candidate solutions are inspected in increasing order of cardinality. In each solution, the smallest nonzero loading is compared to the user-defined threshold `THR`. If it is smaller than `THR`, the previous cardinality is taken as a preliminary upper bound. Next, among all candidate solutions with approximately equal PEV to this preliminary solution, the final cardinality is chosen as the one with the highest IS value. Approximate equality of PEV is determined by rounding the PEV values to `TOL` decimal places. In the example below, we use `THR = 0.2` and `TOL = 3`, corresponding to a minimum loading of 0.2 and comparison of PEV up to three decimal points.}
 ```{r}
 #| eval: false
 #| echo: true
@@ -387,7 +391,7 @@ model_selection <- is.seafar(
   THR = .2
 )
 ```
-When the dataset is large, this model selection procedure can be computationally instensive. Thus, users can use the `is.seafar_wst()` function that makes use of warm-starts as implemented by the *glmnet* package [@JSSv033i01] to speed up the computation time. This function also allows users to specify the number of candidate values to be tested within this range; here, we chose 200 values. 
+When the dataset is large, this model selection procedure can be computationally intensive. Thus, users can use the `is.seafar_wst()` function that makes use of warm-starts as implemented by the *glmnet* package [@JSSv033i01] to speed up the computation time. This function also allows users to specify the number of candidate values to be tested within this range; here, we chose 200 values. 
 ```{r}
 #| echo: false
 set.seed(1997)
@@ -442,7 +446,7 @@ ggsave("_IS-PEV.pdf", width = 8, height = 5, plot = p)
 \end{figure}
   
 ## Analysis 2: Analysis of factor scores in Autism genetic data
-As the `seafar` package was developed to specifically deal with high-dimensional setting, we also demonstrate how the it can be used to analyze the Autism Genetic data set [@nishimura2007genome]. The data is publicly available at \href{https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE7329}{https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE7329}. \textcolor{red}{The data was preprocessed by removing three individuals who were mislabeled and standardizing each column of the data to have a mean of zero and a variance of one} [as done in @guerra2023sparsifying]\footnote{\textcolor{red}{The detailed steps to retrieve the data from source and preprocess it can be found at \href{https://github.com/trale97/seafar/blob/master/data/README.md}{https://github.com/trale97/seafar/blob/master/data/README.md}}}. The resulting data set contains 43893 genetic marker variables for 27 subjects, in which 14 individuals are in the control group, six are in the FMR1-FM autism group, and seven are in the dup15q autism group. This final data set can be load directly from the *seafar* package as follows:
+As the *seafar* package was developed to specifically deal with high-dimensional setting, we also demonstrate how the it can be used to analyze the Autism Genetic data set [@nishimura2007genome]. The data is publicly available at \href{https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE7329}{https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE7329}. \textcolor{red}{The data was preprocessed by removing three individuals who were mislabeled and standardizing each column of the data to have a mean of zero and a variance of one} [as done in @guerra2023sparsifying]\footnote{\textcolor{red}{The detailed steps to retrieve the data from source and preprocess it can be found at \href{https://github.com/trale97/seafar/blob/master/data/README.md}{https://github.com/trale97/seafar/blob/master/data/README.md}}}. The resulting data set contains 43893 genetic marker variables for 27 subjects, in which 14 individuals are in the control group, six are in the FMR1-FM autism group, and seven are in the dup15q autism group. This final data set can be load directly from the *seafar* package as follows:
 ```{r}
 #| eval: true
 #| echo: true

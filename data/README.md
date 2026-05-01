@@ -1,18 +1,17 @@
 # Dataset provenance of `autism.rda`
 
-This dataset is a preprocessed version of the GEO dataset [GSE7329: Gene expression profiles of lymphoblastoid cells](https://ftp.ncbi.nlm.nih.gov/geo/series/GSE7nnn/GSE7329/) from [NCBI Gene Expression Omnibus (GEO)](https://www.ncbi.nlm.nih.gov/geo/).
-This repository shares the processed data object for reproducibility and convenience under the terms of use mentioned below.
+The original data set from @nishimura2007genome is publicly available and can be downloaded from \href{https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE7329}{https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE7329}. We followed the steps done by @guerra2023sparsifying to obtain and process the data prior to the analyses in this manuscript.
 
 ## Recreating the dataset from source
 
 The dataset was derived from the GEO **Series Matrix** file of the dataset in the following manner:  
 
-1.  downloads the original compressed Series Matrix file from NCBI GEO,
-2.  extracts sample labels and expression values,
-3.  removes mislabeled individuals,
-4.  transposes and standardizes the expression matrix,
-5.  removes features with missing values after scaling, and
-6.  saves the resulting processed matrix for use in analyses and vignettes.
+1.  download the original compressed Series Matrix file from NCBI GEO,
+2.  extract sample labels and expression values,
+3.  remove mislabeled individuals,
+4.  transpose and standardizes the expression matrix,
+5.  remove features with missing values after scaling, and
+6.  save the resulting processed matrix for further use.
 
 To recreate the preprocessed dataset from its source you can run `autism <- reproduce_autism_dataset()`. This is equivalent to making the dataset available via `data("autism")`, as we do in the tutorial paper.
 
