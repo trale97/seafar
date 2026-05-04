@@ -31,7 +31,7 @@ seafar <- function(data,
       C = C,
       eps = eps,
       maxiter = maxiter,
-      initloadings,
+      initloadings = initloadings,
       INIT = INIT
     )
   } else {
@@ -41,7 +41,7 @@ seafar <- function(data,
       C = C,
       eps = eps,
       maxiter = maxiter,
-      initloadings,
+      initloadings = initloadings,
       INIT = INIT
     )
   }
@@ -96,7 +96,7 @@ seafar_orthogonal <- function(data,
     loadings <- initloadings
   }
 
-  if (sum(length(C)) > 1) {
+  if (length(C) > 1) {
     C_c <- J - C
 
     while (stopcrit == 0) {
@@ -218,7 +218,7 @@ seafar_general <- function(data,
 
   # 2. Alternating optimization scheme
   tdata <- t(data)
-  if (sum(length(C)) > 1) {
+  if (length(C) > 1) {
     C_c <- J - C
     while (stopcrit == 0) {
       iter0 <- 1
@@ -257,8 +257,7 @@ seafar_general <- function(data,
       # }
       svdTT <- svd(t(scores) %*% scores / N)
       alpha <- svdTT$d[1]
-      A <- t(loadings) - (t(scores) %*% scores %*% t(loadings) - t(scores) %*% data) / (N * alpha)
-      A <- t(A)
+      A <- loadings - (loadings %*% t(scores) %*% scores - tdata %*% scores) / (N*alpha)
 
       # 2.2 Update factor loadings
       if (sum(C_c) == 0) {
@@ -329,8 +328,7 @@ seafar_general <- function(data,
       }
       svdTT <- svd(t(scores) %*% scores / N)
       alpha <- svdTT$d[1]
-      A <- t(loadings) - (t(scores) %*% scores %*% t(loadings) - t(scores) %*% data) / (N * alpha)
-      A <- t(A)
+      A <- loadings - (loadings %*% t(scores) %*% scores - tdata %*% scores) / (N*alpha)
 
       # 2.2 Update factor loadings
       if (C_c == 0) {
