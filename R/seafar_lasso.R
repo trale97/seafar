@@ -17,7 +17,6 @@ seafar_lasso <- function(data,
                          lambda,
                          maxiter = 50,
                          eps = 10^-4,
-                         initloadings,
                          INIT = "semirational") {
   converged <- FALSE
   N <- dim(data)[1]
@@ -141,7 +140,6 @@ seafar_lasso_multistart <- function(data,
                                     lambda,
                                     maxiter = 50,
                                     eps = 10^-4,
-                                    initloadings,
                                     INIT = "semirational",
                                     nstarts) {
   if (missing(nstarts)) {
@@ -155,7 +153,7 @@ seafar_lasso_multistart <- function(data,
   converged <- array()
 
   for (n in 1:nstarts) {
-    result <- seafar_lasso(data, nfactors, lambda, maxiter, eps, initloadings, INIT)
+    result <- seafar_lasso(data, nfactors, lambda, maxiter, eps, INIT)
 
     Pout3d[[n]] <- result$loadings
     Tout3d[[n]] <- result$scores
