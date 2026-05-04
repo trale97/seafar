@@ -18,7 +18,7 @@ seafar_lasso <- function(data,
                          maxiter = 50,
                          eps = 10^-4,
                          initloadings,
-                         INIT = "mixed") {
+                         INIT = "semirational") {
   converged <- FALSE
   N <- dim(data)[1]
   J <- dim(data)[2]
@@ -142,7 +142,7 @@ seafar_lasso_multistart <- function(data,
                                     maxiter = 50,
                                     eps = 10^-4,
                                     initloadings,
-                                    INIT,
+                                    INIT = "semirational",
                                     nstarts) {
   if (missing(nstarts)) {
     nstarts <- 20
