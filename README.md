@@ -12,8 +12,15 @@ BiocManager::install("PCAtools")
 install.packages("remotes")
 # install the latest release of `seafar`
 remotes::install_github("trale97/seafar@*release")
+```
 
+## Getting started
+
+The best way to get started with `seafar` is to follow the tutorial paper we published for the package. You can access it in R like this:
+
+```r
 library(seafar)
+browseVignettes("seafar")
 ```
 
 ## Reproducibility statement
