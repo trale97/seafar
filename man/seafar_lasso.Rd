@@ -10,8 +10,7 @@ seafar_lasso(
   lambda,
   maxiter = 50,
   eps = 10^-4,
-  initloadings,
-  INIT = "mixed"
+  INIT = "semirational"
 )
 }
 \arguments{
