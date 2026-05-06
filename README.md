@@ -8,9 +8,9 @@ This package requires `PCAtools` which was not available on [CRAN](https://cran.
 ```r
 install.packages("BiocManager")
 BiocManager::install("PCAtools")
-
 install.packages("remotes")
-# install the latest release of `seafar`
+
+# Install the latest release of `seafar`
 remotes::install_github("trale97/seafar@*release")
 ```
 
