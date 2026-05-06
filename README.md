@@ -8,9 +8,23 @@ This package requires `PCAtools` which was not available on [CRAN](https://cran.
 ```r
 install.packages("BiocManager")
 BiocManager::install("PCAtools")
-install.packages("remotes")
+```
 
-# Install the latest release of `seafar`
+Currently the only way to install the package with the vignette is to build it from source when installing the package. This might take a few minutes depending on your system.
+
+```r
+install.packages("remotes")
+remotes::install_github(
+  "trale97/seafar@*release",
+  build_vignettes = TRUE,
+  dependencies = TRUE
+)
+```
+
+You can also skip the vignette for a quicker installation:
+
+```r
+install.packages("remotes")
 remotes::install_github("trale97/seafar@*release")
 ```
 
