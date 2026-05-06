@@ -10,7 +10,7 @@ install.packages("BiocManager")
 BiocManager::install("PCAtools")
 ```
 
-Currently the only way to install the package with the vignette is to build it from source when installing the package. This might take a few minutes depending on your system.
+Currently the only way to install the package with the vignette is to build it from source. This might take a few minutes depending on your system.
 
 ```r
 install.packages("remotes")
