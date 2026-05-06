@@ -3,15 +3,38 @@ The package contains functions to perform a Sparse Exploratory Approximate Facto
 
 ## Installation instructions
 
-This package requires `PCAtools` which was not available on [CRAN](https://cran.r-project.org/) at the time of writing. This can lead to problems when installing `seafar` from GitHub. We therefore recommend installing `PCAtools` from [Bioconductor ](https://cran.r-project.org/web/packages/BiocManager/vignettes/BiocManager.html) before installing `seafar`.
+This package requires `PCAtools` which was not available on [CRAN](https://cran.r-project.org/) at the time of writing. This can lead to problems when installing `seafar` from GitHub. We therefore recommend installing `PCAtools` from [Bioconductor](https://cran.r-project.org/web/packages/BiocManager/vignettes/BiocManager.html) before installing `seafar`.
 
 ```r
 install.packages("BiocManager")
 BiocManager::install("PCAtools")
+```
 
+Currently the only way to install the package with the vignette is to build it from source. This might take a few minutes depending on your system.
+
+```r
 install.packages("remotes")
-remotes::install_github("trale97/seafar")
+remotes::install_github(
+  "trale97/seafar@*release",
+  build_vignettes = TRUE,
+  dependencies = TRUE
+)
+```
+
+You can also skip the vignette for a quicker installation:
+
+```r
+install.packages("remotes")
+remotes::install_github("trale97/seafar@*release")
+```
+
+## Getting started
+
+The best way to get started with `seafar` is to follow the tutorial paper we published for the package. You can access it in R like this:
+
+```r
 library(seafar)
+browseVignettes("seafar")
 ```
 
 ## Reproducibility statement

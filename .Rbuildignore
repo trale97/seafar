@@ -3,4 +3,4 @@
 ^LICENSE\.md$
 ^vignettes/\.quarto$
 ^vignettes/*_files$
-SEAFAR_tutorial.pdf
+^SEAFAR_tutorial\.pdf$
