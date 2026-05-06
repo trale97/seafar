@@ -8,11 +8,11 @@ stopifnot(is.matrix(big5_std))
 test_that("factor retention works", {
   set.seed(10)
 
-  Q <- factor_retention(data = big5_std)
+  Q <- factor_retention(data = big5_std, large.data = FALSE)
 
   expect_s3_class(Q, "nfactors")
   expect_type(Q, "list")
-  expect_true(all(c("parallel", "parallel_comp", "scree", "kaiser") %in% names(Q)))
+  expect_true(all(c("parallel", "scree", "kaiser") %in% names(Q)))
 
   expect_true(all(vapply(Q, is.numeric, logical(1))))
 })

@@ -17,6 +17,9 @@ Imports:
 Suggests: 
     ggforce,
     ggplot2,
+    dplyr,
+    flextable,
+    tibble,
     knitr,
     qgraph,
     quarto,

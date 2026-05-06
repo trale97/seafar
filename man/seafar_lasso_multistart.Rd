@@ -10,8 +10,7 @@ seafar_lasso_multistart(
   lambda,
   maxiter = 50,
   eps = 10^-4,
-  initloadings,
-  INIT,
+  INIT = "semirational",
   nstarts
 )
 }
