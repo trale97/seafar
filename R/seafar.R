@@ -14,7 +14,7 @@
 #' @return Factor loading and factor score matrices
 #' @examples
 #' \dontrun{
-#' big5_seafa <- seafar(ocean, 5, 240, INIT = "svd", orthogonal = TRUE)
+#' big5_seafa <- seafar(as.matrix(scale(USArrests, center = TRUE, scale = TRUE), 2, 4, INIT = "svd", orthogonal = TRUE)
 #' }
 seafar <- function(data,
                    nfactors,
