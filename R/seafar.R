@@ -81,12 +81,14 @@ seafar_orthogonal <- function(data,
                               INIT) {
   N <- dim(data)[1]
   J <- dim(data)[2]
-  ssx <- sum(rowSums(data^2))
+  ssx <- sum(data^2)
 
   stopcrit <- 0
   Lossvec <- c()
   Lossc <- 1
   iter <- 1
+
+  verbose <- TRUE ##added to make future debugging easier
 
   tdata <- t(data)
   # 1. Initialize loading matrix
@@ -105,6 +107,10 @@ seafar_orthogonal <- function(data,
       A <- tdata %*% scores / N
       # check monotonicity AO: can be removed later on
       Lossu <- ssres(data, scores, loadings) / ssx
+      if (verbose){
+        message('Iter ', iter, ' Update H: Diff loss ', Lossc-Lossu)
+        Lossc <- Lossu
+      }
 
       # 2.2 Update factor loadings
       if (sum(C_c) == 0) {
@@ -120,6 +126,9 @@ seafar_orthogonal <- function(data,
       # 2.3 Check stopping criteria
       # Calculate loss
       Lossu <- ssres(data, scores, loadings) / ssx
+      if (verbose){
+        message('Iter ', iter, ' Update L: Diff loss ', Lossc-Lossu)
+      }
       Lossvec <- c(Lossvec, Lossu)
       if (iter > maxiter) {
         stopcrit <- 1
@@ -140,6 +149,13 @@ seafar_orthogonal <- function(data,
       A <- tdata %*% scores / N
       # check monotonicity AO: can be removed later on
       Lossu <- ssres(data, scores, loadings) / ssx
+      if (verbose){
+        message('Iter ', iter, ' Update H: loss ', Lossu)
+      }
+      if (verbose){
+        message('Iter ', iter, ' Update H: Diff loss ', Lossc-Lossu)
+        Lossc <- Lossu
+      }
 
 
       # 2.2 Update factor loadings
@@ -152,6 +168,9 @@ seafar_orthogonal <- function(data,
       # 2.3 Check stopping criteria
       # Calculate loss
       Lossu <- ssres(data, scores, loadings) / ssx
+      if (verbose){
+        message('Iter ', iter, ' Update L: Diff loss ', Lossc-Lossu)
+      }
       Lossvec <- c(Lossvec, Lossu)
       if (iter > maxiter) {
         stopcrit <- 1
@@ -200,9 +219,9 @@ seafar_general <- function(data,
                            INIT) {
   N <- dim(data)[1]
   J <- dim(data)[2]
-  ssx <- sum(rowSums(data^2))
+  ssx <- sum(data^2)
   svd1 <- svd(data, nfactors, nfactors)
-  scores <- svd1$u
+  scores <- sqrt(N)*svd1$u
 
   # 1. Initialize loading matrix
   if (is.null(initloadings)) {
@@ -211,6 +230,7 @@ seafar_general <- function(data,
     loadings <- initloadings
   }
 
+  verbose <- TRUE
   stopcrit <- 0
   Lossvec <- c()
   Lossc <- 1
@@ -221,36 +241,19 @@ seafar_general <- function(data,
   if (length(C) > 1) {
     C_c <- J - C
     while (stopcrit == 0) {
-      iter0 <- 1
-      Losst <- 1
-      Lossvec0 <- c()
-      stopcritT0 <- 0
-      # Lossvec1 <- 1
-      # 2.1. Update factor scores
-      while (stopcritT0 == 0) {
-        Lossu1old <- ssres(data, scores, loadings) / ssx
-        for (q in 1:nfactors) {
-          E <- data - scores %*% t(loadings)
-          Er <- E + scores[, q] %*% t(loadings[, q])
-          num <- Er %*% loadings[, q]
-          scores[, q] <- sqrt(N) * num / sqrt(sum(num^2))
-        }
-        # t(scores)%*%scores
-        # Calculate loss
-        Lossu0 <- ssres(data, scores, loadings) / ssx
-        Lossvec0 <- c(Lossvec0, Lossu0)
-        # check convergence
-        if (iter0 > maxiter) {
-          stopcritT0 <- 1
-        }
-        if (abs(Losst - Lossu0) < eps) {
-          stopcritT0 <- 1
-        }
-        iter0 <- iter0 + 1
-        Losst <- Lossu0
-      }
+
+      # 2.1 Update factor scores
+      scores <- oblprocr(data, scores, loadings, maxiter, eps)
       # Loss <- ssres(DATA, scores, loadings)/ssx
       Lossu <- ssres(data, scores, loadings) / ssx
+      if (verbose){
+        message('Iter ', iter, ' Update H: loss ', Lossu)
+      }
+
+      if (verbose){
+        message('Iter ', iter, ' Update H: Diff loss ', Lossc-Lossu)
+        Lossc <- Lossu
+      }
       # if (Lossc-Lossu < -1e-12) {
       #  warning('Increase in Loss: update scores')
       #  break
@@ -275,6 +278,9 @@ seafar_general <- function(data,
       # 2.3 Check stopping criteria
       # Calculate loss
       Lossu <- ssres(data, scores, loadings) / ssx
+      if (verbose){
+        message('Iter ', iter, ' Update L: Diff loss ', Lossc-Lossu)
+      }
       Lossvec <- c(Lossvec, Lossu)
       if (iter > maxiter) {
         stopcrit <- 1
@@ -292,39 +298,21 @@ seafar_general <- function(data,
   } else {
     C_c <- J * nfactors - C
     while (stopcrit == 0) {
-      iter0 <- 1
-      Losst <- 1
-      Lossvec0 <- c()
-      stopcritT0 <- 0
-      # Lossvec1 <- 1
-      # 2.1. Update factor scores
-      while (stopcritT0 == 0) {
-        Lossu1old <- ssres(data, scores, loadings) / ssx
-        for (q in 1:nfactors) {
-          E <- data - scores %*% t(loadings)
-          Er <- E + scores[, q] %*% t(loadings[, q])
-          num <- Er %*% loadings[, q]
-          scores[, q] <- sqrt(N) * num / sqrt(sum(num^2))
-        }
-        # t(scores)%*%scores
-        # Calculate loss
-        Lossu0 <- ssres(data, scores, loadings) / ssx
-        Lossvec0 <- c(Lossvec0, Lossu0)
-        # check convergence
-        if (iter0 > maxiter) {
-          stopcritT0 <- 1
-        }
-        if (abs(Losst - Lossu0) < eps) {
-          stopcritT0 <- 1
-        }
-        iter0 <- iter0 + 1
-        Losst <- Lossu0
-      }
-      # Loss <- ssres(DATA, scores, loadings)/ssx
       Lossu <- ssres(data, scores, loadings) / ssx
-      if (Lossc - Lossu < -1e-12) {
-        warning("Increase in Loss: update scores")
-        # break
+      if (verbose){
+        message('Iter ', iter, 'BEFORE Update H : loss ', Lossu)
+      }
+
+      # 2.1. Update factor scores
+      scores <- oblprocr(data, scores, loadings, maxiter, eps)
+      Lossu <- ssres(data, scores, loadings) / ssx
+      if (verbose){
+        message('Iter ', iter, ' Update H: loss ', Lossu)
+      }
+
+      if (verbose){
+        message('Iter ', iter, ' Update H: Diff loss ', Lossc-Lossu)
+        Lossc <- Lossu
       }
       svdTT <- svd(t(scores) %*% scores / N)
       alpha <- svdTT$d[1]
@@ -340,6 +328,9 @@ seafar_general <- function(data,
       # 2.3 Check stopping criteria
       # Calculate loss
       Lossu <- ssres(data, scores, loadings) / ssx
+      if (verbose){
+        message('Iter ', iter, ' Update L: Diff loss ', Lossc-Lossu)
+      }
       Lossvec <- c(Lossvec, Lossu)
       if (iter > maxiter) {
         stopcrit <- 1
