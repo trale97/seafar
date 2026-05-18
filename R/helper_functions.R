@@ -80,10 +80,12 @@ orthprocr <- function(data, loadings) {
 #' orthprocr(X, loadings)
 #' }
 oblprocr <- function(data, scores, loadings, maxiter, eps){
+  N <- dim(data)[1]
+  Q <- dim(loadings)[2]
   stopcritT0 <- 0
   iter0 <- 1
   Losst <- 1
-  Lossvec0 <- c()
+  #Lossvec0 <- c()
   ssx <- sum(data^2)
   XL <- data %*% loadings  #cache
   LL <- t(loadings) %*% loadings #cache
@@ -91,7 +93,7 @@ oblprocr <- function(data, scores, loadings, maxiter, eps){
   message('Initial loss H ', Lossu1old)
   while (stopcritT0 == 0) {
     scoresLL <- scores %*% LL
-    for (q in 1:nfactors) {
+    for (q in 1:Q) {
       oldscores <- scores[, q]
       num <- XL[, q] - scoresLL[, q] + scores[, q] * LL[q, q]
       scores[, q] <- sqrt(N) * num / sqrt(sum(num^2))
@@ -103,7 +105,7 @@ oblprocr <- function(data, scores, loadings, maxiter, eps){
     Lossu0 <- ssres(data, scores, loadings) / ssx
     message('IterH ', iter0, ' Update H: Diff loss ', Lossu1old-Lossu0)
     Lossu1old <- Lossu0
-    Lossvec0 <- c(Lossvec0, Lossu0)
+    #Lossvec0 <- c(Lossvec0, Lossu0)
     # check convergence
     if (iter0 > maxiter) {
       stopcritT0 <- 1
@@ -133,6 +135,8 @@ oblprocr <- function(data, scores, loadings, maxiter, eps){
 #' orthprocr(X, loadings)
 #' }
 oblprocr_old <- function(data, scores, loadings, maxiter, eps){
+  N <- dim(data)[1]
+  Q <- dim(loadings)[2]
   ssx <- sum(rowSums(data^2))
   iter0 <- 1
   Losst <- 1
@@ -140,7 +144,7 @@ oblprocr_old <- function(data, scores, loadings, maxiter, eps){
   stopcritT0 <- 0
   while (stopcritT0 == 0) {
     Lossu1old <- ssres(data, scores, loadings) / ssx
-    for (q in 1:nfactors) {
+    for (q in 1:Q) {
       E <- data - scores %*% t(loadings)
       Er <- E + scores[, q] %*% t(loadings[, q])
       num <- Er %*% loadings[, q]
