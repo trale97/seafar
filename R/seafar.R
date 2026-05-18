@@ -14,7 +14,7 @@
 #' @return Factor loading and factor score matrices
 #' @examples
 #' \dontrun{
-#' big5_seafa <- seafar(as.matrix(scale(USArrests, center = TRUE, scale = TRUE), 2, 4, INIT = "svd", orthogonal = TRUE)
+#' big5_seafa <- seafar(as.matrix(scale(USArrests, center = TRUE, scale = TRUE)), 2, 4, INIT = "svd", orthogonal = TRUE)
 #' }
 seafar <- function(data,
                    nfactors,
@@ -244,12 +244,10 @@ seafar_general <- function(data,
 
       # 2.1 Update factor scores
       scores <- oblprocr(data, scores, loadings, maxiter, eps)
-      # Loss <- ssres(DATA, scores, loadings)/ssx
       Lossu <- ssres(data, scores, loadings) / ssx
       if (verbose){
         message('Iter ', iter, ' Update H: loss ', Lossu)
       }
-
       if (verbose){
         message('Iter ', iter, ' Update H: Diff loss ', Lossc-Lossu)
         Lossc <- Lossu
@@ -258,11 +256,12 @@ seafar_general <- function(data,
       #  warning('Increase in Loss: update scores')
       #  break
       # }
-      svdTT <- svd(t(scores) %*% scores / N)
-      alpha <- svdTT$d[1]
-      A <- loadings - (loadings %*% t(scores) %*% scores - tdata %*% scores) / (N*alpha)
 
       # 2.2 Update factor loadings
+      TT <- t(scores) %*% scores
+      svdTT <- svd(TT)
+      alpha <- svdTT$d[1]
+      A <- loadings - (loadings %*% TT - tdata %*% scores) / (alpha)
       if (sum(C_c) == 0) {
         loadings <- A
       } else {
@@ -272,8 +271,6 @@ seafar_general <- function(data,
           loadings <- A
         }
       }
-
-      # loadings <- A
 
       # 2.3 Check stopping criteria
       # Calculate loss
@@ -298,10 +295,6 @@ seafar_general <- function(data,
   } else {
     C_c <- J * nfactors - C
     while (stopcrit == 0) {
-      Lossu <- ssres(data, scores, loadings) / ssx
-      if (verbose){
-        message('Iter ', iter, 'BEFORE Update H : loss ', Lossu)
-      }
 
       # 2.1. Update factor scores
       scores <- oblprocr(data, scores, loadings, maxiter, eps)
@@ -314,11 +307,12 @@ seafar_general <- function(data,
         message('Iter ', iter, ' Update H: Diff loss ', Lossc-Lossu)
         Lossc <- Lossu
       }
-      svdTT <- svd(t(scores) %*% scores / N)
-      alpha <- svdTT$d[1]
-      A <- loadings - (loadings %*% t(scores) %*% scores - tdata %*% scores) / (N*alpha)
 
       # 2.2 Update factor loadings
+      TT <- t(scores) %*% scores
+      svdTT <- svd(TT)
+      alpha <- svdTT$d[1]
+      A <- loadings - (loadings %*% TT - tdata %*% scores) / (alpha)
       if (C_c == 0) {
         loadings <- A
       } else {
