@@ -271,7 +271,6 @@ seafar_general <- function(data,
           loadings <- A
         }
       }
-      print(loadings)
 
       # 2.3 Check stopping criteria
       # Calculate loss
