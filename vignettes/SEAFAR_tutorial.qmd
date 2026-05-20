@@ -524,6 +524,7 @@ A limitation of the cardinality-constrained approach implemented in seafar arise
 
 The *seafar* package provides a user-friendly implementation of sparse exploratory factor analysis with minimal input requirements, along with built-in model selection procedures based on the Index of Sparseness. These procedures, suggested by RegularizedSCA [@gu2019variable] and Regularized ESEM [@le2026exploratory], allow users to determine the appropriate number of (non)zero loadings in the absence of strong prior theoretical guidance. The proposed package can be extended in several ways, for example to accommodate categorical variables, further broadening its applicability.
 
+\newpage
 
 # References
 
