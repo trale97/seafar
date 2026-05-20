@@ -524,6 +524,34 @@ A limitation of the cardinality-constrained approach implemented in seafar arise
 
 The *seafar* package provides a user-friendly implementation of sparse exploratory factor analysis with minimal input requirements, along with built-in model selection procedures based on the Index of Sparseness. These procedures, suggested by RegularizedSCA [@gu2019variable] and Regularized ESEM [@le2026exploratory], allow users to determine the appropriate number of (non)zero loadings in the absence of strong prior theoretical guidance. The proposed package can be extended in several ways, for example to accommodate categorical variables, further broadening its applicability.
 
+# Declarations
+## Funding
+This publication is part of the project SEM2.0 (with project number NWO
+406.22.GO.022) of the Open Competition research program which is financed by the Dutch
+Research Council (NWO).
+
+## Competing interests
+The authors have no competing interests to declare that are relevant to the content
+of this article.
+
+## Ethics approval
+Not applicable.
+
+## Consent to participate
+Not applicable.
+
+## Consent for publication
+Not applicable.
+
+## Availability of data and materials
+This tutorial paper used two datasets which are both publicly available. The Big Five dataset can be obtained from the *qgraph* package in R [@epskamp2012qgraph] and the Autism Genetic data is accessible at \href{https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE7329}{https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE7329}. The pre-processing steps of this data can be found at \href{https://github.com/trale97/seafar/blob/master/data/README.md}{https://github.com/trale97/seafar/blob/master/data/README.md}. 
+
+## Code availability
+All functions used in this tutorial paper, as well as code to render and reproduce the paper, are publicly available at \href{https://github.com/trale97/seafar}{https://github.com/trale97/seafar}.
+
+# Open Practices Statements
+This tutorial paper made use of two datasets that are both publicly available as described above. The code to access the data and reproduce the analyses in this paper are available at \href{https://github.com/trale97/seafar}{https://github.com/trale97/seafar}.
+
 \newpage
 
 # References
