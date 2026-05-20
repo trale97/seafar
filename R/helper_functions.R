@@ -85,12 +85,12 @@ oblprocr <- function(data, scores, loadings, maxiter, eps){
 
   N <- dim(data)[1]
   Q <- dim(loadings)[2]
+  ssx <- sum(data^2)
 
   stopcritT0 <- 0
   iter0 <- 1
   Losst_c <- ssres(data, scores, loadings) / ssx
 
-  ssx <- sum(data^2)
   XL <- data %*% loadings  #cache
   LL <- t(loadings) %*% loadings #cache
 
@@ -121,6 +121,7 @@ oblprocr <- function(data, scores, loadings, maxiter, eps){
     if (abs(Losst_c - Losst_u) < eps) {
       stopcritT0 <- 1
     }
+
     iter0 <- iter0 + 1
     Losst_c <- Losst_u
   }

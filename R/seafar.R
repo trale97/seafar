@@ -155,7 +155,6 @@ seafar_orthogonal <- function(data,
       if (verbose){
         message('Iter ', iter, ' Update H: Diff loss ', Lossc-Lossu)
       }
-      Lossc <- Lossu
 
       # 2.2 Update factor loadings
       if (C_c == 0) {
@@ -250,7 +249,7 @@ seafar_general <- function(data,
       if (verbose){
         message('Iter ', iter, ' Update H: Diff loss ', Lossc-Lossu_H)
       }
-      Lossc <- Lossu
+      #Lossc <- Lossu
       # if (Lossc-Lossu < -1e-12) {
       #  warning('Increase in Loss: update scores')
       #  break
@@ -301,7 +300,6 @@ seafar_general <- function(data,
 
       if (verbose){
         message('Iter ', iter, ' Update H: Diff loss ', Lossc-Lossu_H)
-        Lossc <- Lossu
       }
 
       # 2.2 Update factor loadings
