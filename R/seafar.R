@@ -87,7 +87,7 @@ seafar_orthogonal <- function(data,
   Lossvec <- c()
   iter <- 1
 
-  verbose <- TRUE ##added to make future debugging easier
+  verbose <- FALSE ##added to make future debugging easier
 
   tdata <- t(data)
   # 1. Initialize loading matrix
@@ -228,7 +228,7 @@ seafar_general <- function(data,
     loadings <- initloadings
   }
 
-  verbose <- TRUE
+  verbose <- FALSE
   stopcrit <- 0
   Lossvec <- c()
   Lossc <- 1

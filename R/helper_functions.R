@@ -81,7 +81,7 @@ orthprocr <- function(data, loadings) {
 #' }
 oblprocr <- function(data, scores, loadings, maxiter, eps){
 
-  verbose <- TRUE
+  verbose <- FALSE
 
   N <- dim(data)[1]
   Q <- dim(loadings)[2]
