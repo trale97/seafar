@@ -85,10 +85,9 @@ seafar_orthogonal <- function(data,
 
   stopcrit <- 0
   Lossvec <- c()
-  Lossc <- 1
   iter <- 1
 
-  verbose <- TRUE ##added to make future debugging easier
+  verbose <- FALSE ##added to make future debugging easier
 
   tdata <- t(data)
   # 1. Initialize loading matrix
@@ -97,19 +96,20 @@ seafar_orthogonal <- function(data,
   } else {
     loadings <- initloadings
   }
+  Lossc <- 1
 
   if (length(C) > 1) {
     C_c <- J - C
 
     while (stopcrit == 0) {
+
       # 2.1 Update factor scores
       scores <- orthprocr(data, loadings)
       A <- tdata %*% scores / N
       # check monotonicity AO: can be removed later on
-      Lossu <- ssres(data, scores, loadings) / ssx
+      Lossu_H <- ssres(data, scores, loadings) / ssx
       if (verbose){
-        message('Iter ', iter, ' Update H: Diff loss ', Lossc-Lossu)
-        Lossc <- Lossu
+        message('Iter ', iter, ' Update H: Diff loss ', Lossc-Lossu_H)
       }
 
       # 2.2 Update factor loadings
@@ -127,7 +127,7 @@ seafar_orthogonal <- function(data,
       # Calculate loss
       Lossu <- ssres(data, scores, loadings) / ssx
       if (verbose){
-        message('Iter ', iter, ' Update L: Diff loss ', Lossc-Lossu)
+        message('Iter ', iter, ' Update L: Diff loss ', Lossu_H-Lossu)
       }
       Lossvec <- c(Lossvec, Lossu)
       if (iter > maxiter) {
@@ -154,9 +154,7 @@ seafar_orthogonal <- function(data,
       }
       if (verbose){
         message('Iter ', iter, ' Update H: Diff loss ', Lossc-Lossu)
-        Lossc <- Lossu
       }
-
 
       # 2.2 Update factor loadings
       if (C_c == 0) {
@@ -230,7 +228,7 @@ seafar_general <- function(data,
     loadings <- initloadings
   }
 
-  verbose <- TRUE
+  verbose <- FALSE
   stopcrit <- 0
   Lossvec <- c()
   Lossc <- 1
@@ -244,14 +242,14 @@ seafar_general <- function(data,
 
       # 2.1 Update factor scores
       scores <- oblprocr(data, scores, loadings, maxiter, eps)
-      Lossu <- ssres(data, scores, loadings) / ssx
+      Lossu_H <- ssres(data, scores, loadings) / ssx
       if (verbose){
-        message('Iter ', iter, ' Update H: loss ', Lossu)
+        message('Iter ', iter, ' Update H: loss ', Lossu_H)
       }
       if (verbose){
-        message('Iter ', iter, ' Update H: Diff loss ', Lossc-Lossu)
-        Lossc <- Lossu
+        message('Iter ', iter, ' Update H: Diff loss ', Lossc-Lossu_H)
       }
+      #Lossc <- Lossu
       # if (Lossc-Lossu < -1e-12) {
       #  warning('Increase in Loss: update scores')
       #  break
@@ -276,7 +274,7 @@ seafar_general <- function(data,
       # Calculate loss
       Lossu <- ssres(data, scores, loadings) / ssx
       if (verbose){
-        message('Iter ', iter, ' Update L: Diff loss ', Lossc-Lossu)
+        message('Iter ', iter, ' Update L: Diff loss ', Lossu_H-Lossu)
       }
       Lossvec <- c(Lossvec, Lossu)
       if (iter > maxiter) {
@@ -298,14 +296,10 @@ seafar_general <- function(data,
 
       # 2.1. Update factor scores
       scores <- oblprocr(data, scores, loadings, maxiter, eps)
-      Lossu <- ssres(data, scores, loadings) / ssx
-      if (verbose){
-        message('Iter ', iter, ' Update H: loss ', Lossu)
-      }
+      Lossu_H <- ssres(data, scores, loadings) / ssx
 
       if (verbose){
-        message('Iter ', iter, ' Update H: Diff loss ', Lossc-Lossu)
-        Lossc <- Lossu
+        message('Iter ', iter, ' Update H: Diff loss ', Lossc-Lossu_H)
       }
 
       # 2.2 Update factor loadings
@@ -323,7 +317,7 @@ seafar_general <- function(data,
       # Calculate loss
       Lossu <- ssres(data, scores, loadings) / ssx
       if (verbose){
-        message('Iter ', iter, ' Update L: Diff loss ', Lossc-Lossu)
+        message('Iter ', iter, ' Update L: Diff loss ', Lossu_H-Lossu)
       }
       Lossvec <- c(Lossvec, Lossu)
       if (iter > maxiter) {
