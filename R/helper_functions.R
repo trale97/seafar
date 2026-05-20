@@ -85,14 +85,14 @@ oblprocr <- function(data, scores, loadings, maxiter, eps){
 
   N <- dim(data)[1]
   Q <- dim(loadings)[2]
+
   stopcritT0 <- 0
   iter0 <- 1
-  #Losst <- 1
-  #Lossvec0 <- c()
+  Losst_c <- ssres(data, scores, loadings) / ssx
+
   ssx <- sum(data^2)
   XL <- data %*% loadings  #cache
   LL <- t(loadings) %*% loadings #cache
-  Losst_c <- ssres(data, scores, loadings) / ssx
 
   if (verbose){
     message('Initial loss H ', Losst_c)
