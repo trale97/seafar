@@ -1,6 +1,8 @@
 # seafar: Sparse Exploratory Approximate Factor Analysis for High-dimensional Data in R
 The package contains functions to perform a Sparse Exploratory Approximate Factor Analysis (SEAFA). These methods are implementations and extensions of the Regularized ESEM method ([Le et al. (2026)](https://doi.org/10.3758/s13428-026-02960-y)) that uses approximate factor model with regularization (cardinality constraint and the LASSO penalty) to obtain simple structure for the loading matrix. A vignette was created as a tutorial paper for interested users.  
 
+Please cite the package as shown in `CITATION.cff`.
+
 ## Installation instructions
 
 This package requires `PCAtools` which was not available on [CRAN](https://cran.r-project.org/) at the time of writing. This can lead to problems when installing `seafar` from GitHub. We therefore recommend installing `PCAtools` from [Bioconductor](https://cran.r-project.org/web/packages/BiocManager/vignettes/BiocManager.html) before installing `seafar`.
