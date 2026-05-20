@@ -345,7 +345,7 @@ library(dplyr)
 
 tmp <- df |>
   as.data.frame() |>
-  rownames_to_column("Traint")
+  rownames_to_column("Trait")
 
 flextable(tmp) |>
   theme_apa() |>
@@ -554,7 +554,7 @@ Using the method of Lagrange Multipliers, we obtain the Lagrangian function
         &= ||\mathbf{Y}-\sum_{t \neq q}\bm \eta_t\mathbf{p}_t^T - \bm \eta_q\mathbf{p}_q^T||^2 - \mu(\bm \eta_q^T \bm \eta_q-N)\\ 
     &= ||\mathbf{E}_q - \bm \eta_q\mathbf{p}_q^T||^2 - \mu(\bm \eta_q^T \bm \eta_q - N) \numberthis
 \end{align*}
-Solving $\frac{\partial \mathcal{L}}{\partial \bm \eta_q} = 0$ and $\frac{\partial \mathcal{L}}{\partial \mu} = 0$, we have $\bm \eta_q = \frac{\sqrt{N}\mathbf{E}_q\mathbf{p}_q}{\sqrt{(\mathbf{E}_q\mathbf{p}_q)^T(\mathbf{E}_q\mathbf{p}_q)}}$. 
+Solving $\frac{\partial \mathcal{L}}{\partial \bm \eta_q} = 0$ and $\frac{\partial \mathcal{L}}{\partial \mu} = 0$, we have $\bm \eta_q = \frac{\sqrt{N}\mathbf{E}_q\mathbf{p}_q}{\sqrt{(\mathbf{E}_q\mathbf{p}_q)^T(\mathbf{E}_q\mathbf{p}_q)}} \quad \forall q = 1,...,Q$. 
 
 2. The update of factor loadings conditional upon fixed values for the scores is based on the following objective:
 \begin{align*}
