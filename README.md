@@ -70,6 +70,6 @@ quarto render SEAFAR_tutorial.qmd --to apaquarto-pdf
 
 This package is licensed under the MIT License.
 
-The autism dataset is licensed under the terms specified in data/README.md
+The autism dataset is licensed under the terms specified in `data/README.md`.
 
 The [APA Quarto template](https://github.com/wjschne/apaquarto) by W. J. Schneider is licensed under [CC0-1.0](https://creativecommons.org/publicdomain/zero/1.0/).
