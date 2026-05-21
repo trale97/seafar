@@ -4,8 +4,8 @@ title: "Sparse Exploratory Approximate Factor Analysis: A Tutorial for the R pac
 repository-code: "https://github.com/trale97/seafar"
 
 # doi: to be determined
-# version: to be determined
-# date-released: to be determined
+version: "0.1.0"
+date-released: "2026-05-21"
 
 authors:
   - family-names: "Le"
