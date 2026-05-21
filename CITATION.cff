@@ -3,7 +3,7 @@ message: "If you use this work, please cite it as below."
 title: "Sparse Exploratory Approximate Factor Analysis: A Tutorial for the R package seafar"
 repository-code: "https://github.com/trale97/seafar"
 
-# doi: to be determined
+doi: "10.5281/zenodo.20326842"
 version: "0.1.0"
 date-released: "2026-05-21"
 
