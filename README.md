@@ -1,3 +1,5 @@
+# seafar: Sparse Exploratory Approximate Factor Analysis for High-dimensional Data in R <img src="man/figures/logo.png" align="right" height="139" alt="" />
+
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20326842.svg)](https://doi.org/10.5281/zenodo.20326842)
 
 # seafar: Sparse Exploratory Approximate Factor Analysis for High-dimensional Data in R
