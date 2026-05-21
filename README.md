@@ -2,7 +2,6 @@
 
 [![DOI](https://img.shields.io/badge/DOI-10.5281%2Fzenodo.20326842-blue.svg)](https://doi.org/10.5281/zenodo.20326842)
 
-# seafar: Sparse Exploratory Approximate Factor Analysis for High-dimensional Data in R
 The package contains functions to perform a Sparse Exploratory Approximate Factor Analysis (SEAFA). These methods are implementations and extensions of the Regularized ESEM method ([Le et al. (2026)](https://doi.org/10.3758/s13428-026-02960-y)) that uses approximate factor model with regularization (cardinality constraint and the LASSO penalty) to obtain simple structure for the loading matrix. A vignette was created as a tutorial paper for interested users.  
 
 Please cite the package as shown in `CITATION.cff`.
