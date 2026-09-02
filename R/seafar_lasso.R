@@ -17,6 +17,7 @@ seafar_lasso <- function(data,
                          lambda,
                          maxiter = 50,
                          eps = 10^-4,
+                         initloadings = NULL,
                          INIT = "semirational") {
   converged <- FALSE
   N <- dim(data)[1]
@@ -26,8 +27,9 @@ seafar_lasso <- function(data,
   iter <- 1
   Lossc <- 1
   Lossvec <- Lossc # Used to compute convergence criterium
+
   # 1. Initialize loading matrix
-  if (missing(initloadings)) {
+  if (is.null(initloadings)) {
     loadings <- seafar_init_l1(data, nfactors, INIT)
   } else {
     loadings <- initloadings
