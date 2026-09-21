@@ -12,6 +12,9 @@
 #' @param INIT Method to initialize loadings
 #' @param orthogonal Orthogonal or non-orthogonal factors, default is FALSE.
 #' @return Factor loading and factor score matrices
+#'
+#' @export
+#'
 #' @examples
 #' \dontrun{
 #' big5_seafa <- seafar(as.matrix(scale(USArrests, center = TRUE, scale = TRUE)), 2, 4, INIT = "svd", orthogonal = TRUE)
