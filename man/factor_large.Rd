@@ -7,7 +7,7 @@
 factor_large(data)
 }
 \arguments{
-\item{data}{A NxJ matrix of standardized items.}
+\item{data}{A NxJ matrix of observed variables.}
 }
 \value{
 Number of factors/components.
