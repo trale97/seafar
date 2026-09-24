@@ -6,6 +6,9 @@
 #' @param maxiter Maximum number of iterations of the AO procedure.
 #' @param eps Convergence criterion based on difference in loss between iterates.
 #' @param INIT Method to initialize loadings.
+#' @param pattern Optional JxQ matrix; loadings where \code{pattern} is 0 (or \code{FALSE}) are fixed at zero.
+#'    With \code{lambda = 0} this refits a given zero pattern without shrinkage (used by \code{unshrink} in
+#'    \code{seafar_lasso_multistart()}).
 #'
 #' @return Factor loading and factor score matrices.
 #' @examples
@@ -19,6 +22,7 @@ seafar_lasso <- function(data,
                          eps = 10^-4,
                          INIT = "semirational") {
   converged <- FALSE
+                         pattern = NULL) {
   N <- dim(data)[1]
   J <- dim(data)[2]
   ssx <- sum(data^2)
@@ -78,6 +82,9 @@ seafar_lasso <- function(data,
       crosstEr <- t(Er) %*% scores[, q]
       loadings[, q] <- sign(crosstEr) * apply(cbind(abs(crosstEr) - lambda / 2, 0), 1, max) / N
     }
+    if (!is.null(pattern)) {
+      loadings[pattern == 0] <- 0 # fixed zeros
+    }
 
     # Calculate loss
     Lossu <- LOSS(data, scores, loadings, lambda) / ssx
@@ -122,6 +129,8 @@ seafar_lasso <- function(data,
 #' \item{Lossvec}{A list of vectors of loss values of each starting value.}
 #' \item{Loss}{A vector of loss values of the best starting value.}
 #' \item{converged}{A scalar where 1 is converged and 0 is not converged.}
+#' \item{loadings_lasso, scores_lasso, Loss_lasso}{If \code{unshrink = TRUE}: the original lasso solution that
+#'   defined the zero pattern, and its penalized loss.}
 #'
 #' @export
 #'
@@ -142,6 +151,7 @@ seafar_lasso_multistart <- function(data,
                                     eps = 10^-4,
                                     INIT = "semirational",
                                     nstarts) {
+                                    unshrink = TRUE) {
   if (missing(nstarts)) {
     nstarts <- 20
   }
@@ -184,6 +194,25 @@ seafar_lasso_multistart <- function(data,
   return_varselect$n_best <- n_best
   return_varselect$n_distinct <- n_distinct
   return_varselect$converged <- converged[k]
+  # undo shrinkage: refit the zero pattern of the best start with lambda = 0, warm-started from it
+  if (unshrink) {
+    refit <- seafar_lasso(data = data,
+                          nfactors = nfactors,
+                          lambda = 0,
+                          maxiter = maxiter,
+                          eps = eps,
+                          initloadings = Pout3d[[k]],
+                          standardize = standardize,
+                          pattern = Pout3d[[k]])
+
+    return_varselect$loadings <- refit$loadings
+    return_varselect$scores <- refit$scores
+    return_varselect$Loss <- refit$Residual
+    return_varselect$loadings_lasso <- Pout3d[[k]] # keep the shrunk solution the pattern came from
+    return_varselect$scores_lasso <- Tout3d[[k]]
+    return_varselect$Loss_lasso <- LOSS[k]
+    return_varselect$converged <- refit$converged
+  }
 
   attr(return_varselect, "class") <- "lasso_multistart"
 
