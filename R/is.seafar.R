@@ -118,36 +118,8 @@ is.seafar <- function(data,
   col_names <- c("K", "IS", "PEV", "Prop0", "MinNonZeroL", "MaxSDL")
   rows <- list()
 
-  # --- first set of cardinalities ---
-  cardvec <- round(seq(3, J, length.out = 100))
-
-  for (k in seq_along(cardvec)) {
-    a <- tryCatch(
-      is.seafar_original(
-        data = data,
-        nfactors = nfactors,
-        C = rep(cardvec[k], nfactors),
-        maxiter = 20,
-        eps = 10^-4,
-        INIT = INIT,
-        orthogonal = orthogonal,
-        nstarts = nstarts
-      ),
-      error = function(e) NULL
-    )
-
-    if (is.null(a)) next
-
-    rows[[length(rows) + 1]] <- c(
-      cardvec[k], a$value, a$vaf, a$propzero,
-      a$smallestP, a$maxsdP
-    )
-  }
-
-  K <- length(rows)
-
-  # --- second set of cardinalities ---
-  if (nfactors * (J - 1) > 100) {
+  # --- cardinalities (total number of nonzero loadings) ---
+  if (nfactors * (J - 3) > 100) {
     cardvec <- round(seq(3 * nfactors, J * nfactors - 1, length.out = 100))
   } else {
     cardvec <- seq(3 * nfactors, J * nfactors - 1, by = 1)
