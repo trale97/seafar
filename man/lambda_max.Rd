@@ -12,12 +12,13 @@ lambda_max(
   nstarts = 1,
   min_items = 3,
   TOL = 10^-4,
-  INIT,
-  max_iter = 25
+  INIT = "semirational",
+  max_iter = 25,
+  standardize = TRUE
 )
 }
 \arguments{
-\item{data}{Data matrix of standardized items NxJ.}
+\item{data}{A data frame or matrix (NxJ). Data are always centered internally.}
 
 \item{nfactors}{Number of factors.}
 
@@ -34,6 +35,9 @@ lambda_max(
 \item{INIT}{Method to initialize loading matrix.}
 
 \item{max_iter}{Maximum iterations for the binary search.}
+
+\item{standardize}{Logical. If \code{TRUE} (default), items are scaled to unit variance (N denominator)
+after centering. Centering is applied regardless.}
 }
 \value{
 The maximum value for LASSO penalty parameter.

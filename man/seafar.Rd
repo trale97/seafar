@@ -12,11 +12,12 @@ seafar(
   maxiter = 50,
   initloadings = NULL,
   INIT,
-  orthogonal = FALSE
+  orthogonal = FALSE,
+  standardize = TRUE
 )
 }
 \arguments{
-\item{data}{A data frame containing the dataset (standardized).}
+\item{data}{A data frame or matrix (NxJ). Data are always centered internally.}
 
 \item{nfactors}{The number of factors}
 
@@ -31,9 +32,12 @@ seafar(
 \item{INIT}{Method to initialize loadings}
 
 \item{orthogonal}{Orthogonal or non-orthogonal factors, default is FALSE.}
+
+\item{standardize}{Logical. If \code{TRUE} (default), items are scaled to unit variance (N denominator)
+after centering. Centering is applied regardless.}
 }
 \value{
-Factor loading and factor score matrices
+Factor loading and factor score matrices, plus the \code{center} and \code{scale} used to transform the data.
 }
 \description{
 Function for exploratory approximate factor analysis resulting in a sparse
@@ -41,6 +45,6 @@ measurement model
 }
 \examples{
 \dontrun{
-big5_seafa <- seafar(as.matrix(scale(USArrests, center = TRUE, scale = TRUE)), 2, 4, INIT = "svd", orthogonal = TRUE)
+big5_seafa <- seafar(USArrests, 2, 4, INIT = "svd", orthogonal = TRUE)
 }
 }

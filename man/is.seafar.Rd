@@ -3,7 +3,7 @@
 \name{is.seafar}
 \alias{is.seafar}
 \title{Model selection for SEAFAR using modified Index of Sparseness
-(Van Deun et al., 2025).}
+(Van Deun et al., 2026).}
 \usage{
 is.seafar(
   data,
@@ -14,11 +14,12 @@ is.seafar(
   orthogonal = FALSE,
   nstarts,
   TOL,
-  THR
+  THR,
+  standardize = TRUE
 )
 }
 \arguments{
-\item{data}{A NxJ matrix of standardized items.}
+\item{data}{A data frame or matrix (NxJ).}
 
 \item{nfactors}{Number of factors.}
 
@@ -32,16 +33,19 @@ is.seafar(
 
 \item{nstarts}{Number of starts.}
 
-\item{TOL}{Decimal points for the loadings.}
+\item{TOL}{Number of decimals used to decide whether two PEV values are the same.}
 
 \item{THR}{Thresholding selection for the smallest nonzero loading.}
+
+\item{standardize}{Logical. If \code{TRUE} (default), items are scaled to unit variance
+after centering. Centering is applied regardless.}
 }
 \value{
 The selected cardinality value.
 }
 \description{
 Model selection for SEAFAR using modified Index of Sparseness
-(Van Deun et al., 2025).
+(Van Deun et al., 2026).
 }
 \examples{
 \dontrun{

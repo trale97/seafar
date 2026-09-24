@@ -20,6 +20,6 @@ Display a summary of the results of \code{seafar()}.
 \examples{
 \dontrun{
 results <- seafar(X)
-summary(results, display = "full")
+summary(results, disp = "full")
 }
 }

@@ -14,11 +14,12 @@ seafar_multistart(
   initloadings = NULL,
   orthogonal = FALSE,
   nstarts = 50,
-  show_progress = FALSE
+  show_progress = FALSE,
+  standardize = TRUE
 )
 }
 \arguments{
-\item{data}{Data matrix of standardized items NxJ.}
+\item{data}{A data frame or matrix (NxJ). Data are always centered internally.}
 
 \item{nfactors}{Number of factors Q.}
 
@@ -37,12 +38,17 @@ seafar_multistart(
 \item{nstarts}{Number of starts.}
 
 \item{show_progress}{Option of print progress bar, default is FALSE.}
+
+\item{standardize}{Logical. If \code{TRUE} (default), items are scaled to unit variance (N denominator)
+after centering. Centering is applied regardless.}
 }
 \value{
 \item{loadings}{The best estimated loading matrix.}
 \item{scores}{The best estimated factor score matrix.}
 \item{PVE}{A list of vectors of PVE of each starting value.}
 \item{Loss}{A vector of loss values of the best starting value.}
+\item{center}{Item means used to center the data.}
+\item{scale}{Item standard deviations used to scale the data (1s if \code{standardize = FALSE}).}
 }
 \description{
 Multistart procedure for seafar.
@@ -50,7 +56,7 @@ Multistart procedure for seafar.
 \examples{
 \dontrun{
 big5_result <- seafar_multistart(
-  scale(big5),
+  big5,
   nfactors = 5,
   C = 240,
   INIT = "random",

@@ -12,11 +12,12 @@ is.seafar_original(
   eps = 10^-4,
   INIT,
   orthogonal = FALSE,
-  nstarts
+  nstarts,
+  standardize = TRUE
 )
 }
 \arguments{
-\item{data}{A NxJ matrix of standardized items.}
+\item{data}{A data frame or matrix (NxJ).}
 
 \item{nfactors}{Number of factors.}
 
@@ -31,6 +32,9 @@ is.seafar_original(
 \item{orthogonal}{Orthogonal or non-orthogonal factors, default is FALSE.}
 
 \item{nstarts}{Number of starts.}
+
+\item{standardize}{Logical. If \code{TRUE} (default), items are scaled to unit variance
+after centering. Centering is applied regardless.}
 }
 \value{
 A list with
@@ -39,6 +43,8 @@ A list with
 \item{propzero}{Proportion of zero loadings.}
 \item{smallestP}{Smallest nonzero loading.}
 \item{maxsdP}{Maximum standard deviation of loading.}
+\item{center}{Item means used to center the data.}
+\item{scale}{Item standard deviations used to scale the data (1s if \code{standardize = FALSE}).}
 }
 \description{
 Model selection for SEAFAR using the Index of Sparseness.

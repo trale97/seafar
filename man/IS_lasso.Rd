@@ -4,10 +4,19 @@
 \alias{IS_lasso}
 \title{Function to calculate the IS for each LASSO penalty parameter.}
 \usage{
-IS_lasso(data, nfactors, lambda, maxiter = 50, eps = 10^-4, INIT, nstarts)
+IS_lasso(
+  data,
+  nfactors,
+  lambda,
+  maxiter = 50,
+  eps = 10^-4,
+  INIT = "semirational",
+  nstarts,
+  standardize = TRUE
+)
 }
 \arguments{
-\item{data}{Data matrix of standardized items NxJ.}
+\item{data}{A data frame or matrix (NxJ). Data are always centered internally.}
 
 \item{nfactors}{The number of factors.}
 
@@ -20,6 +29,9 @@ IS_lasso(data, nfactors, lambda, maxiter = 50, eps = 10^-4, INIT, nstarts)
 \item{INIT}{Method to initialize loadings.}
 
 \item{nstarts}{Number of starts.}
+
+\item{standardize}{Logical. If \code{TRUE} (default), items are scaled to unit variance (N denominator)
+after centering. Centering is applied regardless.}
 }
 \value{
 A list with
