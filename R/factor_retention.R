@@ -30,7 +30,7 @@ factor_retention <- function(data,
 
 #' Function to retain number of factors/components for traditional size data set using various methods.
 #'
-#' @param data A NxJ matrix of standardized items.
+#' @param data A NxJ matrix of observed variables.
 #'
 #' @returns Number of factors/components.
 #' @export
@@ -42,6 +42,8 @@ factor_retention <- function(data,
 #' a <- factor_small(X)
 #' }
 factor_small <- function(data) {
+  data <- scale(data, center = TRUE, scale = TRUE)
+
   Q_parallel <- tryCatch(
     {
       tmp <- utils::capture.output(
@@ -55,7 +57,7 @@ factor_small <- function(data) {
   )
 
   # scree
-  pX <- PCAtools::pca(data, removeVar = 0.1)
+  pX <- PCAtools::pca(data, removeVar = 0.1, transposed = TRUE)
   Q_elbow <- PCAtools::findElbowPoint(pX$variance)
 
   # Kaiser
@@ -73,7 +75,7 @@ factor_small <- function(data) {
 
 #' Function to retain number of factors/components for very large data set using various methods.
 #'
-#' @param data A NxJ matrix of standardized items.
+#' @param data A NxJ matrix of observed variables.
 #'
 #' @returns Number of factors/components.
 #' @export
@@ -85,12 +87,13 @@ factor_small <- function(data) {
 #' a <- factor_large(X)
 #' }
 factor_large <- function(data) {
+  data <- scale(data, center = TRUE, scale = TRUE)
   # parallel analysis components
   horn <- PCAtools::parallelPCA(data)
   Q_parallel_comp <- horn$n
 
   # scree
-  pX <- PCAtools::pca(data, removeVar = 0.1)
+  pX <- PCAtools::pca(data, removeVar = 0.1, transposed = TRUE)
   Q_elbow <- PCAtools::findElbowPoint(pX$variance)
 
   number_factors <- list(
