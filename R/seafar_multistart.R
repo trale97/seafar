@@ -1,6 +1,6 @@
 #' Multistart procedure for seafar.
 #'
-#' @param data Data matrix of standardized items NxJ.
+#' @param data A data frame or matrix (NxJ). Data are always centered internally.
 #' @param nfactors Number of factors Q.
 #' @param C Number of nonzero loadings.
 #' @param eps Convergence criterion based on difference in loss between iterates.
@@ -10,19 +10,23 @@
 #' @param orthogonal Orthogonal or non-orthogonal factors, default is FALSE.
 #' @param nstarts Number of starts.
 #' @param show_progress Option of print progress bar, default is FALSE.
+#' @param standardize Logical. If \code{TRUE} (default), items are scaled to unit variance (N denominator)
+#'   after centering. Centering is applied regardless.
 #'
 #' @returns
 #' \item{loadings}{The best estimated loading matrix.}
 #' \item{scores}{The best estimated factor score matrix.}
 #' \item{PVE}{A list of vectors of PVE of each starting value.}
 #' \item{Loss}{A vector of loss values of the best starting value.}
+#' \item{center}{Item means used to center the data.}
+#' \item{scale}{Item standard deviations used to scale the data (1s if \code{standardize = FALSE}).}
 #'
 #' @export
 #'
 #' @examples
 #' \dontrun{
 #' big5_result <- seafar_multistart(
-#'   scale(big5),
+#'   big5,
 #'   nfactors = 5,
 #'   C = 240,
 #'   INIT = "random",
@@ -39,7 +43,8 @@ seafar_multistart <- function(data,
                               initloadings = NULL,
                               orthogonal = FALSE,
                               nstarts = 50,
-                              show_progress = FALSE) {
+                              show_progress = FALSE,
+                              standardize = TRUE) {
   Pout3d <- list()
   Hout3d <- list()
   LOSS <- array()
@@ -64,7 +69,8 @@ seafar_multistart <- function(data,
           eps = eps,
           INIT = INIT,
           initloadings = initloadings,
-          orthogonal = orthogonal
+          orthogonal = orthogonal,
+          standardize = standardize
         )
       },
       error = function(e) {
@@ -85,11 +91,20 @@ seafar_multistart <- function(data,
     LOSS[valid_index] <- result$Residual
     PVE[[valid_index]] <- result$PVE
     LOSSvec[[valid_index]] <- 1 - result$PVE
+    xcenter <- result$center # same for every start; taken from a successful run
+    xscale <- result$scale
 
     if (show_progress) setTxtProgressBar(pb, n)
   }
 
   if (show_progress == TRUE) close(pb)
+
+  if (valid_index == 0) {
+    stop("all ", nstarts, " starts failed; run seafar() once to see the error")
+  }
+  if (valid_index < nstarts) {
+    warning(nstarts - valid_index, " of ", nstarts, " starts failed and were skipped")
+  }
 
   # choose solution with lowest loss value
   k <- which(LOSS == min(LOSS))
@@ -103,6 +118,8 @@ seafar_multistart <- function(data,
   return_varselect$scores <- Hout3d[[k]]
   return_varselect$PVE <- PVE
   return_varselect$Loss <- LOSS[k]
+  return_varselect$center <- xcenter
+  return_varselect$scale <- xscale
 
   attr(return_varselect, "class") <- "multistart"
 

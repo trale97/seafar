@@ -10,11 +10,14 @@ seafar_lasso(
   lambda,
   maxiter = 50,
   eps = 10^-4,
-  INIT = "semirational"
+  INIT = "semirational",
+  initloadings = NULL,
+  standardize = TRUE,
+  pattern = NULL
 )
 }
 \arguments{
-\item{data}{A data frame containing the dataset (standardized).}
+\item{data}{A data matrix containing the dataset.}
 
 \item{nfactors}{The number of factors.}
 
@@ -25,6 +28,15 @@ seafar_lasso(
 \item{eps}{Convergence criterion based on difference in loss between iterates.}
 
 \item{INIT}{Method to initialize loadings.}
+
+\item{initloadings}{Optional user-supplied initial loading matrix.}
+
+\item{standardize}{Logical. If \code{TRUE} (default) variables are scaled to unit variance after centering.
+Centering is applied regardless.}
+
+\item{pattern}{Optional JxQ matrix; loadings where \code{pattern} is 0 (or \code{FALSE}) are fixed at zero.
+With \code{lambda = 0} this refits a given zero pattern without shrinkage (used by \code{unshrink} in
+\code{seafar_lasso_multistart()}).}
 }
 \value{
 Factor loading and factor score matrices.
@@ -34,6 +46,6 @@ Title Sparse exploratory approximate factor analysis using LASSO penalty
 }
 \examples{
 \dontrun{
-big5_seafa <- seafar_lasso(ocean, 5, lambda = 200, INIT = "svd")
+fit.seafar <- seafar_lasso(USArrests, 2, lambda = 10, INIT = "svd")
 }
 }

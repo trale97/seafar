@@ -12,11 +12,12 @@ seafar_general(
   eps = 1e-04,
   maxiter = 50,
   initloadings = NULL,
-  INIT
+  INIT,
+  standardize = TRUE
 )
 }
 \arguments{
-\item{data}{A NxJ matrix of standardized items.}
+\item{data}{A data frame or matrix (NxJ). Data are always centered internally.}
 
 \item{nfactors}{Number of factors.}
 
@@ -29,11 +30,16 @@ seafar_general(
 \item{initloadings}{Initial loading matrix if available.}
 
 \item{INIT}{Method to initialize loadings.}
+
+\item{standardize}{Logical. If \code{TRUE} (default), items are scaled to unit variance (N denominator)
+after centering. Centering is applied regardless.}
 }
 \value{
 \item{loadings}{The best estimated loading matrix.}
 \item{scores}{The best estimated factor score matrix.}
 \item{PVE}{A vector of PVE in each iteration of the AO procedure.}
+\item{center}{Item means used to center the data.}
+\item{scale}{Item standard deviations used to scale the data (1s if \code{standardize = FALSE}).}
 }
 \description{
 Function for exploratory approximate factor analysis resulting in a sparse

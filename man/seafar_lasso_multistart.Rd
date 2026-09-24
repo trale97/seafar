@@ -11,11 +11,13 @@ seafar_lasso_multistart(
   maxiter = 50,
   eps = 10^-4,
   INIT = "semirational",
-  nstarts
+  nstarts,
+  standardize = TRUE,
+  unshrink = TRUE
 )
 }
 \arguments{
-\item{data}{A data frame containing the dataset (standardized).}
+\item{data}{A data frame or matrix (NxJ). Data are always centered internally.}
 
 \item{nfactors}{The number of factors.}
 
@@ -28,22 +30,35 @@ seafar_lasso_multistart(
 \item{INIT}{Method to initialize loadings.}
 
 \item{nstarts}{Number of starting values.}
+
+\item{standardize}{Logical. If \code{TRUE} (default), items are scaled to unit variance (N denominator)
+after centering. Centering is applied regardless.}
+
+\item{unshrink}{Logical. If \code{TRUE} (default), the zero pattern of the best solution is refitted with
+\code{lambda = 0} (warm-started from that solution) to remove the shrinkage of the nonzero loadings.}
 }
 \value{
-\item{loadings}{The best estimated loading matrix.}
-\item{scores}{The best estimated factor score matrix.}
-\item{Lossvec}{A list of vectors of loss values of each starting value.}
-\item{Loss}{A vector of loss values of the best starting value.}
-\item{converged}{A scalar where 1 is converged and 0 is not converged.}
+\item{loadings}{The best estimated loading matrix (unshrunk if \code{unshrink = TRUE}).}
+\item{scores}{The best estimated factor score matrix (from the unshrunk refit if \code{unshrink = TRUE}).}
+\item{Lossvec}{A list of vectors of loss values of each starting value (lasso fits).}
+\item{Loss}{Loss value of the best starting value; the residual sum of squares of the refit if \code{unshrink = TRUE}.}
+\item{all_losses}{Penalized loss of every starting value (lasso fits).}
+\item{n_best}{Number of starting values that reached the lowest lasso loss (within 0.01).}
+\item{n_distinct}{Number of distinct lasso loss values across starting values.}
+\item{converged}{Whether the returned solution converged (the refit if \code{unshrink = TRUE}).}
+\item{center}{Item means used to center the data.}
+\item{scale}{Item standard deviations used to scale the data (1s if \code{standardize = FALSE}).}
+\item{loadings_lasso, scores_lasso, Loss_lasso}{If \code{unshrink = TRUE}: the original lasso solution that
+defined the zero pattern, and its penalized loss.}
 }
 \description{
 Multistart procedure for seafar with the LASSO penalty.
 }
 \examples{
 \dontrun{
-big5_result <- seafar_lasso_multistart(
-  scale(big5),
-  nfactors = 5,
+fit.seafar <- seafar_lasso_multistart(
+  USArrests,
+  nfactors = 2,
   lambda = 10,
   INIT = "random",
   nstarts = 50

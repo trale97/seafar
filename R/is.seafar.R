@@ -1,6 +1,6 @@
 #' Model selection for SEAFAR using the Index of Sparseness.
 #'
-#' @param data A NxJ matrix of standardized items.
+#' @param data A data frame or matrix (NxJ).
 #' @param nfactors Number of factors.
 #' @param C Number of nonzero loadings.
 #' @param maxiter Maximum number of iterations for the AO procedure.
@@ -8,6 +8,8 @@
 #' @param INIT Method to initialize loading matrix.
 #' @param orthogonal Orthogonal or non-orthogonal factors, default is FALSE.
 #' @param nstarts Number of starts.
+#' @param standardize Logical. If \code{TRUE} (default), items are scaled to unit variance
+#'   after centering. Centering is applied regardless.
 #'
 #' @importFrom stats sd
 #'
@@ -17,6 +19,8 @@
 #' \item{propzero}{Proportion of zero loadings.}
 #' \item{smallestP}{Smallest nonzero loading.}
 #' \item{maxsdP}{Maximum standard deviation of loading.}
+#' \item{center}{Item means used to center the data.}
+#' \item{scale}{Item standard deviations used to scale the data (1s if \code{standardize = FALSE}).}
 #'
 #' @export
 #'
@@ -39,8 +43,24 @@ is.seafar_original <- function(data,
                                eps = 10^-4,
                                INIT,
                                orthogonal = FALSE,
-                               nstarts) {
+                               nstarts,
+                               standardize = TRUE) {
+  N <- dim(data)[1]
   J <- dim(data)[2]
+
+  # 0. Center (always) and optionally scale to unit variance (N denominator), so that
+  #    vzero and va are computed on the same data as the seafar fits
+  data <- scale(data, center = TRUE, scale = FALSE)
+  xcenter <- attr(data, "scaled:center")
+  xscale <- rep(1, J)
+  if (standardize) {
+    xscale <- sqrt(colSums(data^2) / N)
+    if (any(xscale < sqrt(.Machine$double.eps))) {
+      stop("data contains item(s) with zero variance; remove them or use standardize = FALSE")
+    }
+    data <- scale(data, center = FALSE, scale = xscale)
+  }
+
   seafar_result <- seafar_multistart(
     data = data,
     nfactors = nfactors,
@@ -50,7 +70,8 @@ is.seafar_original <- function(data,
     INIT = INIT,
     orthogonal = orthogonal,
     nstarts = nstarts,
-    show_progress = FALSE
+    show_progress = FALSE,
+    standardize = FALSE # data already preprocessed above
   )
   Hmat <- seafar_result$scores
   Pmat <- seafar_result$loadings
@@ -68,26 +89,30 @@ is.seafar_original <- function(data,
   IS$propzero <- nrzeqcoef / nrcoef
 
   IS$smallestP <- ifelse(sum(rowSums(Pmat != 0)) < sum(C),
-    0, min(abs(Pmat[Pmat != 0]))
+                         0, min(abs(Pmat[Pmat != 0]))
   )
   IS$maxsdP <- max(apply(Pmat, 2, sd))
+  IS$center <- xcenter
+  IS$scale <- xscale
 
   return(IS)
 }
 
 
 #' Model selection for SEAFAR using modified Index of Sparseness
-#' (Van Deun et al., 2025).
+#' (Van Deun et al., 2026).
 #'
-#' @param data A NxJ matrix of standardized items.
+#' @param data A data frame or matrix (NxJ).
 #' @param nfactors Number of factors.
 #' @param maxiter Maximum number of iterations for the AO procedure.
 #' @param eps Convergence criterion based on difference in loss between iterates.
 #' @param INIT Method to initialize loading matrix.
 #' @param orthogonal Orthogonal or non-orthogonal factors, default is FALSE.
 #' @param nstarts Number of starts.
-#' @param TOL Decimal points for the loadings.
+#' @param TOL Number of decimals used to decide whether two PEV values are the same.
 #' @param THR Thresholding selection for the smallest nonzero loading.
+#' @param standardize Logical. If \code{TRUE} (default), items are scaled to unit variance
+#'   after centering. Centering is applied regardless.
 #'
 #' @returns The selected cardinality value.
 #' @export
@@ -112,42 +137,15 @@ is.seafar <- function(data,
                       orthogonal = FALSE,
                       nstarts,
                       TOL,
-                      THR) {
+                      THR,
+                      standardize = TRUE) {
   J <- dim(data)[2]
 
   col_names <- c("K", "IS", "PEV", "Prop0", "MinNonZeroL", "MaxSDL")
   rows <- list()
 
-  # --- first set of cardinalities ---
-  cardvec <- round(seq(3, J, length.out = 100))
-
-  for (k in seq_along(cardvec)) {
-    a <- tryCatch(
-      is.seafar_original(
-        data = data,
-        nfactors = nfactors,
-        C = rep(cardvec[k], nfactors),
-        maxiter = 20,
-        eps = 10^-4,
-        INIT = INIT,
-        orthogonal = orthogonal,
-        nstarts = nstarts
-      ),
-      error = function(e) NULL
-    )
-
-    if (is.null(a)) next
-
-    rows[[length(rows) + 1]] <- c(
-      cardvec[k], a$value, a$vaf, a$propzero,
-      a$smallestP, a$maxsdP
-    )
-  }
-
-  K <- length(rows)
-
-  # --- second set of cardinalities ---
-  if (nfactors * (J - 1) > 100) {
+  # --- cardinalities (total number of nonzero loadings) ---
+  if (nfactors * (J - 3) > 100) {
     cardvec <- round(seq(3 * nfactors, J * nfactors - 1, length.out = 100))
   } else {
     cardvec <- seq(3 * nfactors, J * nfactors - 1, by = 1)
@@ -159,11 +157,12 @@ is.seafar <- function(data,
         data = data,
         nfactors = nfactors,
         C = cardvec[l],
-        maxiter = 20,
-        eps = 10^-4,
+        maxiter = maxiter,
+        eps = eps,
         INIT = INIT,
         orthogonal = orthogonal,
-        nstarts = nstarts
+        nstarts = nstarts,
+        standardize = standardize
       ),
       error = function(e) NULL
     )
@@ -183,8 +182,7 @@ is.seafar <- function(data,
     colnames(avec) <- col_names
     avec <- round(avec, 3)
   } else {
-    avec <- matrix(nrow = 0, ncol = 6)
-    colnames(avec) <- col_names
+    stop("is.seafar_original() failed for every cardinality; run it once to see the error")
   }
 
   round(avec, 4)
@@ -193,32 +191,23 @@ is.seafar <- function(data,
 
   placeholder <- seq(1:KL)
   indexnonzeroL <- placeholder[avec[, "MinNonZeroL"] < THR][1] - 1 # THR holding selection
-  if (indexnonzeroL < K) {
-    placeholder2 <- placeholder[(K + 1):KL]
-    indexnonzeroL2 <- placeholder2[avec[(K + 1):KL, "MinNonZeroL"] < THR][1] - 1 # THR holding selection
-    if (avec[indexnonzeroL2, 1] < avec[indexnonzeroL, 1] * nfactors) {
-      indexnonzeroL <- indexnonzeroL2
-    } else if (avec[indexnonzeroL2, 1] == avec[indexnonzeroL, 1] * nfactors) {
-      if (round(avec[indexnonzeroL2, 3], THR) > round(avec[indexnonzeroL, 3], THR)) {
-        indexnonzeroL <- indexnonzeroL2
-      }
-    }
+  if (is.na(indexnonzeroL)) {
+    indexnonzeroL <- KL # no smallest loading below THR: keep the largest cardinality
+  } else if (indexnonzeroL == 0) {
+    indexnonzeroL <- NA # below THR already at the smallest cardinality: fall back to the maximum IS
   }
   selcardinality <- avec[indexnonzeroL, 1]
-  if (indexnonzeroL < K + 1) {
-    selcardinality <- c(rep(avec[indexnonzeroL, 1], nfactors))
-  }
 
   # TOL = 2
-  samepve <- round(avec[, 3], TOL) == round(avec[indexnonzeroL, 3], TOL)
+  samepve <- rep(TRUE, KL)
+  if (!is.na(indexnonzeroL)) {
+    samepve <- round(avec[, 3], TOL) == round(avec[indexnonzeroL, 3], TOL)
+  }
 
   index <- indexnonzeroL
   if (is.na(indexnonzeroL) || max(round(avec[samepve, 2], 3)) > round(avec[indexnonzeroL, 2], 3)) {
-    index <- placeholder[avec[, 2] == max(avec[samepve, 2])][1]
+    index <- placeholder[samepve & avec[, 2] == max(avec[samepve, 2])][1]
     selcardinality <- avec[index, 1]
-    if (index < K) {
-      selcardinality <- rep(avec[index, 1], nfactors)
-    }
   }
   attr(selcardinality, "class") <- "is_seafar"
 

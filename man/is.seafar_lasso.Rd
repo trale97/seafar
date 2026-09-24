@@ -10,12 +10,13 @@ is.seafar_lasso(
   max_lambda,
   maxiter = 50,
   eps = 10^-4,
-  INIT,
-  nstarts
+  INIT = "semirational",
+  nstarts,
+  standardize = TRUE
 )
 }
 \arguments{
-\item{data}{Data matrix of standardized items NxJ.}
+\item{data}{A data frame or matrix (NxJ). Data are always centered internally.}
 
 \item{nfactors}{The number of factors.}
 
@@ -28,6 +29,9 @@ is.seafar_lasso(
 \item{INIT}{Method to initialize loading matrix.}
 
 \item{nstarts}{Number of starts.}
+
+\item{standardize}{Logical. If \code{TRUE} (default), items are scaled to unit variance (N denominator)
+after centering. Centering is applied regardless.}
 }
 \value{
 The selected LASSO penalty parameter.
