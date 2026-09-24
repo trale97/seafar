@@ -1,6 +1,6 @@
 #' Function to find the maximum LASSO penalty parameter for a given data set
 #'
-#' @param data Data matrix of standardized items NxJ.
+#' @param data A data frame or matrix (NxJ). Data are always centered internally.
 #' @param nfactors Number of factors.
 #' @param maxiter Maximum iterations for SEAFA with LASSO.
 #' @param eps Convergence criterion based on difference in loss between iterates.
@@ -9,6 +9,8 @@
 #' @param TOL Tolerance for the binary search convergence criterion.
 #' @param INIT Method to initialize loading matrix.
 #' @param max_iter Maximum iterations for the binary search.
+#' @param standardize Logical. If \code{TRUE} (default), items are scaled to unit variance (N denominator)
+#'   after centering. Centering is applied regardless.
 #'
 #' @returns The maximum value for LASSO penalty parameter.
 #' @export
@@ -27,9 +29,24 @@ lambda_max <- function(data,
                        nstarts = 1,
                        min_items = 3,
                        TOL = 10^-4,
-                       INIT,
-                       max_iter = 25){
-  N  <- nrow(data)
+                       INIT = 'semirational',
+                       max_iter = 25,
+                       standardize = TRUE){
+  N <- dim(data)[1]
+  J <- dim(data)[2]
+
+  # 0. Center (always) and optionally scale to unit variance (N denominator)
+  data <- scale(data, center = TRUE, scale = FALSE)
+  xcenter <- attr(data, "scaled:center")
+  xscale <- rep(1, J)
+  if (standardize) {
+    xscale <- sqrt(colSums(data^2) / N)
+    if (any(xscale < sqrt(.Machine$double.eps))) {
+      stop("data contains item(s) with zero variance; remove them or use standardize = FALSE")
+    }
+    data <- scale(data, center = FALSE, scale = xscale)
+  }
+
   svd1 <- svd(data, nfactors, nfactors)
   scores_0 <- sqrt(N) * svd1$u
 
@@ -46,7 +63,8 @@ lambda_max <- function(data,
                              maxiter = maxiter,
                              eps = eps,
                              nstarts = nstarts,
-                             INIT = INIT),
+                             INIT = INIT,
+                             standardize = FALSE), # data already preprocessed above
                     silent = TRUE)
     ok <- !(inherits(loadings, "try-error") ||
               any(!enough_items(loadings, min_items)))
@@ -69,7 +87,8 @@ lambda_max <- function(data,
                              maxiter = maxiter,
                              eps = eps,
                              nstarts = nstarts,
-                             INIT = INIT),
+                             INIT = INIT,
+                             standardize = FALSE), # data already preprocessed above
                     silent = TRUE)
     ok <- !(inherits(loadings, "try-error") ||
               any(!enough_items(loadings, min_items)))
@@ -111,13 +130,15 @@ enough_items <- function(loadings,
 
 #' Function to fit SEAFA with LASSO penalty once and get loading matrix
 #'
-#' @param data Data matrix of standardized items NxJ.
+#' @param data A data frame or matrix (NxJ). Data are always centered internally.
 #' @param nfactors Number of factors.
 #' @param lambda LASSO penalty parameter.
 #' @param maxiter Maximum iterations for SEAFA with LASSO.
 #' @param eps Convergence criterion based on difference in loss between iterations.
 #' @param INIT Method to initialize loading matrix.
 #' @param nstarts Number of starts.
+#' @param standardize Logical. If \code{TRUE} (default), items are scaled to unit variance (N denominator)
+#'   after centering. Centering is applied regardless.
 #'
 #' @returns Estimated loading matrix.
 #' @export
@@ -136,15 +157,18 @@ fit_once <- function(data,
                      lambda,
                      maxiter = 50,
                      eps = 10^-4,
-                     INIT,
-                     nstarts = 1){
+                     INIT = 'semirational',
+                     nstarts = 1,
+                     standardize = TRUE){
   fit <- seafar_lasso_multistart(data = data,
                                  nfactors = nfactors,
                                  maxiter = maxiter,
                                  eps = eps,
                                  nstarts = nstarts,
                                  lambda  = lambda,
-                                 INIT = INIT)
+                                 INIT = INIT,
+                                 standardize = standardize,
+                                 unshrink = FALSE)
   loadings <- fit$loadings
   return(loadings)
 }
