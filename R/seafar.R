@@ -3,7 +3,7 @@
 #' Function for exploratory approximate factor analysis resulting in a sparse
 #' measurement model
 #'
-#' @param data A data frame containing the dataset (standardized).
+#' @param data A data frame or matrix (NxJ). Data are always centered internally.
 #' @param nfactors The number of factors
 #' @param C The number of nonzero loadings
 #' @param eps Convergence criterion based on difference in loss between iterates
@@ -11,13 +11,15 @@
 #' @param initloadings Initial loading matrix if available.
 #' @param INIT Method to initialize loadings
 #' @param orthogonal Orthogonal or non-orthogonal factors, default is FALSE.
-#' @return Factor loading and factor score matrices
+#' @param standardize Logical. If \code{TRUE} (default), items are scaled to unit variance (N denominator)
+#'   after centering. Centering is applied regardless.
+#' @return Factor loading and factor score matrices, plus the \code{center} and \code{scale} used to transform the data.
 #'
 #' @export
 #'
 #' @examples
 #' \dontrun{
-#' big5_seafa <- seafar(as.matrix(scale(USArrests, center = TRUE, scale = TRUE)), 2, 4, INIT = "svd", orthogonal = TRUE)
+#' big5_seafa <- seafar(USArrests, 2, 4, INIT = "svd", orthogonal = TRUE)
 #' }
 seafar <- function(data,
                    nfactors,
@@ -26,7 +28,8 @@ seafar <- function(data,
                    maxiter = 50,
                    initloadings = NULL,
                    INIT,
-                   orthogonal = FALSE) {
+                   orthogonal = FALSE,
+                   standardize = TRUE) {
   if (orthogonal == TRUE) {
     result <- seafar_orthogonal(
       data = data,
@@ -35,7 +38,8 @@ seafar <- function(data,
       eps = eps,
       maxiter = maxiter,
       initloadings = initloadings,
-      INIT = INIT
+      INIT = INIT,
+      standardize = standardize
     )
   } else {
     result <- seafar_general(
@@ -45,7 +49,8 @@ seafar <- function(data,
       eps = eps,
       maxiter = maxiter,
       initloadings = initloadings,
-      INIT = INIT
+      INIT = INIT,
+      standardize = standardize
     )
   }
   # 3. Return output
@@ -56,18 +61,22 @@ seafar <- function(data,
 #' Function for exploratory approximate factor analysis resulting in a sparse
 #' measurement model for orthogonal factors.
 #'
-#' @param data A NxJ matrix of standardized items.
+#' @param data A data frame or matrix (NxJ). Data are always centered internally.
 #' @param nfactors Number of factors.
 #' @param C Number of nonzero loadings.
 #' @param eps Convergence criterion based on difference in loss between iterates.
 #' @param maxiter Maximum number of iterations of the AO procedure.
 #' @param initloadings Initial loading matrix if available.
 #' @param INIT Method to initialize loadings.
+#' @param standardize Logical. If \code{TRUE} (default), items are scaled to unit variance (N denominator)
+#'   after centering. Centering is applied regardless.
 #'
 #' @returns
 #' \item{loadings}{The best estimated loading matrix.}
 #' \item{scores}{The best estimated factor score matrix.}
 #' \item{PVE}{A vector of PVE in each iteration of the AO procedure.}
+#' \item{center}{Item means used to center the data.}
+#' \item{scale}{Item standard deviations used to scale the data (1s if \code{standardize = FALSE}).}
 #'
 #' @export
 #'
@@ -81,9 +90,22 @@ seafar_orthogonal <- function(data,
                               eps = 1e-4,
                               maxiter = 50,
                               initloadings = NULL,
-                              INIT) {
+                              INIT,
+                              standardize = TRUE) {
   N <- dim(data)[1]
   J <- dim(data)[2]
+
+  # 0. Center (always) and optionally scale to unit variance (N denominator)
+  data <- scale(data, center = TRUE, scale = FALSE)
+  xcenter <- attr(data, "scaled:center")
+  xscale <- rep(1, J)
+  if (standardize) {
+    xscale <- sqrt(colSums(data^2) / N)
+    if (any(xscale < sqrt(.Machine$double.eps))) {
+      stop("data contains item(s) with zero variance; remove them or use standardize = FALSE")
+    }
+    data <- scale(data, center = FALSE, scale = xscale)
+  }
   ssx <- sum(data^2)
 
   stopcrit <- 0
@@ -121,7 +143,7 @@ seafar_orthogonal <- function(data,
       } else {
         for (q in 1:nfactors) {
           ind <- sort(abs(A[, q]), index.return = TRUE)
-          A[ind$ix[1:C_c[q]], q] <- 0
+          A[ind$ix[seq_len(C_c[q])], q] <- 0
           loadings <- A
         }
       }
@@ -186,24 +208,28 @@ seafar_orthogonal <- function(data,
   }
 
   # 3. Return output
-  result <- list("scores" = scores, "loadings" = loadings, "PVE" = 1 - Lossvec, "Residual" = Lossu * ssx)
+  result <- list("scores" = scores, "loadings" = loadings, "PVE" = 1 - Lossvec, "Residual" = Lossu * ssx, "center" = xcenter, "scale" = xscale)
 }
 
 #' Function for exploratory approximate factor analysis resulting in a sparse
 #' measurement model for non-orthogonal factors.
 #'
-#' @param data A NxJ matrix of standardized items.
+#' @param data A data frame or matrix (NxJ). Data are always centered internally.
 #' @param nfactors Number of factors.
 #' @param C Number of nonzero loadings.
 #' @param eps Convergence criterion based on difference in loss between iterates.
 #' @param maxiter Maximum number of iterations of the AO procedure.
 #' @param initloadings Initial loading matrix if available.
 #' @param INIT Method to initialize loadings.
+#' @param standardize Logical. If \code{TRUE} (default), items are scaled to unit variance (N denominator)
+#'   after centering. Centering is applied regardless.
 #'
 #' @returns
 #' \item{loadings}{The best estimated loading matrix.}
 #' \item{scores}{The best estimated factor score matrix.}
 #' \item{PVE}{A vector of PVE in each iteration of the AO procedure.}
+#' \item{center}{Item means used to center the data.}
+#' \item{scale}{Item standard deviations used to scale the data (1s if \code{standardize = FALSE}).}
 #'
 #' @export
 #'
@@ -217,7 +243,23 @@ seafar_general <- function(data,
                            eps = 1e-4,
                            maxiter = 50,
                            initloadings = NULL,
-                           INIT) {
+                           INIT,
+                           standardize = TRUE) {
+  N <- dim(data)[1]
+  J <- dim(data)[2]
+
+  # 0. Center (always) and optionally scale to unit variance (N denominator)
+  data <- scale(data, center = TRUE, scale = FALSE)
+  xcenter <- attr(data, "scaled:center")
+  xscale <- rep(1, J)
+  if (standardize) {
+    xscale <- sqrt(colSums(data^2) / N)
+    if (any(xscale < sqrt(.Machine$double.eps))) {
+      stop("data contains item(s) with zero variance; remove them or use standardize = FALSE")
+    }
+    data <- scale(data, center = FALSE, scale = xscale)
+  }
+
   N <- dim(data)[1]
   J <- dim(data)[2]
   ssx <- sum(data^2)
@@ -234,7 +276,7 @@ seafar_general <- function(data,
   verbose <- FALSE
   stopcrit <- 0
   Lossvec <- c()
-  Lossc <- 1
+  Lossc <- Inf # never stop at iteration 1 (random starts can have loss > 1; warm starts can be less sparse than C)
   iter <- 1
 
   # 2. Alternating optimization scheme
@@ -268,7 +310,7 @@ seafar_general <- function(data,
       } else {
         for (q in 1:nfactors) {
           ind <- sort(abs(A[, q]), index.return = TRUE)
-          A[ind$ix[1:C_c[q]], q] <- 0
+          A[ind$ix[seq_len(C_c[q])], q] <- 0
           loadings <- A
         }
       }
@@ -339,7 +381,7 @@ seafar_general <- function(data,
   }
 
   # 3. Return output
-  result <- list("scores" = scores, "loadings" = loadings, "PVE" = 1 - Lossvec, "Residual" = Lossu * ssx)
+  result <- list("scores" = scores, "loadings" = loadings, "PVE" = 1 - Lossvec, "Residual" = Lossu * ssx, "center" = xcenter, "scale" = xscale)
 }
 
 #' Display a summary of the results of \code{seafar()}.
@@ -354,7 +396,7 @@ seafar_general <- function(data,
 #' @examples
 #' \dontrun{
 #' results <- seafar(X)
-#' summary(results, display = "full")
+#' summary(results, disp = "full")
 #' }
 summary.seafar <- function(object, disp = "loadings", ...) {
   if (is.null(disp)) {
@@ -364,7 +406,7 @@ summary.seafar <- function(object, disp = "loadings", ...) {
   if (disp == "loadings") {
     cat(sprintf(
       "\nThe number of nonzero loadings is: %s\n",
-      sum(round(object$loadings, 3) != 0)
+      sum(object$loadings != 0)
     ))
 
     cat(sprintf("\nThe estimated loadings matrix is \n"))
@@ -372,7 +414,7 @@ summary.seafar <- function(object, disp = "loadings", ...) {
   } else {
     cat(sprintf(
       "\nThe number of nonzero loadings is: %s\n",
-      sum(round(object$loadings, 3) != 0)
+      sum(object$loadings != 0)
     ))
 
     cat(sprintf("\nThe estimated loadings matrix is \n"))
