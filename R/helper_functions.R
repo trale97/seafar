@@ -103,7 +103,9 @@ oblprocr <- function(data, scores, loadings, maxiter, eps){
     for (q in 1:Q) {
       oldscores <- scores[, q]
       num <- XL[, q] - scoresLL[, q] + scores[, q] * LL[q, q]
-      scores[, q] <- sqrt(N) * num / sqrt(sum(num^2))
+      if (sum(num^2) > 0) {
+        scores[, q] <- sqrt(N) * num / sqrt(sum(num^2))
+      }
       delta <- scores[, q] - oldscores
       scoresLL <- scoresLL + delta %*% LL[q, , drop = FALSE]
     }
@@ -204,9 +206,6 @@ seafar_init <- function(data,
                         C,
                         INIT) {
   n <- dim(data)[1]
-  ###
-  data <- data/n
-  ###
   J <- dim(data)[2]
   svd1 <- svd(data, nfactors, nfactors)
   P1 <- matrix(rnorm(J * nfactors), ncol = nfactors, nrow = J)
@@ -234,7 +233,7 @@ seafar_init <- function(data,
     C_c <- J - C
     for (q in 1:nfactors) {
       ind <- sort(abs(P[, q]), index.return = TRUE)
-      P[ind$ix[1:C_c[q]], q] <- 0
+      P[ind$ix[seq_len(C_c[q])], q] <- 0
     }
   } else {
     C_c <- J * nfactors - C
