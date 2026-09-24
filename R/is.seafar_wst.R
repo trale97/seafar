@@ -48,6 +48,13 @@ is.seafar_wst <- function(data,
   min_nzero_loading <- NA
   isvalue <- 0
   if (nfactors * (J - 1) > card.length) {
+  svd1 <- svd(data, 0, 0)
+  pvepca <- sum(svd1$d[1:nfactors]^2) / sum(svd1$d^2) # PVE of the unconstrained model, independent of INIT and scaling
+  PVE <- c()
+  propzero <- c()
+  min_nzero_loading <- c()
+  isvalue <- c()
+  if (nfactors * (J - 3) > card.length) {
     regpath <- round(seq(((J * nfactors) - 1), nfactors * 3, length = card.length))
   } else {
     regpath <- seq(((J * nfactors) - 1), nfactors * 3)
@@ -60,7 +67,7 @@ is.seafar_wst <- function(data,
 
   for (i in 1:length(regpath)) {
     card <- regpath[i]
-    seafa_result <- seafar(data, nfactors, C = card, initloadings = loadings, INIT = INIT, orthogonal = orthogonal)
+    seafa_result <- seafar(data, nfactors, C = card, eps = eps, maxiter = maxiter, initloadings = loadings, INIT = INIT, orthogonal = orthogonal, standardize = FALSE) # data already preprocessed above
     loadings <- seafa_result$loadings
     # scores <- seafa_result$scores
     pveseafa <- seafa_result$PVE[length(seafa_result$PVE)]
@@ -69,7 +76,7 @@ is.seafar_wst <- function(data,
     is <- pvepca * pveseafa * (1 - card / nrcoef)
     isvalue <- c(isvalue, is)
     minl <- ifelse(sum(colSums(loadings != 0)) > card, 0,
-      min(abs(loadings[loadings != 0]))
+                   min(abs(loadings[loadings != 0]))
     )
     min_nzero_loading <- c(min_nzero_loading, minl)
 
@@ -82,14 +89,17 @@ is.seafar_wst <- function(data,
     close(pb)
   }
 
-  cardinality <- c(nrcoef, regpath)
+  cardinality <- regpath
 
   IS$cardinality <- cardinality
   IS$value <- isvalue
   IS$pve <- PVE
+  IS$pvepca <- pvepca
   IS$propzero <- propzero
   IS$smallestP <- min_nzero_loading
   IS$selcard <- cardinality[which.max(isvalue)]
+  IS$center <- xcenter
+  IS$scale <- xscale
   attr(IS, "class") <- "ISwarmstart"
 
   return(IS)
@@ -120,6 +130,6 @@ summary.ISwarmstart <- function(object, ...) {
 
   cat(sprintf(
     "The PEV of the unconstrained model (no zero loadings) is: %.3f\n",
-    object$pve[1]
+    object$pvepca
   ))
 }
