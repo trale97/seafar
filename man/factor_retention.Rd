@@ -34,8 +34,8 @@ obtain eigenvalues makes it possible to process cases where \code{J} > \code{N}.
 \examples{
 \dontrun{
 data(HolzingerSwineford1939, package = 'lavaan')
-HS_1939_std <- as.matrix(scale(HolzingerSwineford1939[, paste0('x', 1:9)]))
-npcs <- factor_retention(HS_1939_std, iterations = 10, quantile = 0.05)
+HS_1939 <- as.matrix(HolzingerSwineford1939[, paste0('x', 1:9)])
+npcs <- factor_retention(HS_1939, iterations = 10, quantile = 0.05)
 }
 }
 \seealso{
