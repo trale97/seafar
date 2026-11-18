@@ -1,3 +1,3 @@
-# seafar 0.1.0
+# seafar 0.2.0
 
 * Initial CRAN submission.
