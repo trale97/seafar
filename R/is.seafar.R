@@ -22,7 +22,6 @@
 #' \item{center}{Item means used to center the data.}
 #' \item{scale}{Item standard deviations used to scale the data (1s if \code{standardize = FALSE}).}
 #'
-#' @export
 #'
 #' @examples
 #' \dontrun{
@@ -117,7 +116,6 @@ is.seafar_original <- function(data,
 #' @param card.length Maximum number of candidate cardinality values to test, default is 100.
 #'
 #' @returns The selected cardinality value.
-#' @export
 #'
 #' @examples
 #' \dontrun{
