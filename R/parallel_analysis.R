@@ -1,17 +1,17 @@
 #' Parallel analysis based on SVD decomposition
 #'
 #' This function samples an \code{N} x \code{J} data matrix \code{iterations}
-#' times and extracts its eigenvalues. 
-#' The eigenvalues are obtained via the SVD decomposition of the data matrix 
-#' rather than eigen-decomposition of the correlation or covariance matrix of 
-#' the data matrix. 
-#' These eigenvalues are equivalent to those obtained with eigen-decomposition 
-#' of the correlation matrix when N > J, but it allows the program to handle 
+#' times and extracts its eigenvalues.
+#' The eigenvalues are obtained via the SVD decomposition of the data matrix
+#' rather than eigen-decomposition of the correlation or covariance matrix of
+#' the data matrix.
+#' These eigenvalues are equivalent to those obtained with eigen-decomposition
+#' of the correlation matrix when N > J, but it allows the program to handle
 #' N < J cases.
 #' When N < J, the \code{base::svd()} function used to perform the SVD decomposition
 #' obtains as many eigenvalues as the matrix rank allows.
-#' The function returns the eigenvalues and their summary statistics. 
-#' As the number of iterations grows, the mean, standard deviations and values 
+#' The function returns the eigenvalues and their summary statistics.
+#' As the number of iterations grows, the mean, standard deviations and values
 #' of the distribution of eigenvalues.
 #'
 #' @param N The integer number of rows for the data matrix
@@ -28,7 +28,6 @@
 #' \item{summary_statistics_eigenvalues$sd}{ Standard deviation of the sampled
 #' eigenvalues }
 #' \item{summary_statistics_eigenvalues$quantile}{ The eigenvalue that leaves the \code{quantile} proportion of the sampled eigenvalues to its left. }
-#' @export
 #'
 #' @examples
 #' parallel_analysis(N = 100, J = 5, iterations = 5, quantile = 0.05)

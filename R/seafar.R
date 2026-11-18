@@ -29,7 +29,9 @@
 #'
 #' @examples
 #' \dontrun{
-#' fit <- seafar(data = X, nfactors = 3, C = 9, INIT = "random", orthogonal = TRUE, nstarts = 50)
+#' data(HolzingerSwineford1939, package = 'lavaan')
+#' HS_1939 <- as.matrix(HolzingerSwineford1939[, paste0('x', 1:9)])
+#' fit <- seafar(data = HS_1939, nfactors = 3, C = 9, INIT = "random", orthogonal = TRUE, nstarts = 50)
 #' summary(fit)
 #' }
 seafar <- function(data,
@@ -150,7 +152,9 @@ seafar <- function(data,
 #'
 #' @examples
 #' \dontrun{
-#' fit_ortho <- seafar_orthogonal(data = X, nfactors = 3, C = 9, INIT = "svd")
+#' data(HolzingerSwineford1939, package = 'lavaan')
+#' HS_1939 <- as.matrix(HolzingerSwineford1939[, paste0('x', 1:9)])
+#' fit_ortho <- seafar_orthogonal(data = HS_1939, nfactors = 3, C = 9, INIT = "svd")
 #' }
 seafar_orthogonal <- function(data,
                               nfactors,
@@ -303,6 +307,8 @@ seafar_orthogonal <- function(data,
 #'
 #' @examples
 #' \dontrun{
+#' data(HolzingerSwineford1939, package = 'lavaan')
+#' HS_1939 <- as.matrix(HolzingerSwineford1939[, paste0('x', 1:9)])
 #' fit <- seafar_orthogonal(data = X, nfactors = 3, C = 9, INIT = "svd")
 #' }
 seafar_general <- function(data,
@@ -462,6 +468,9 @@ seafar_general <- function(data,
 #' @param ...  Argument to be passed to or from other methods.
 #' @examples
 #' \dontrun{
+#' data(HolzingerSwineford1939, package = 'lavaan')
+#' HS_1939 <- as.matrix(HolzingerSwineford1939[, paste0('x', 1:9)])
+#' fit <- seafar(data = HS_1939, nfactors = 3, C = 9, INIT = "random", orthogonal = TRUE, nstarts = 50)
 #' summary(fit)
 #' }
 #' @export

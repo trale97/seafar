@@ -16,8 +16,10 @@
 #'
 #' @examples
 #'\dontrun{
+#' data(HolzingerSwineford1939, package = 'lavaan')
+#' HS_1939 <- as.matrix(HolzingerSwineford1939[, paste0('x', 1:9)])
 #' max_lambda <- lambda_max(
-#'   data = X,
+#'   data = HS_1939,
 #'   nfactors = 3,
 #'   INIT = 'semirational')
 #'}
@@ -143,9 +145,11 @@ enough_items <- function(loadings,
 #'
 #' @examples
 #'\dontrun{
-#' P <- seafar_lasso(
-#'   scale(big5),
-#'   nfactors = 5,
+#' data(HolzingerSwineford1939, package = 'lavaan')
+#' HS_1939 <- as.matrix(HolzingerSwineford1939[, paste0('x', 1:9)])
+#' P <- fit_once(
+#'   HS_1939,
+#'   nfactors = 3,
 #'   lambda = 10,
 #'   INIT = 'semirational',
 #'   nstarts = 1)

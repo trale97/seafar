@@ -51,8 +51,10 @@ Model selection for SEAFAR using the Index of Sparseness.
 }
 \examples{
 \dontrun{
+data(HolzingerSwineford1939, package = 'lavaan')
+HS_1939 <- as.matrix(HolzingerSwineford1939[, paste0('x', 1:9)])
 IS <- is.seafar_original(
-  data = X,
+  data = HS_1939,
   nfactors = 3,
   C = 9,
   INIT = "random",

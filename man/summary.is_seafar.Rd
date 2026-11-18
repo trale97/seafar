@@ -19,6 +19,17 @@ Display a summary of the results of \code{is.seafar()}.
 }
 \examples{
 \dontrun{
+data(HolzingerSwineford1939, package = 'lavaan')
+HS_1939 <- as.matrix(HolzingerSwineford1939[, paste0('x', 1:9)])
+selcard <- is.seafar(
+  data = HS_1939,
+  nfactors = 3,
+  INIT = "random",
+  orthogonal = TRUE,
+  nstarts = 50,
+  TOL = 2,
+  THR = 0.15
+)
 summary(selcard)
 }
 }

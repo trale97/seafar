@@ -19,6 +19,15 @@ Display a summary of the results of \code{is.seafar_wst()}.
 }
 \examples{
 \dontrun{
+data(HolzingerSwineford1939, package = 'lavaan')
+HS_1939 <- as.matrix(HolzingerSwineford1939[, paste0('x', 1:9)])
+IS_result <- is.seafar_wst(
+  data = HS_1939,
+  nfactors = 3,
+  INIT = "random",
+  orthogonal = TRUE,
+  card.length = 100
+)
 summary(IS_result)
 }
 }

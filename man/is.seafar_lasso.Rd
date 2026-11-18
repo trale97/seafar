@@ -61,8 +61,10 @@ path stops at the first penalty that leaves fewer than 3 nonzero loadings on a f
 }
 \examples{
 \dontrun{
+data(HolzingerSwineford1939, package = 'lavaan')
+HS_1939 <- as.matrix(HolzingerSwineford1939[, paste0('x', 1:9)])
 IS_result <- is.seafar_lasso(
-  data = X,
+  data = HS_1939,
   nfactors = 3,
   warmstart = FALSE,
   nstarts = 100,

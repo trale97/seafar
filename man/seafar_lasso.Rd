@@ -68,8 +68,10 @@ and the solution with the lowest loss is returned.
 }
 \examples{
 \dontrun{
+data(HolzingerSwineford1939, package = 'lavaan')
+HS_1939 <- as.matrix(HolzingerSwineford1939[, paste0('x', 1:9)])
 fit <- seafar_lasso(
-  data = X,
+  data = HS_1939,
   nfactors = 3,
   lambda = 10,
   INIT = "random",

@@ -19,9 +19,11 @@
 #'
 #' @examples
 #' \dontrun{
+#' data(HolzingerSwineford1939, package = 'lavaan')
+#' HS_1939 <- as.matrix(HolzingerSwineford1939[, paste0('x', 1:9)])
 #' IS <- IS_lasso(
-#'   data = X,
-#'   nfactors = 5,
+#'   data = HS_1939,
+#'   nfactors = 3,
 #'   lambda = 100,
 #'   INIT = "semirational",
 #'   nstarts = 50
@@ -138,8 +140,10 @@ is_lasso_stats <- function(P_hat, T_hat, V_s, V_oo) {
 #'
 #' @examples
 #'\dontrun{
+#' data(HolzingerSwineford1939, package = 'lavaan')
+#' HS_1939 <- as.matrix(HolzingerSwineford1939[, paste0('x', 1:9)])
 #' IS_result <- is.seafar_lasso(
-#'   data = X,
+#'   data = HS_1939,
 #'   nfactors = 3,
 #'   warmstart = FALSE,
 #'   nstarts = 100,
@@ -353,6 +357,14 @@ retry_lasso <- function(fit, what, lambda, times = 10) {
 #'
 #' @examples
 #' \dontrun{
+#' data(HolzingerSwineford1939, package = 'lavaan')
+#' HS_1939 <- as.matrix(HolzingerSwineford1939[, paste0('x', 1:9)])
+#' IS_result <- is.seafar_lasso(
+#'   data = HS_1939,
+#'   nfactors = 3,
+#'   warmstart = FALSE,
+#'   nstarts = 100,
+#'   nstarts.tune = 10)
 #' summary(IS_result)
 #' }
 #' @export
