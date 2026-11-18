@@ -30,7 +30,9 @@
 #' \item{summary_statistics_eigenvalues$quantile}{ The eigenvalue that leaves the \code{quantile} proportion of the sampled eigenvalues to its left. }
 #'
 #' @examples
+#' \dontrun{
 #' parallel_analysis(N = 100, J = 5, iterations = 5, quantile = 0.05)
+#' }
 parallel_analysis <- function(
   N = 10,
   J = 5,
