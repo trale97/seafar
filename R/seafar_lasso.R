@@ -39,8 +39,10 @@
 #'
 #' @examples
 #' \dontrun{
+#' data(HolzingerSwineford1939, package = 'lavaan')
+#' HS_1939 <- as.matrix(HolzingerSwineford1939[, paste0('x', 1:9)])
 #' fit <- seafar_lasso(
-#'   data = X,
+#'   data = HS_1939,
 #'   nfactors = 3,
 #'   lambda = 10,
 #'   INIT = "random",
@@ -206,7 +208,9 @@ seafar_lasso <- function(data,
 #'
 #' @examples
 #' \dontrun{
-#' fit <- seafar_lasso_single(ddata = X, nfactors = 3, lambda = 10, INIT = "svd")
+#' data(HolzingerSwineford1939, package = 'lavaan')
+#' HS_1939 <- as.matrix(HolzingerSwineford1939[, paste0('x', 1:9)])
+#' fit <- seafar_lasso_single(data = HS_1939, nfactors = 3, lambda = 10, INIT = "svd")
 #' }
 seafar_lasso_single <- function(data,
                                 nfactors,
@@ -330,6 +334,15 @@ seafar_lasso_single <- function(data,
 #' @export
 #' @examples
 #' \dontrun{
+#' data(HolzingerSwineford1939, package = 'lavaan')
+#' HS_1939 <- as.matrix(HolzingerSwineford1939[, paste0('x', 1:9)])
+#' fit <- seafar_lasso(
+#'   data = HS_1939,
+#'   nfactors = 3,
+#'   lambda = 10,
+#'   INIT = "random",
+#'   nstarts = 50
+#' )
 #' summary(fit)
 #' }
 summary.seafar_lasso <- function(object, disp = "loadings", nrow = 10, ...) {

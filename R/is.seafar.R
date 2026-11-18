@@ -25,8 +25,10 @@
 #'
 #' @examples
 #' \dontrun{
+#' data(HolzingerSwineford1939, package = 'lavaan')
+#' HS_1939 <- as.matrix(HolzingerSwineford1939[, paste0('x', 1:9)])
 #' IS <- is.seafar_original(
-#'   data = X,
+#'   data = HS_1939,
 #'   nfactors = 3,
 #'   C = 9,
 #'   INIT = "random",
@@ -119,9 +121,11 @@ is.seafar_original <- function(data,
 #'
 #' @examples
 #' \dontrun{
+#' data(HolzingerSwineford1939, package = 'lavaan')
+#' HS_1939 <- as.matrix(HolzingerSwineford1939[, paste0('x', 1:9)])
 #' selcard <- is.seafar(
-#'   data = X,
-#'   nfactors = 5,
+#'   data = HS_1939,
+#'   nfactors = 3,
 #'   INIT = "random",
 #'   orthogonal = TRUE,
 #'   nstarts = 50,
@@ -223,9 +227,21 @@ is.seafar <- function(data,
 #' @param ... Argument to be passed to or from other methods.
 #'
 #' @returns Summary of the results.
+#' @export
 #'
 #' @examples
 #' \dontrun{
+#' data(HolzingerSwineford1939, package = 'lavaan')
+#' HS_1939 <- as.matrix(HolzingerSwineford1939[, paste0('x', 1:9)])
+#' selcard <- is.seafar(
+#'   data = HS_1939,
+#'   nfactors = 3,
+#'   INIT = "random",
+#'   orthogonal = TRUE,
+#'   nstarts = 50,
+#'   TOL = 2,
+#'   THR = 0.15
+#' )
 #' summary(selcard)
 #' }
 #' @export

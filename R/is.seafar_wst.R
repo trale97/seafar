@@ -25,13 +25,16 @@
 #'
 #' @examples
 #' \dontrun{
+#' data(HolzingerSwineford1939, package = 'lavaan')
+#' HS_1939 <- as.matrix(HolzingerSwineford1939[, paste0('x', 1:9)])
 #' IS_result <- is.seafar_wst(
-#'   data = X,
-#'   nfactors = 5,
+#'   data = HS_1939,
+#'   nfactors = 3,
 #'   INIT = "random",
 #'   orthogonal = TRUE,
 #'   card.length = 100
 #' )
+#' summary(IS_result)
 #' }
 is.seafar_wst <- function(data,
                           nfactors,
@@ -131,6 +134,15 @@ is.seafar_wst <- function(data,
 #'
 #' @examples
 #' \dontrun{
+#' data(HolzingerSwineford1939, package = 'lavaan')
+#' HS_1939 <- as.matrix(HolzingerSwineford1939[, paste0('x', 1:9)])
+#' IS_result <- is.seafar_wst(
+#'   data = HS_1939,
+#'   nfactors = 3,
+#'   INIT = "random",
+#'   orthogonal = TRUE,
+#'   card.length = 100
+#' )
 #' summary(IS_result)
 #' }
 #' @export
