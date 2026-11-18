@@ -5,15 +5,13 @@ Authors@R: c(person(given = "Tra", family = "Le", role = c("aut", "cre"),
     email = "t.t.le_1@tilburguniversity.edu"), 
     person(given = "Katrijn", family = "Van Deun", role = "aut"),
     person(given = "Stefan", family = "Kirsch", role = "ctb"))
-Description: Functions to Perform Sparse Exploratory Approximate Factor Analysis for High-Dimensional Data.
+    person(given = "Edoardo", family = "Costantini", role = "ctb"))
+Description: Functions to perform Sparse Exploratory Approximate Factor Analysis for High-dimensional Data.
 License: GPL (>= 3)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.3
 Imports:
-    psych,
-    PCAtools,
-    EFA.dimensions
+    psych
 Suggests: 
     ggforce,
     ggplot2,
@@ -24,7 +22,9 @@ Suggests:
     qgraph,
     quarto,
     rmarkdown,
-    testthat (>= 3.0.0)
+    testthat (>= 3.0.0),
+    lavaan,
+    nFactors
 Config/testthat/edition: 3
 URL: https://github.com/trale97/seafar
 BugReports: https://github.com/trale97/seafar/issues
@@ -33,3 +33,5 @@ Depends:
 LazyData: true
 LazyDataCompression: xz
 VignetteBuilder: quarto
+Config/roxygen2/version: 8.1.1
+RoxygenNote: 7.3.3
