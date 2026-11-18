@@ -103,7 +103,9 @@ oblprocr <- function(data, scores, loadings, maxiter, eps){
     for (q in 1:Q) {
       oldscores <- scores[, q]
       num <- XL[, q] - scoresLL[, q] + scores[, q] * LL[q, q]
-      scores[, q] <- sqrt(N) * num / sqrt(sum(num^2))
+      if (sum(num^2) > 0) {
+        scores[, q] <- sqrt(N) * num / sqrt(sum(num^2))
+      }
       delta <- scores[, q] - oldscores
       scoresLL <- scoresLL + delta %*% LL[q, , drop = FALSE]
     }
@@ -184,7 +186,7 @@ oblprocr_old <- function(data, scores, loadings, maxiter, eps){
 #' @param data Data matrix of standardized items NxJ.
 #' @param nfactors The number of factors Q.
 #' @param C The number of zero loadings.
-#' @param INIT Methods to initialize loadings c("svd", "random", "rational", "mixed).
+#' @param INIT Methods to initialize loadings c("svd", "random", "rational", "semirational").
 #' Rational start uses the result of Ding and He (2004) to partition the
 #' variables into nfactors clusters.
 #' Mixed start combines random (20%) and SVD (80%).
@@ -203,10 +205,8 @@ seafar_init <- function(data,
                         nfactors,
                         C,
                         INIT) {
+  INIT <- check_init(INIT)
   n <- dim(data)[1]
-  ###
-  data <- data/n
-  ###
   J <- dim(data)[2]
   svd1 <- svd(data, nfactors, nfactors)
   P1 <- matrix(rnorm(J * nfactors), ncol = nfactors, nrow = J)
@@ -234,7 +234,7 @@ seafar_init <- function(data,
     C_c <- J - C
     for (q in 1:nfactors) {
       ind <- sort(abs(P[, q]), index.return = TRUE)
-      P[ind$ix[1:C_c[q]], q] <- 0
+      P[ind$ix[seq_len(C_c[q])], q] <- 0
     }
   } else {
     C_c <- J * nfactors - C
@@ -401,7 +401,7 @@ LOSS <- function(data, scores, loadings, lambda) {
 #'
 #' @param data Data matrix of standardized items NxJ.
 #' @param nfactors Number of factors.
-#' @param INIT Methods to initialize loadings c("svd", "random", "mixed).
+#' @param INIT Methods to initialize loadings c("svd", "random", "rational", "semirational").
 #'
 #' @return A matrix of initial loadings.
 #' @examples
@@ -409,8 +409,13 @@ LOSS <- function(data, scores, loadings, lambda) {
 #' initialP_lasso <- seafar_init_l1(ocean, 5, INIT = "svd")
 #' }
 seafar_init_l1 <- function(data, nfactors, INIT) {
+  INIT <- check_init(INIT)
   n <- dim(data)[1]
   J <- dim(data)[2]
+  if (INIT == "rational") {
+    # no zero loadings to start from: the penalty decides which ones become zero
+    return(seafar_init(data, nfactors, C = J * nfactors, INIT = INIT))
+  }
   svd1 <- svd(data, nfactors, nfactors)
   P1 <- matrix(rnorm(J * nfactors), ncol = nfactors, nrow = J)
   P2 <- svd1$v %*% diag(svd1$d[1:nfactors]) / sqrt(n)
@@ -424,4 +429,23 @@ seafar_init_l1 <- function(data, nfactors, INIT) {
 
   loadings <- P
   return(loadings)
+}
+
+
+#' Function to validate INIT argument
+#'
+#' @param INIT Method to initialize loading matrix.
+#'
+#' @returns The correct INIT value.
+#'
+#' @examples
+#' \dontrun{
+#' check_init(INIT = 'svd')
+#' }
+check_init <- function(INIT) {
+  methods <- c("semirational", "svd", "random", "rational")
+  if (!is.character(INIT) || length(INIT) != 1 || !INIT %in% methods) {
+    stop("INIT must be one of: ", paste0('"', methods, '"', collapse = ", "), call. = FALSE)
+  }
+  INIT
 }

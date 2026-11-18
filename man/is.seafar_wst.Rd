@@ -9,14 +9,15 @@ is.seafar_wst(
   nfactors,
   eps = 1e-04,
   maxiter = 50,
-  INIT,
+  INIT = "rational",
   orthogonal = FALSE,
-  card.length,
-  show_progress = FALSE
+  card.length = 100,
+  show_progress = FALSE,
+  standardize = TRUE
 )
 }
 \arguments{
-\item{data}{A NxJ matrix of standardized items.}
+\item{data}{A data frame or matrix (NxJ). Data are always centered internally.}
 
 \item{nfactors}{Number of factors.}
 
@@ -24,20 +25,28 @@ is.seafar_wst(
 
 \item{maxiter}{Maximum number of iterations for the AO procedure.}
 
-\item{INIT}{Method to initialize loading matrix.}
+\item{INIT}{Method to initialize loading matrix, default is \code{"rational"}.}
 
 \item{orthogonal}{Orthogonal or non-orthogonal factors, default is FALSE.}
 
-\item{card.length}{Number of candidate cardinality values to test.}
+\item{card.length}{Number of candidate cardinality values to test, default is 100.}
 
 \item{show_progress}{Option of print progress bar, default is FALSE.}
+
+\item{standardize}{Logical. If \code{TRUE} (default), items are scaled to unit variance (N denominator)
+after centering. Centering is applied regardless.}
 }
 \value{
 A list with
+\item{cardinality}{Candidate cardinalities (number of nonzero loadings).}
 \item{value}{IS value.}
-\item{vaf}{Variance accounted for.}
+\item{pve}{Proportion of variance explained for each cardinality.}
+\item{pvepca}{Proportion of variance explained by the unconstrained model (first nfactors principal components).}
 \item{propzero}{Proportion of zero loadings.}
 \item{smallestP}{Smallest nonzero loading.}
+\item{selcard}{Cardinality with the highest IS value.}
+\item{center}{Item means used to center the data.}
+\item{scale}{Item standard deviations used to scale the data (1s if \code{standardize = FALSE}).}
 }
 \description{
 Model selection for SEAFAR using Index of Sparseness with warm start
