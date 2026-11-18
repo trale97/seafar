@@ -74,6 +74,7 @@ factor_retention <- function(data, iterations = 100, quantile = 0.05) {
 #' HS_1939 <- as.matrix(HolzingerSwineford1939[, paste0('x', 1:9)])
 #' npcs <- factor_retention(HS_1939, iterations = 10, quantile = 0.05)
 #' summary(npcs)
+#' }
 #' @export
 summary.nfactors <- function(object, ...) {
   cat(sprintf(
