@@ -60,3 +60,40 @@ factor_retention <- function(data, iterations = 100, quantile = 0.05) {
 
   return(number_factors)
 }
+
+#' Display a summary of the results of \code{factor_retention()}.
+#'
+#' @param object Object of class inheriting from 'factor_retention'.
+#' @param ... Argument to be passed to or from other methods.
+#'
+#' @returns Summary of the number of factors retained using various methods.
+#'
+#' @examples
+#' \dontrun{
+#' data(HolzingerSwineford1939, package = 'lavaan')
+#' HS_1939 <- as.matrix(HolzingerSwineford1939[, paste0('x', 1:9)])
+#' npcs <- factor_retention(HS_1939, iterations = 10, quantile = 0.05)
+#' summary(npcs)
+#' @export
+summary.nfactors <- function(object, ...) {
+  cat(sprintf(
+    "Number of factors/components by Kaiser rule is: %s\n",
+    object$kaiser
+  ))
+
+  cat(sprintf(
+    "Number of factors/components by parallel analysis is: %s\n",
+    object$parallel
+  ))
+
+  cat(sprintf(
+    "Number of factors/components by acceleration factor is: %s\n",
+    object$acceleration_factor
+  ))
+
+  cat(sprintf(
+    "Number of factors/components by optimal coordinatess is: %s\n",
+    object$optimal_coordinates
+  ))
+}
+
