@@ -41,5 +41,7 @@ As the number of iterations grows, the mean, standard deviations and values
 of the distribution of eigenvalues.
 }
 \examples{
+\dontrun{
 parallel_analysis(N = 100, J = 5, iterations = 5, quantile = 0.05)
+}
 }
