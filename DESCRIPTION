@@ -24,6 +24,6 @@ Depends:
     R (>= 3.5)
 LazyData: true
 LazyDataCompression: xz
-VignetteBuilder: quarto
+VignetteBuilder: knitr
 Config/roxygen2/version: 8.1.1
 RoxygenNote: 7.3.3
