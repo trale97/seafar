@@ -21,6 +21,15 @@ Display a summary of the results of \code{seafar_lasso()}.
 }
 \examples{
 \dontrun{
+data(HolzingerSwineford1939, package = 'lavaan')
+HS_1939 <- as.matrix(HolzingerSwineford1939[, paste0('x', 1:9)])
+fit <- seafar_lasso(
+  data = HS_1939,
+  nfactors = 3,
+  lambda = 10,
+  INIT = "random",
+  nstarts = 50
+)
 summary(fit)
 }
 }

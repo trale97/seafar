@@ -46,9 +46,11 @@ Function to calculate the IS for each LASSO penalty parameter.
 }
 \examples{
 \dontrun{
+data(HolzingerSwineford1939, package = 'lavaan')
+HS_1939 <- as.matrix(HolzingerSwineford1939[, paste0('x', 1:9)])
 IS <- IS_lasso(
-  data = X,
-  nfactors = 5,
+  data = HS_1939,
+  nfactors = 3,
   lambda = 100,
   INIT = "semirational",
   nstarts = 50

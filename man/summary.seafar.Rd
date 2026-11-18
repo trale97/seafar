@@ -21,6 +21,9 @@ Display a summary of the results of \code{seafar()}.
 }
 \examples{
 \dontrun{
+data(HolzingerSwineford1939, package = 'lavaan')
+HS_1939 <- as.matrix(HolzingerSwineford1939[, paste0('x', 1:9)])
+fit <- seafar(data = HS_1939, nfactors = 3, C = 9, INIT = "random", orthogonal = TRUE, nstarts = 50)
 summary(fit)
 }
 }

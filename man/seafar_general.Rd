@@ -47,6 +47,8 @@ measurement model for non-orthogonal factors.
 }
 \examples{
 \dontrun{
+data(HolzingerSwineford1939, package = 'lavaan')
+HS_1939 <- as.matrix(HolzingerSwineford1939[, paste0('x', 1:9)])
 fit <- seafar_orthogonal(data = X, nfactors = 3, C = 9, INIT = "svd")
 }
 }

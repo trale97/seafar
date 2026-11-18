@@ -41,9 +41,11 @@ Function to fit SEAFA with LASSO penalty once and get loading matrix
 }
 \examples{
 \dontrun{
-P <- seafar_lasso(
-  scale(big5),
-  nfactors = 5,
+data(HolzingerSwineford1939, package = 'lavaan')
+HS_1939 <- as.matrix(HolzingerSwineford1939[, paste0('x', 1:9)])
+P <- fit_once(
+  HS_1939,
+  nfactors = 3,
   lambda = 10,
   INIT = 'semirational',
   nstarts = 1)

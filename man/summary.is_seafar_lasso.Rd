@@ -19,6 +19,14 @@ Use \code{summary(object$selmodel)} to display the loading matrix of the selecte
 }
 \examples{
 \dontrun{
+data(HolzingerSwineford1939, package = 'lavaan')
+HS_1939 <- as.matrix(HolzingerSwineford1939[, paste0('x', 1:9)])
+IS_result <- is.seafar_lasso(
+  data = HS_1939,
+  nfactors = 3,
+  warmstart = FALSE,
+  nstarts = 100,
+  nstarts.tune = 10)
 summary(IS_result)
 }
 }
