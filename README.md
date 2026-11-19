@@ -85,4 +85,4 @@ Upload the seafar_x.y.z.tar.gz without errors and warnings to the [CRAN Submissi
 
 This package is licensed under the MIT License.
 
-The autism dataset is licensed under the terms specified in `data/README.md`.
+The autism dataset is licensed under the terms specified in `R/autism.R`.
