@@ -57,7 +57,7 @@ We follow the main workflow highlighted in the [R Packages](https://r-pkgs.org/r
 
 1. [ ] Make sure you have update the version number in both [DESCRIPTION](DESCRIPTION) and [CITATION](https://github.com/trale97/seafar/blob/master/CITATION.cff).
 2. [ ] Update the [NEWS.md](NEWS.md) or create one via `usethis::use_news_md()`.
-3. [ ] `usethis::use_cran_comments()` to add a [cran-comments.md](cran-comments.md) to communicate to CRAN the output of the checks we have run.
+3. [ ] `usethis::use_cran_comments()` to add a `cran-comments.md` to communicate to CRAN the output of the checks we have run.
 
 #### Compile
 
