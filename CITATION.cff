@@ -3,8 +3,8 @@ message: "If you use this work, please cite it as below."
 title: "Sparse Exploratory Approximate Factor Analysis: A Tutorial for the R package seafar"
 repository-code: "https://github.com/trale97/seafar"
 
-doi: "10.5281/zenodo.20326842"
-version: "0.1.0"
+doi: "10.5281/zenodo.20326841"
+version: "0.2.0"
 date-released: "2026-05-21"
 
 authors:
@@ -12,6 +12,11 @@ authors:
     given-names: "Tra"
     orcid: "https://orcid.org/0000-0002-7700-8946"
     affiliation: "Department of Methodology and Statistics, Tilburg University"
+
+  - family-names: "Edoardo"
+    given-names: "Costantini"
+    orcid: "https://orcid.org/0000-0001-9581-9913"
+    affiliation: "Research Support Team, Tilburg University"
 
   - family-names: "Kirsch"
     given-names: "Stefan"
