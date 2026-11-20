@@ -27,9 +27,9 @@ knitr::opts_chunk$set(
   <p class="meta-heading">Affiliations</p>
   <p><a href="https://orcid.org/0000-0002-7700-8946">Tra T. Le</a></p>
   <p>Department of Methodology and Statistics, Tilburg University</p>
-  <p><a href="https://orcid.org/0009-0009-6939-411X">Stefan Kirsch</a></p>
-  <p>Research Support Team, Tilburg University</p>
   <p><a href="https://orcid.org/0000-0001-9581-9913">Edoardo Costantini</a></p>
+  <p>Research Support Team, Tilburg University</p>
+  <p><a href="https://orcid.org/0009-0009-6939-411X">Stefan Kirsch</a></p>
   <p>Research Support Team, Tilburg University</p>
   <p><a href="https://orcid.org/0000-0002-2271-793X">Katrijn Van Deun</a></p>
   <p>Department of Methodology and Statistics, Tilburg University</p>
@@ -81,7 +81,7 @@ HS_1939 <- HolzingerSwineford1939[, paste0("x", 1:9)]
 
 ## Step 1: Determine the number of factors Q
 
-In order to fit a SEAFA model, the number of factors $Q$ needs to be specified. $Q$ can be determined either based on prior knowledge or by using different factor retention methods such as parallel analysis [@horn1965rationale], scree plot [@cattell1966scree], Kaiser-Guttman rule [@kaiser1960application], or a machine learning method [@goretzko2020one]. The *seafar* package provides a function to retain the number of factors based on the `nScree()` function from the *nFactors* package [@scree2025], with some modifications so that it can also work with high-dimensional data. `nScree()` provides results from for different factor retention methods: the Kaiser criterion, parallel analysis, the optimal coordinates method, and the acceleration factor method. The last two are both non-graphical approaches to Cattell's scree test. The details are discussed in @raiche2013non. Users can also use any other methods or packages available to select the number of factors. We would like to point out that this is an important but often not straightforward task, since different methods can suggest different numbers of factors.
+In order to fit a SEAFA model, the number of factors $Q$ needs to be specified. $Q$ can be determined either based on prior knowledge or by using different factor retention methods such as parallel analysis [@horn1965rationale], scree plot [@cattell1966scree], Kaiser-Guttman rule [@kaiser1960application], or a machine learning method [@goretzko2020one]. The *seafar* package provides a function to retain the number of factors based on the `nScree()` function from the *nFactors* package [@scree2025], with some modifications so that it can also work with high-dimensional data. `nScree()` provides results for different factor retention methods: the Kaiser criterion, parallel analysis, the optimal coordinates method, and the acceleration factor method. The last two are both non-graphical approaches to Cattell's scree test. The details are discussed in @raiche2013non. Users can also use any other methods or packages available to select the number of factors. We would like to point out that this is an important but often not straightforward task, since different methods can suggest different numbers of factors.
 
 ```{r}
 Q <- factor_retention(data = HS_1939)
