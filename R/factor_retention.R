@@ -28,9 +28,9 @@
 #' \dontrun{
 #' data(HolzingerSwineford1939, package = 'lavaan')
 #' HS_1939 <- as.matrix(HolzingerSwineford1939[, paste0('x', 1:9)])
-#' npcs <- factor_retention(HS_1939, iterations = 10, quantile = 0.05)
+#' npcs <- factor_retention(HS_1939, iterations = 10, quantile = 0.95)
 #' }
-factor_retention <- function(data, iterations = 100, quantile = 0.05) {
+factor_retention <- function(data, iterations = 100, quantile = 0.95) {
   data <- scale(data, center = TRUE, scale = TRUE)
 
   # Only the singular values are needed, so skip computing the singular vectors
@@ -73,7 +73,7 @@ factor_retention <- function(data, iterations = 100, quantile = 0.05) {
 #' \dontrun{
 #' data(HolzingerSwineford1939, package = 'lavaan')
 #' HS_1939 <- as.matrix(HolzingerSwineford1939[, paste0('x', 1:9)])
-#' npcs <- factor_retention(HS_1939, iterations = 10, quantile = 0.05)
+#' npcs <- factor_retention(HS_1939, iterations = 10, quantile = 0.95)
 #' summary(npcs)
 #' }
 #' @export
