@@ -1,6 +1,6 @@
 ^seafar\.Rproj$
 ^\.Rproj\.user$
 ^LICENSE\.md$
-^CITATION.cff
-
+^CITATION\.cff$
+^aidecl\.yaml$
 ^cran-comments\.md$
