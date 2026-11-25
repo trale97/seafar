@@ -200,7 +200,7 @@ Here, we outline the SEAFA model and explain the use of regularization in the co
 
 ## The SEAFA model
 
-Let $\mathbf{y}$ denote a $J \times 1$ vector of standardized (i.e., mean zero and unit variance) scores on $J$ observed variables, $\mathbf{P}$ a $J \times Q$ factor loading matrix, and $\boldsymbol{\eta}$ a $Q \times 1$ vector of factor scores. The SEAFA model is expressed as:
+Let $\mathbf{y}$ denote a $J \times 1$ vector of standardized (i.e., mean zero and unit variance) scores on $J$ observed variables, $\mathbf{P}$ a $J \times Q$ factor loading matrix, and $\boldsymbol{\eta}$ a $Q \times 1$ vector of factor scores. The SEAFA model for *Q* factors is expressed as:
 
 $$
 \mathbf{y} = \mathbf{P}\boldsymbol{\eta} + \boldsymbol{\epsilon} \tag{1}
@@ -322,8 +322,8 @@ where $\mathbf{b} = \textrm{vec}(\mathbf{B}^T)$. Let $k = J\times Q - C$ be the 
 
 $$
 p_{jq} = \begin{cases}
-  b_{jq}, & \textrm{if } |b_{jq}| \leq |b|_{(k)},\\
-  0, & \textrm{otherwise}
+  0, & \textrm{if } |b_{jq}| \leq |b|_{(k)},\\
+  b_{jq}, & \textrm{otherwise}
 \end{cases} \tag{10}
 $$
 
