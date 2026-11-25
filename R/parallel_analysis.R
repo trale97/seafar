@@ -11,8 +11,9 @@
 #' When N < J, the \code{base::svd()} function used to perform the SVD decomposition
 #' obtains as many eigenvalues as the matrix rank allows.
 #' The function returns the eigenvalues and their summary statistics.
-#' As the number of iterations grows, the mean, standard deviations and values
-#' of the distribution of eigenvalues.
+#' As the number of iterations grows, the mean, standard deviation and quantile
+#' of the sampled eigenvalues become more accurate estimates of the corresponding
+#' characteristics of the distribution of eigenvalues.
 #'
 #' @param N The integer number of rows for the data matrix
 #' @param J The integer number of independent columns for the data matrix
@@ -20,8 +21,9 @@
 #' @param quantile The proportion for the quantile of interest. This should be a single value in the interval \[0, 1\].
 #'
 #' @return
-#' \item{sampled_eigenvalues}{ An \code{iterations} x \code{J} matrix of sampled
-#' eigenvalues from the eigenvalues distribution }
+#' \item{sampled_eigenvalues}{ An \code{iterations} x \code{min(N, J)} matrix of
+#' sampled eigenvalues from the eigenvalues distribution, with one row per
+#' iteration and one column per eigenvalue }
 #' \item{summary_statistics_eigenvalues}{ A \code{data.frame} of summary statistics of
 #' the sampled eigenvalues.}
 #' \item{summary_statistics_eigenvalues$mean}{ Mean of the sampled eigenvalues }
