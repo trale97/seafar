@@ -10,14 +10,14 @@
 #' @param quantile The proportion for the quantile of interest for the parallel
 #' analysis criteria. This should be a single value in the interval \[0, 1\].
 #'
-#' @returns A list of containing the number of principal components of
+#' @returns A list containing the number of principal components of
 #' \code{data} retained according to four different criteria:
 #' \item{kaiser}{Kaiser rule}
 #' \item{parallel}{Horn's parallel analysis}
 #' \item{acceleration_factor}{Acceleration factor}
 #' \item{optimal_coordinates}{Optimal coordinates}
 #' For more details on the criteria, please see the documentation of function
-#' \code{\link[nFactors]{nScree}}, which is the engine used provide the numbers of
+#' \code{\link[nFactors]{nScree}}, which is the engine used to provide the numbers of
 #' components to retain.
 #'
 #' @seealso \code{\link[nFactors]{nScree}}, \code{\link[nFactors]{parallel}}, \code{\link{parallel_analysis}}
@@ -94,7 +94,7 @@ summary.nfactors <- function(object, ...) {
   ))
 
   cat(sprintf(
-    "Number of factors/components by optimal coordinatess is: %s\n",
+    "Number of factors/components by optimal coordinates is: %s\n",
     object$optimal_coordinates
   ))
 }
