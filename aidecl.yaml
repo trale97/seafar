@@ -1,0 +1,23 @@
+schema_version: 1.0.0
+project:
+  name: seafar
+  repository: https://github.com/trale97/seafar
+  version: 0.2.0
+  content_type: software
+ai_usage:
+  used: true
+  level: minimal
+  scope:
+    debugging: true
+    code_review: true
+  tools:
+    - name: Claude Code
+      type: agent
+      hosting: local
+      purpose: |-
+        code debugging
+        code review
+  summary: Claude Code was used for code debugging and review
+declaration:
+  declared_by: Tra le
+  date: '2026-11-21'
