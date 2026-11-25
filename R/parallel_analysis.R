@@ -52,6 +52,14 @@ parallel_analysis <- function(
       ncol = J
     )
     uSVt <- base::svd(sampled_independent_variables)
+    # Center and scale the same way factor_retention() treats the observed data,
+    # so that the sampled eigenvalues are directly comparable to the observed ones
+    sampled_independent_variables <- base::scale(
+      sampled_independent_variables,
+      center = TRUE,
+      scale = TRUE
+    )
+    # Only the singular values are needed, so skip computing the singular vectors
     # Divide by N-1 to scale the eigenvalues the same way as if they came from
     # the correlation matrix
     sampled_eigenvalues[repetition, ] <- uSVt$d^2 / (N - 1)
