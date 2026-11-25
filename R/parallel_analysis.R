@@ -51,7 +51,6 @@ parallel_analysis <- function(
       nrow = N,
       ncol = J
     )
-    uSVt <- base::svd(sampled_independent_variables)
     # Center and scale the same way factor_retention() treats the observed data,
     # so that the sampled eigenvalues are directly comparable to the observed ones
     sampled_independent_variables <- base::scale(
@@ -60,9 +59,10 @@ parallel_analysis <- function(
       scale = TRUE
     )
     # Only the singular values are needed, so skip computing the singular vectors
+    singular_values <- base::svd(sampled_independent_variables, nu = 0, nv = 0)$d
     # Divide by N-1 to scale the eigenvalues the same way as if they came from
     # the correlation matrix
-    sampled_eigenvalues[repetition, ] <- uSVt$d^2 / (N - 1)
+    sampled_eigenvalues[repetition, ] <- singular_values^2 / (N - 1)
   }
 
   sampled_eigenvalues_quantiles <- base::apply(

@@ -33,10 +33,11 @@
 factor_retention <- function(data, iterations = 100, quantile = 0.05) {
   data <- scale(data, center = TRUE, scale = TRUE)
 
-  uSVt <- svd(data)
+  # Only the singular values are needed, so skip computing the singular vectors
+  singular_values <- svd(data, nu = 0, nv = 0)$d
   # Divide by N-1 to scale the eigenvalues the same way as if they came from
   # the eigen-decomposition of the correlation/covariance matrix
-  eigenvalues <- uSVt$d^2 / (nrow(data) - 1)
+  eigenvalues <- singular_values^2 / (nrow(data) - 1)
   parallel_analysis_output <- parallel_analysis(
     N = nrow(data),
     J = ncol(data),
