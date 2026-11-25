@@ -33,13 +33,13 @@
 #'
 #' @examples
 #' \dontrun{
-#' parallel_analysis(N = 100, J = 5, iterations = 5, quantile = 0.05)
+#' parallel_analysis(N = 100, J = 5, iterations = 5, quantile = 0.95)
 #' }
 parallel_analysis <- function(
   N = 10,
   J = 5,
   iterations = 100,
-  quantile = 0.05
+  quantile = 0.95
 ) {
   matrix_rank <- min(N, J)
   # Because the base::svd functions caps the number of eigenvalues to the rank
