@@ -491,7 +491,7 @@ summary.seafar <- function(object, disp = "loadings", nrow = 10, ...) {
       "The PEV is: %.3f\n",
       pev
     ))
-    cat(sprintf("\nThe estimated loadings matrix is \n"))
+    cat(sprintf("\nThe estimated loadings matrix (first 10 rows) is \n"))
     print(noquote(utils::head(load_fmt, nrow)))
   } else if (disp == "full") {
     cat(sprintf(
@@ -503,7 +503,7 @@ summary.seafar <- function(object, disp = "loadings", nrow = 10, ...) {
       pev
     ))
 
-    cat(sprintf("\nThe estimated loadings matrix is \n"))
+    cat(sprintf("\nThe estimated loadings matrix (first 10 rows) is \n"))
     print(noquote(utils::head(load_fmt, nrow)))
 
     cat(sprintf("\nThe estimated factor scores matrix is \n"))
