@@ -10,14 +10,14 @@ test_that("Parallel Analysis is equivalent to nFactors::parallel for N > J case"
     N = nrow(HS_1939_std),
     J = ncol(HS_1939_std),
     iterations = 1e3,
-    quant = 0.05
+    quantile = 0.95
   )
   set.seed(10)
   nFactors_pa <- nFactors::parallel(
     subject = nrow(HS_1939_std),
     var = ncol(HS_1939_std),
     rep = 1e3,
-    quantile = 0.05
+    quantile = 0.95
   )
 
   expect_true(
@@ -34,7 +34,7 @@ test_that("Parallel Analysis works for N < J case", {
     N = nrow(autism),
     J = ncol(autism),
     iterations = 2,
-    quantile = 0.05
+    quantile = 0.95
   )
 
   expect_type(parallel_analysis_output, "list")
