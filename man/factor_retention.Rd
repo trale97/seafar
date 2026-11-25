@@ -4,7 +4,7 @@
 \alias{factor_retention}
 \title{Function to retain number of factors/components using various methods.}
 \usage{
-factor_retention(data, iterations = 100, quantile = 0.05)
+factor_retention(data, iterations = 100, quantile = 0.95)
 }
 \arguments{
 \item{data}{An \code{N} x \code{J} matrix or data frame of observed variables.}
@@ -16,14 +16,14 @@ that will be generated for the parallel analysis criteria}
 analysis criteria. This should be a single value in the interval [0, 1].}
 }
 \value{
-A list of containing the number of principal components of
+A list containing the number of principal components of
 \code{data} retained according to four different criteria:
 \item{kaiser}{Kaiser rule}
 \item{parallel}{Horn's parallel analysis}
 \item{acceleration_factor}{Acceleration factor}
 \item{optimal_coordinates}{Optimal coordinates}
 For more details on the criteria, please see the documentation of function
-\code{\link[nFactors]{nScree}}, which is the engine used provide the numbers of
+\code{\link[nFactors]{nScree}}, which is the engine used to provide the numbers of
 components to retain.
 }
 \description{
@@ -35,7 +35,7 @@ obtain eigenvalues makes it possible to process cases where \code{J} > \code{N}.
 \dontrun{
 data(HolzingerSwineford1939, package = 'lavaan')
 HS_1939 <- as.matrix(HolzingerSwineford1939[, paste0('x', 1:9)])
-npcs <- factor_retention(HS_1939, iterations = 10, quantile = 0.05)
+npcs <- factor_retention(HS_1939, iterations = 10, quantile = 0.95)
 }
 }
 \seealso{

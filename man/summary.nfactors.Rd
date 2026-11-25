@@ -21,7 +21,7 @@ Display a summary of the results of \code{factor_retention()}.
 \dontrun{
 data(HolzingerSwineford1939, package = 'lavaan')
 HS_1939 <- as.matrix(HolzingerSwineford1939[, paste0('x', 1:9)])
-npcs <- factor_retention(HS_1939, iterations = 10, quantile = 0.05)
+npcs <- factor_retention(HS_1939, iterations = 10, quantile = 0.95)
 summary(npcs)
 }
 }

@@ -4,7 +4,7 @@
 \alias{parallel_analysis}
 \title{Parallel analysis based on SVD decomposition}
 \usage{
-parallel_analysis(N = 10, J = 5, iterations = 100, quantile = 0.05)
+parallel_analysis(N = 10, J = 5, iterations = 100, quantile = 0.95)
 }
 \arguments{
 \item{N}{The integer number of rows for the data matrix}
@@ -16,8 +16,9 @@ parallel_analysis(N = 10, J = 5, iterations = 100, quantile = 0.05)
 \item{quantile}{The proportion for the quantile of interest. This should be a single value in the interval [0, 1].}
 }
 \value{
-\item{sampled_eigenvalues}{ An \code{iterations} x \code{J} matrix of sampled
-eigenvalues from the eigenvalues distribution }
+\item{sampled_eigenvalues}{ An \code{iterations} x \code{min(N, J)} matrix of
+sampled eigenvalues from the eigenvalues distribution, with one row per
+iteration and one column per eigenvalue }
 \item{summary_statistics_eigenvalues}{ A \code{data.frame} of summary statistics of
 the sampled eigenvalues.}
 \item{summary_statistics_eigenvalues$mean}{ Mean of the sampled eigenvalues }
@@ -37,11 +38,12 @@ N < J cases.
 When N < J, the \code{base::svd()} function used to perform the SVD decomposition
 obtains as many eigenvalues as the matrix rank allows.
 The function returns the eigenvalues and their summary statistics.
-As the number of iterations grows, the mean, standard deviations and values
-of the distribution of eigenvalues.
+As the number of iterations grows, the mean, standard deviation and quantile
+of the sampled eigenvalues become more accurate estimates of the corresponding
+characteristics of the distribution of eigenvalues.
 }
 \examples{
 \dontrun{
-parallel_analysis(N = 100, J = 5, iterations = 5, quantile = 0.05)
+parallel_analysis(N = 100, J = 5, iterations = 5, quantile = 0.95)
 }
 }
