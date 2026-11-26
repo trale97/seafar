@@ -15,7 +15,7 @@ seafar.IS(
   nstarts = 50,
   nstarts.tune = nstarts,
   TOL = 3,
-  THR = 0.03,
+  THR = 0.1,
   card.length = 100,
   show_progress = FALSE,
   standardize = TRUE
@@ -44,11 +44,11 @@ and \code{"semirational"} if \code{warmstart = FALSE}.}
 
 \item{TOL}{Number of decimals used to decide whether two PEV values are the same. Only used if \code{warmstart = FALSE}.}
 
-\item{THR}{Thresholding selection for the smallest nonzero loading. Only used if \code{warmstart = FALSE}.}
+\item{THR}{Thresholding selection for the smallest nonzero loading, default is 0.1. Only used if \code{warmstart = FALSE}.}
 
 \item{card.length}{Number of candidate cardinality values to test, default is 100.}
 
-\item{show_progress}{Option of print progress bar, default is FALSE. Only used if \code{warmstart = TRUE}.}
+\item{show_progress}{Option to print a progress bar, default is FALSE. Only used if \code{warmstart = TRUE}.}
 
 \item{standardize}{Logical. If \code{TRUE} (default), items are scaled to unit variance
 after centering. Centering is applied regardless.}

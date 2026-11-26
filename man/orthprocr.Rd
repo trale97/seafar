@@ -12,7 +12,7 @@ orthprocr(data, loadings)
 \item{loadings}{Loadings matrix JxQ.}
 }
 \value{
-Orthogonal factor scores matrix NxJ.
+Orthogonal factor scores matrix NxQ.
 }
 \description{
 Function to calculate the solution to the orthogonal procrustes problem.

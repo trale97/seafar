@@ -2,14 +2,14 @@
 % Please edit documentation in R/lambda_max.R
 \name{enough_items}
 \alias{enough_items}
-\title{Function to check there are at least certain number of items per factor}
+\title{Function to check there are at least a certain number of items per factor}
 \usage{
 enough_items(loadings, min_items = 3, eps = 1e-08)
 }
 \arguments{
 \item{loadings}{Loading matrix resulting from SEAFA.}
 
-\item{min_items}{Minimum number of items per factors.}
+\item{min_items}{Minimum number of items per factor.}
 
 \item{eps}{Numerical tolerance used to treat very small loadings as zero.}
 }
@@ -17,7 +17,7 @@ enough_items(loadings, min_items = 3, eps = 1e-08)
 A logical vector indicating whether each factor has at least \code{min_items} nonzero loadings.
 }
 \description{
-Function to check there are at least certain number of items per factor
+Function to check there are at least a certain number of items per factor
 }
 \examples{
 \dontrun{

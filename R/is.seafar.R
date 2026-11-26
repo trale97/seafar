@@ -79,7 +79,7 @@ is.seafar_original <- function(data,
   Pmat <- seafar_result$loadings
 
   vzero <- sum(data^2)
-  d <- svd(data)$d
+  d <- svd(data, nu = 0, nv = 0)$d # only the singular values are needed
   va <- sum((d[1:nfactors])^2)
   vs <- sum((Hmat %*% t(Pmat))^2)
   nrzeqcoef <- sum(round(Pmat, 3) == 0)
@@ -112,7 +112,7 @@ is.seafar_original <- function(data,
 #' @param orthogonal Orthogonal or non-orthogonal factors, default is FALSE.
 #' @param nstarts Number of starts.
 #' @param TOL Number of decimals used to decide whether two PEV values are the same.
-#' @param THR Thresholding selection for the smallest nonzero loading.
+#' @param THR Thresholding selection for the smallest nonzero loading, default is 0.1.
 #' @param standardize Logical. If \code{TRUE} (default), items are scaled to unit variance
 #'   after centering. Centering is applied regardless.
 #' @param card.length Maximum number of candidate cardinality values to test, default is 100.
@@ -142,7 +142,7 @@ is.seafar <- function(data,
                       orthogonal = FALSE,
                       nstarts = 50,
                       TOL = 3,
-                      THR = 0.03,
+                      THR = 0.1,
                       standardize = TRUE,
                       card.length = 100) {
   INIT <- check_init(INIT)
@@ -224,7 +224,7 @@ is.seafar <- function(data,
 #' Display a summary of the results of \code{is.seafar()}.
 #'
 #' @param object Object of class inheriting from 'is_seafar'.
-#' @param ... Argument to be passed to or from other methods.
+#' @param ... Arguments to be passed to or from other methods.
 #'
 #' @returns Summary of the results.
 #' @export
@@ -244,7 +244,6 @@ is.seafar <- function(data,
 #' )
 #' summary(selcard)
 #' }
-#' @export
 summary.is_seafar <- function(object, ...) {
   selcard <- if (is.list(object)) object$selcard else object
   cat(sprintf(

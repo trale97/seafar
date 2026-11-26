@@ -9,7 +9,7 @@ pstr(loadings, target, weights, maxiter = 50, eps = 1e-04)
 \arguments{
 \item{loadings}{Matrix that needs to be rotated.}
 
-\item{target}{Target towards which to rotated.}
+\item{target}{Target towards which to rotate.}
 
 \item{weights}{elementwise weights for rotation.}
 

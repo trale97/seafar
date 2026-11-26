@@ -9,7 +9,7 @@
 \arguments{
 \item{object}{Object of class inheriting from 'is_seafar_lasso'.}
 
-\item{...}{Argument to be passed to or from other methods.}
+\item{...}{Arguments to be passed to or from other methods.}
 }
 \value{
 Summary of the results.

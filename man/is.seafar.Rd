@@ -14,7 +14,7 @@ is.seafar(
   orthogonal = FALSE,
   nstarts = 50,
   TOL = 3,
-  THR = 0.03,
+  THR = 0.1,
   standardize = TRUE,
   card.length = 100
 )
@@ -36,7 +36,7 @@ is.seafar(
 
 \item{TOL}{Number of decimals used to decide whether two PEV values are the same.}
 
-\item{THR}{Thresholding selection for the smallest nonzero loading.}
+\item{THR}{Thresholding selection for the smallest nonzero loading, default is 0.1.}
 
 \item{standardize}{Logical. If \code{TRUE} (default), items are scaled to unit variance
 after centering. Centering is applied regardless.}

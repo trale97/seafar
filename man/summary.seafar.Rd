@@ -14,7 +14,7 @@ Otherwise if \code{"full"}, function returns both the estimated loadings and fac
 
 \item{nrow}{Number of rows of the loading matrix to be displayed, default is 10.}
 
-\item{...}{Argument to be passed to or from other methods.}
+\item{...}{Arguments to be passed to or from other methods.}
 }
 \description{
 Display a summary of the results of \code{seafar()}.

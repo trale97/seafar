@@ -64,8 +64,8 @@ factor_retention <- function(data, iterations = 100, quantile = 0.95) {
 
 #' Display a summary of the results of \code{factor_retention()}.
 #'
-#' @param object Object of class inheriting from 'factor_retention'.
-#' @param ... Argument to be passed to or from other methods.
+#' @param object Object of class inheriting from 'nfactors'.
+#' @param ... Arguments to be passed to or from other methods.
 #'
 #' @returns Summary of the number of factors retained using various methods.
 #'

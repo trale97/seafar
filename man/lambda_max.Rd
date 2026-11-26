@@ -28,7 +28,7 @@ lambda_max(
 
 \item{nstarts}{Number of starts}
 
-\item{min_items}{Number of minimum items per factor.}
+\item{min_items}{Minimum number of items per factor.}
 
 \item{TOL}{Tolerance for the binary search convergence criterion.}
 

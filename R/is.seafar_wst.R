@@ -7,7 +7,7 @@
 #' @param INIT Method to initialize loading matrix, default is \code{"rational"}.
 #' @param orthogonal Orthogonal or non-orthogonal factors, default is FALSE.
 #' @param card.length Number of candidate cardinality values to test, default is 100.
-#' @param show_progress Option of print progress bar, default is FALSE.
+#' @param show_progress Option to print a progress bar, default is FALSE.
 #' @param standardize Logical. If \code{TRUE} (default), items are scaled to unit variance (N denominator)
 #'   after centering. Centering is applied regardless.
 #'
@@ -95,7 +95,7 @@ is.seafar_wst <- function(data,
     propzero <- c(propzero, 1 - card / nrcoef)
     is <- pvepca * pveseafa * (1 - card / nrcoef)
     isvalue <- c(isvalue, is)
-    minl <- ifelse(sum(colSums(loadings != 0)) > card, 0,
+    minl <- ifelse(sum(colSums(loadings != 0)) < card, 0,
                    min(abs(loadings[loadings != 0]))
     )
     min_nzero_loading <- c(min_nzero_loading, minl)
@@ -128,7 +128,7 @@ is.seafar_wst <- function(data,
 #' Display a summary of the results of \code{is.seafar_wst()}.
 #'
 #' @param object Object of class inheriting from 'ISwarmstart'.
-#' @param ... Argument to be passed to or from other methods.
+#' @param ... Arguments to be passed to or from other methods.
 #'
 #' @returns Summary of the results.
 #'

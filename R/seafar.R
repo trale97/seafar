@@ -14,7 +14,7 @@
 #' @param orthogonal Orthogonal or non-orthogonal factors, default is FALSE.
 #' @param nstarts Number of starts, default is 50. Only one start is run if \code{initloadings} is provided
 #'   or \code{INIT = "svd"}, because every start would be identical.
-#' @param show_progress Option of print progress bar, default is FALSE.
+#' @param show_progress Option to print a progress bar, default is FALSE.
 #' @param standardize Logical. If \code{TRUE} (default), items are scaled to unit variance (N denominator)
 #'   after centering. Centering is applied regardless.
 #' @returns A list with
@@ -46,6 +46,7 @@ seafar <- function(data,
                    show_progress = FALSE,
                    standardize = TRUE) {
   INIT <- check_init(INIT)
+  C <- check_C(C, J = dim(data)[2], nfactors = nfactors)
   if (!is.null(initloadings) || INIT == "svd") {
     nstarts <- 1 # every start would be identical
   }
@@ -309,7 +310,7 @@ seafar_orthogonal <- function(data,
 #' \dontrun{
 #' data(HolzingerSwineford1939, package = 'lavaan')
 #' HS_1939 <- as.matrix(HolzingerSwineford1939[, paste0('x', 1:9)])
-#' fit <- seafar_orthogonal(data = X, nfactors = 3, C = 9, INIT = "svd")
+#' fit <- seafar_general(data = HS_1939, nfactors = 3, C = 9, INIT = "svd")
 #' }
 seafar_general <- function(data,
                            nfactors,
@@ -465,7 +466,7 @@ seafar_general <- function(data,
 #' @param disp The default is \code{"loadings"} which returns only the estimated loadings matrix.
 #'             Otherwise if \code{"full"}, function returns both the estimated loadings and factor scores matrices.
 #' @param nrow Number of rows of the loading matrix to be displayed, default is 10.
-#' @param ...  Argument to be passed to or from other methods.
+#' @param ...  Arguments to be passed to or from other methods.
 #' @examples
 #' \dontrun{
 #' data(HolzingerSwineford1939, package = 'lavaan')
@@ -481,6 +482,7 @@ summary.seafar <- function(object, disp = "loadings", nrow = 10, ...) {
 
   load_fmt <- formatC(object$loadings, format = "f", digits = 3, drop0trailing = TRUE)
   pev <- object$PVE[length(object$PVE)]
+  nrow_shown <- min(nrow, dim(object$loadings)[1])
 
   if (disp == "loadings") {
     cat(sprintf(
@@ -491,7 +493,7 @@ summary.seafar <- function(object, disp = "loadings", nrow = 10, ...) {
       "The PEV is: %.3f\n",
       pev
     ))
-    cat(sprintf("\nThe estimated loadings matrix (first 10 rows) is \n"))
+    cat(sprintf("\nThe estimated loadings matrix (first %s rows) is \n", nrow_shown))
     print(noquote(utils::head(load_fmt, nrow)))
   } else if (disp == "full") {
     cat(sprintf(
@@ -503,7 +505,7 @@ summary.seafar <- function(object, disp = "loadings", nrow = 10, ...) {
       pev
     ))
 
-    cat(sprintf("\nThe estimated loadings matrix (first 10 rows) is \n"))
+    cat(sprintf("\nThe estimated loadings matrix (first %s rows) is \n", nrow_shown))
     print(noquote(utils::head(load_fmt, nrow)))
 
     cat(sprintf("\nThe estimated factor scores matrix is \n"))

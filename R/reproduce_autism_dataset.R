@@ -1,14 +1,13 @@
 #' Reproduce the autism dataset from GEO accession GSE7329
 #'
-#' Downloads the original Series Matrix file from NCBI GEO, reproduces the
+#' Downloads the original Series Matrix file from NCBI GEO and reproduces the
 #' existing preprocessing steps.
 #'
-#' Running `autism <- reproduce_autism_dataset()` is equivalent to `data("autism")`
 #'
 #' For more information, consult \code{\link{autism}}.
 #'
-#' @param source_url Source URL of the original Series Matrix file on the NCBI 
-#' GEO ftp server. Since the URL is too long for the documentation, we broke it 
+#' @param source_url Source URL of the original Series Matrix file on the NCBI
+#' GEO ftp server. Since the URL is too long for the documentation, we broke it
 #' down into parts as in the example.
 #' @param envir the environment where the function is called from.
 #' @importFrom utils read.csv

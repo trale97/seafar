@@ -5,7 +5,7 @@
 \alias{autism}
 \title{Autism Genetic Dataset}
 \format{
-A matrix with 27 rows and 438893 variables
+A matrix with 27 rows and 43893 variables
 }
 \source{
 \href{https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE7329}{NCBI}
@@ -19,13 +19,13 @@ The dataset contains 43893 genetic marker variables for 27 subjects, in which
 and seven are in the dup15q autism group.
 }
 \details{
-The original data was collected by Nishimura et. al. (2007) and is available from \href{https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE7329}{NCBI}. The version used in this package was obtained by removing three individuals who were mislabeled and standardizing each column of the data to have a mean of zero and a variance of one (see Guerra-Urzola et. al., 2023).
+The original data was collected by Nishimura et al. (2007) and is available from \href{https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE7329}{NCBI}. The version used in this package was obtained by removing three individuals who were mislabeled and standardizing each column of the data to have a mean of zero and a variance of one (see Guerra-Urzola et al., 2023).
 In particular, these processing steps were followed:
 \enumerate{
 \item download the original compressed Series Matrix file from NCBI GEO,
 \item extract sample labels and expression values,
 \item remove mislabeled individuals,
-\item transpose and standardizes the expression matrix,
+\item transpose and standardize the expression matrix,
 \item remove features with missing values after scaling, and
 \item save the resulting processed matrix for further use.
 }

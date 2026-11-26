@@ -7,9 +7,9 @@
 \method{summary}{nfactors}(object, ...)
 }
 \arguments{
-\item{object}{Object of class inheriting from 'factor_retention'.}
+\item{object}{Object of class inheriting from 'nfactors'.}
 
-\item{...}{Argument to be passed to or from other methods.}
+\item{...}{Arguments to be passed to or from other methods.}
 }
 \value{
 Summary of the number of factors retained using various methods.

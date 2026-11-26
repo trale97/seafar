@@ -3,7 +3,7 @@
 #' @param loadings Loadings matrix JxR.
 #' @param C_c Number of zero loadings.
 #'
-#' @returns Loadings with exactly C_c nonzero loadings.
+#' @returns Loadings with exactly C_c zero loadings.
 #' @author Katrijn Van Deun
 #'
 #' @examples
@@ -44,7 +44,7 @@ ssres <- function(data, scores, loadings) {
 #' @param data Data matrix of standardized items NxJ.
 #' @param loadings Loadings matrix JxQ.
 #'
-#' @returns Orthogonal factor scores matrix NxJ.
+#' @returns Orthogonal factor scores matrix NxQ.
 #' @author Katrijn Van Deun.
 #'
 #' @examples
@@ -61,7 +61,7 @@ orthprocr <- function(data, loadings) {
   scores
 }
 
-#' Function to calculate the solution to the olique procrustes problem.
+#' Function to calculate the solution to the oblique procrustes problem.
 #'
 #' @param data Data matrix of standardized items NxJ.
 #' @param scores Factor scores matrix NxQ.
@@ -69,7 +69,7 @@ orthprocr <- function(data, loadings) {
 #' @param maxiter Maximum number of iterations.
 #' @param eps Tolerance for difference in loss.
 #'
-#' @returns Orthogonal factor scores matrix NxJ.
+#' @returns Orthogonal factor scores matrix NxQ.
 #' @author Katrijn Van Deun.
 #'
 #' @examples
@@ -127,7 +127,7 @@ oblprocr <- function(data, scores, loadings, maxiter, eps){
   scores
 }
 
-#' Function to calculate the solution to the olique procrustes problem.
+#' Function to calculate the solution to the oblique procrustes problem.
 #' This version is slightly less efficient.
 #'
 #' @param data Data matrix of standardized items NxJ.
@@ -136,7 +136,7 @@ oblprocr <- function(data, scores, loadings, maxiter, eps){
 #' @param maxiter Maximum number of iterations.
 #' @param eps Tolerance for difference in loss.
 #'
-#' @returns Orthogonal factor scores matrix NxJ.
+#' @returns Orthogonal factor scores matrix NxQ.
 #'
 #'
 #' @examples
@@ -183,11 +183,11 @@ oblprocr_old <- function(data, scores, loadings, maxiter, eps){
 #'
 #' @param data Data matrix of standardized items NxJ.
 #' @param nfactors The number of factors Q.
-#' @param C The number of zero loadings.
+#' @param C The number of nonzero loadings.
 #' @param INIT Methods to initialize loadings c("svd", "random", "rational", "semirational").
 #' Rational start uses the result of Ding and He (2004) to partition the
 #' variables into nfactors clusters.
-#' Mixed start combines random (20%) and SVD (80%).
+#' Semirational start combines random (20%) and SVD (80%).
 #'
 #' @importFrom stats kmeans rnorm
 #' @importFrom utils setTxtProgressBar txtProgressBar
@@ -195,7 +195,14 @@ oblprocr_old <- function(data, scores, loadings, maxiter, eps){
 #' @return A matrix of initial loadings.
 #' @examples
 #' \dontrun{
-#' initialP <- seafar_init(ocean, 5, 240, INIT = "svd")
+#' data(HolzingerSwineford1939, package = 'lavaan')
+#' HS_1939 <- as.matrix(HolzingerSwineford1939[, paste0('x', 1:9)])
+#' initialP <- seafar_init(
+#'  data = HS_1939,
+#'  nfactors = 3,
+#'  C = 9,
+#'  INIT = "svd"
+#' )
 #' }
 #' @author Tra Le and Katrijn Van Deun
 
@@ -208,7 +215,7 @@ seafar_init <- function(data,
   J <- dim(data)[2]
   svd1 <- svd(data, nfactors, nfactors)
   P1 <- matrix(rnorm(J * nfactors), ncol = nfactors, nrow = J)
-  P2 <- svd1$v %*% diag(svd1$d[1:nfactors]) / sqrt(n)
+  P2 <- svd1$v %*% diag(svd1$d[1:nfactors], nrow = nfactors) / sqrt(n)
   if (INIT == "svd") {
     P <- P2
   } else if (INIT == "random") {
@@ -226,7 +233,7 @@ seafar_init <- function(data,
     B <- pstr(P, TARGET, WEIGHTS, 50, 1e-4)
     P <- P %*% B$Bmatrix
   } else {
-    P <- P2 * 0.7 + P1 * 0.3
+    P <- P2 * 0.8 + P1 * 0.2
   }
   if (length(C) > 1) {
     C_c <- J - C
@@ -251,7 +258,7 @@ seafar_init <- function(data,
 #'
 #'
 #' @param loadings Matrix that needs to be rotated.
-#' @param target Target towards which to rotated.
+#' @param target Target towards which to rotate.
 #' @param weights elementwise weights for rotation.
 #' @param maxiter Maximum number of iterations of the AO procedure.
 #' @param eps Convergence criterion based on difference in loss between iterates.
@@ -373,7 +380,7 @@ pstrLoss <- function(B, Tmat, target, weights) {
   return(Loss)
 }
 
-#' Title Loss function for LASSO
+#' Loss function for LASSO
 #'
 #' @param data Data matrix of standardized items NxJ.
 #' @param scores Factor scores matrix NxQ.
@@ -416,7 +423,7 @@ seafar_init_l1 <- function(data, nfactors, INIT) {
   }
   svd1 <- svd(data, nfactors, nfactors)
   P1 <- matrix(rnorm(J * nfactors), ncol = nfactors, nrow = J)
-  P2 <- svd1$v %*% diag(svd1$d[1:nfactors]) / sqrt(n)
+  P2 <- svd1$v %*% diag(svd1$d[1:nfactors], nrow = nfactors) / sqrt(n)
   if (INIT == "svd") {
     P <- P2
   } else if (INIT == "random") {
@@ -445,7 +452,9 @@ check_init <- function(INIT) {
   if (!is.character(INIT) || length(INIT) != 1 || !INIT %in% methods) {
     stop("INIT must be one of: ", paste0('"', methods, '"', collapse = ", "), call. = FALSE)
   }
-  INIT
+  return(INIT)
+}
+
 #' Function to validate C argument
 #'
 #' @param C Number of nonzero loadings, or a vector of number of nonzero loadings per factor.

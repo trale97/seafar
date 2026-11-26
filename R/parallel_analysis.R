@@ -42,7 +42,7 @@ parallel_analysis <- function(
   quantile = 0.95
 ) {
   matrix_rank <- min(N, J)
-  # Because the base::svd functions caps the number of eigenvalues to the rank
+  # Because the base::svd function caps the number of eigenvalues to the rank
   # you will only be able to store at most `rank` eigenvalues
   sampled_eigenvalues <- base::matrix(data = NA, nrow = iterations, ncol = matrix_rank)
   for (repetition in 1:iterations) {

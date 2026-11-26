@@ -2,7 +2,7 @@
 % Please edit documentation in R/helper_functions.R
 \name{LOSS}
 \alias{LOSS}
-\title{Title Loss function for LASSO}
+\title{Loss function for LASSO}
 \usage{
 LOSS(data, scores, loadings, lambda)
 }
@@ -19,7 +19,7 @@ LOSS(data, scores, loadings, lambda)
 Loss value when using LASSO penalty.
 }
 \description{
-Title Loss function for LASSO
+Loss function for LASSO
 }
 \examples{
 \dontrun{

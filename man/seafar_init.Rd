@@ -11,12 +11,12 @@ seafar_init(data, nfactors, C, INIT)
 
 \item{nfactors}{The number of factors Q.}
 
-\item{C}{The number of zero loadings.}
+\item{C}{The number of nonzero loadings.}
 
 \item{INIT}{Methods to initialize loadings c("svd", "random", "rational", "semirational").
 Rational start uses the result of Ding and He (2004) to partition the
 variables into nfactors clusters.
-Mixed start combines random (20\%) and SVD (80\%).}
+Semirational start combines random (20\%) and SVD (80\%).}
 }
 \value{
 A matrix of initial loadings.
@@ -26,7 +26,14 @@ Function for obtaining an initial loading matrix.
 }
 \examples{
 \dontrun{
-initialP <- seafar_init(ocean, 5, 240, INIT = "svd")
+data(HolzingerSwineford1939, package = 'lavaan')
+HS_1939 <- as.matrix(HolzingerSwineford1939[, paste0('x', 1:9)])
+initialP <- seafar_init(
+ data = HS_1939,
+ nfactors = 3,
+ C = 9,
+ INIT = "svd"
+)
 }
 }
 \author{

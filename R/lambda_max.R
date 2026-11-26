@@ -5,7 +5,7 @@
 #' @param maxiter Maximum iterations for SEAFA with LASSO.
 #' @param eps Convergence criterion based on difference in loss between iterates.
 #' @param nstarts Number of starts
-#' @param min_items Number of minimum items per factor.
+#' @param min_items Minimum number of items per factor.
 #' @param TOL Tolerance for the binary search convergence criterion.
 #' @param INIT Method to initialize loading matrix.
 #' @param max_iter Maximum iterations for the binary search.
@@ -110,10 +110,10 @@ lambda_max <- function(data,
   return(lambda_max)
 }
 
-#' Function to check there are at least certain number of items per factor
+#' Function to check there are at least a certain number of items per factor
 #'
 #' @param loadings Loading matrix resulting from SEAFA.
-#' @param min_items Minimum number of items per factors.
+#' @param min_items Minimum number of items per factor.
 #' @param eps Numerical tolerance used to treat very small loadings as zero.
 #'
 #' @returns A logical vector indicating whether each factor has at least `min_items` nonzero loadings.

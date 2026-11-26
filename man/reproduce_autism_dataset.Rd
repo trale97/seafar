@@ -17,12 +17,10 @@ down into parts as in the example.}
 Invisibly returns the processed matrix \code{autism}.
 }
 \description{
-Downloads the original Series Matrix file from NCBI GEO, reproduces the
+Downloads the original Series Matrix file from NCBI GEO and reproduces the
 existing preprocessing steps.
 }
 \details{
-Running \code{autism <- reproduce_autism_dataset()} is equivalent to \code{data("autism")}
-
 For more information, consult \code{\link{autism}}.
 }
 \examples{

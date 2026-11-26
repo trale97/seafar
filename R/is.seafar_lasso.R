@@ -9,6 +9,9 @@
 #' @param nstarts Number of starts.
 #' @param standardize Logical. If \code{TRUE} (default), items are scaled to unit variance (N denominator)
 #'   after centering. Centering is applied regardless.
+#' @param V_s Optional. Variance explained by the \code{lambda = 0} solution on the preprocessed data.
+#'   If \code{NULL} (default), the \code{lambda = 0} model is fitted here; pass it in to avoid refitting
+#'   that model for every candidate penalty.
 #'
 #' @returns A list with
 #' \item{value}{IS value.}
@@ -36,7 +39,8 @@ IS_lasso <- function(data,
                      eps = 10^-4,
                      INIT = "semirational",
                      nstarts = 50,
-                     standardize = TRUE){
+                     standardize = TRUE,
+                     V_s = NULL){
   INIT <- check_init(INIT)
   N <- dim(data)[1]
   J <- dim(data)[2]
@@ -53,22 +57,10 @@ IS_lasso <- function(data,
     data <- scale(data, center = FALSE, scale = xscale)
   }
 
-  VarSelect0 <- seafar_lasso(
-    data = data,
-    nfactors = nfactors,
-    lambda = 0,
-    maxiter = maxiter,
-    eps = eps,
-    INIT = INIT,
-    nstarts = nstarts,
-    standardize = FALSE, # data already preprocessed above
-    unshrink = FALSE
-  )
-  P_hat0 <- VarSelect0$loadings
-  T_hat0 <- VarSelect0$scores
-
   V_oo <- sum(data^2)
-  V_s <- sum((T_hat0 %*% t(P_hat0))^2)
+  if (is.null(V_s)) {
+    V_s <- lasso_V_s(data, nfactors, maxiter, eps, INIT, nstarts, standardize = FALSE) # data already preprocessed above
+  }
 
   VarSelect <- seafar_lasso(
     data = data,
@@ -85,6 +77,22 @@ IS_lasso <- function(data,
   T_hat <- VarSelect$scores
 
   return(is_lasso_stats(P_hat, T_hat, V_s, V_oo))
+}
+
+# Variance explained by the lambda = 0 solution (the reference V_s of the IS)
+lasso_V_s <- function(data, nfactors, maxiter, eps, INIT, nstarts, standardize) {
+  fit0 <- seafar_lasso(
+    data = data,
+    nfactors = nfactors,
+    lambda = 0,
+    maxiter = maxiter,
+    eps = eps,
+    INIT = INIT,
+    nstarts = nstarts,
+    standardize = standardize,
+    unshrink = FALSE
+  )
+  sum((fit0$scores %*% t(fit0$loadings))^2)
 }
 
 # IS and related statistics of one solution, given the explained variance of the
@@ -106,7 +114,7 @@ is_lasso_stats <- function(P_hat, T_hat, V_s, V_oo) {
 }
 
 
-#' Model selection procedure with IS to choose the LASSO penalty paramter.
+#' Model selection procedure with IS to choose the LASSO penalty parameter.
 #'
 #' The grid of candidate penalties runs up to the largest value that still leaves
 #' at least 3 nonzero loadings on every factor, which is found
@@ -163,8 +171,7 @@ is.seafar_lasso <- function(data,
                             lambda.length = 50,
                             standardize = TRUE) {
   INIT <- check_init(INIT)
-  N <- dim(data)[2]
-  I <- dim(data)[1]
+  N <- dim(data)[1]
 
   max_lambda <- lambda_max(
     data = data,
@@ -179,7 +186,6 @@ is.seafar_lasso <- function(data,
     stop("no positive penalty leaves at least 3 nonzero loadings on every factor; try fewer factors")
   }
 
-  # With few observations and many items max_lambda can fall below the usual lower bound
   lambda_min <- if (max_lambda > 0.1*N) 0.1*N else 0.1*max_lambda
   lasso_vec <- seq(lambda_min, max_lambda, length.out = lambda.length)
   K <- length(lasso_vec)
@@ -195,6 +201,14 @@ is.seafar_lasso <- function(data,
       standardize = standardize
     )
   } else {
+    # the lambda = 0 solution is the same for every candidate, so fit it once
+    V_s <- retry_lasso(
+      function() {
+        lasso_V_s(data, nfactors, maxiter, eps, INIT, nstarts.tune, standardize)
+      },
+      what = "seafar_lasso",
+      lambda = 0
+    )
     avec <- lasso_is_table(K)
     for (k in 1:K) {
       a <- retry_lasso(
@@ -207,7 +221,8 @@ is.seafar_lasso <- function(data,
             eps = eps,
             INIT = INIT,
             nstarts = nstarts.tune,
-            standardize = standardize
+            standardize = standardize,
+            V_s = V_s
           )
         },
         what = "IS_lasso",
@@ -351,7 +366,7 @@ retry_lasso <- function(fit, what, lambda, times = 10) {
 #' Use \code{summary(object$selmodel)} to display the loading matrix of the selected model.
 #'
 #' @param object Object of class inheriting from 'is_seafar_lasso'.
-#' @param ... Argument to be passed to or from other methods.
+#' @param ... Arguments to be passed to or from other methods.
 #'
 #' @returns Summary of the results.
 #'

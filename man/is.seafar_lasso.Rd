@@ -2,7 +2,7 @@
 % Please edit documentation in R/is.seafar_lasso.R
 \name{is.seafar_lasso}
 \alias{is.seafar_lasso}
-\title{Model selection procedure with IS to choose the LASSO penalty paramter.}
+\title{Model selection procedure with IS to choose the LASSO penalty parameter.}
 \usage{
 is.seafar_lasso(
   data,

@@ -31,7 +31,7 @@ is.seafar_wst(
 
 \item{card.length}{Number of candidate cardinality values to test, default is 100.}
 
-\item{show_progress}{Option of print progress bar, default is FALSE.}
+\item{show_progress}{Option to print a progress bar, default is FALSE.}
 
 \item{standardize}{Logical. If \code{TRUE} (default), items are scaled to unit variance (N denominator)
 after centering. Centering is applied regardless.}

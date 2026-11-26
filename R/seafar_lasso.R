@@ -13,7 +13,7 @@
 #' @param initloadings Initial loading matrix if available.
 #' @param nstarts Number of starts, default is 50. Only one start is run if \code{initloadings} is provided
 #'   or \code{INIT = "svd"}, because every start would be identical.
-#' @param show_progress Option of print progress bar, default is FALSE.
+#' @param show_progress Option to print a progress bar, default is FALSE.
 #' @param standardize Logical. If \code{TRUE} (default), items are scaled to unit variance (N denominator)
 #'   after centering. Centering is applied regardless.
 #' @param unshrink Logical. If \code{TRUE} (default), the zero pattern of the best solution is refitted with
@@ -242,7 +242,7 @@ seafar_lasso_single <- function(data,
   convAO <- 0
   iter <- 1
   Lossc <- 1
-  Lossvec <- Lossc # Used to compute convergence criterium
+  Lossvec <- Lossc # Used to compute convergence criterion
   # 1. Initialize loading matrix
   if (is.null(initloadings)) {
     loadings <- seafar_init_l1(data, nfactors, INIT)
@@ -312,12 +312,10 @@ seafar_lasso_single <- function(data,
     # }
     if (abs(Lossc - Lossu) < eps) {
       convAO <- 1
+      converged <- TRUE # convergence criterion met, not just stopped at maxiter
     }
     iter <- iter + 1
     Lossc <- Lossu
-  }
-  if (iter < maxiter) {
-    converged <- TRUE
   }
 
   result <- list("scores" = scores, "loadings" = loadings, "PVE" = 1 - Lossvec, "Residual" = Lossu * ssx, "converged" = converged, "center" = xcenter, "scale" = xscale)
@@ -330,7 +328,7 @@ seafar_lasso_single <- function(data,
 #' @param disp The default is \code{"loadings"} which returns only the estimated loadings matrix.
 #'             Otherwise if \code{"full"}, function returns both the estimated loadings and factor scores matrices.
 #' @param nrow Number of rows of the loading matrix to be displayed, default is 10.
-#' @param ...  Argument to be passed to or from other methods.
+#' @param ...  Arguments to be passed to or from other methods.
 #' @export
 #' @examples
 #' \dontrun{

@@ -2,7 +2,7 @@
 % Please edit documentation in R/helper_functions.R
 \name{oblprocr}
 \alias{oblprocr}
-\title{Function to calculate the solution to the olique procrustes problem.}
+\title{Function to calculate the solution to the oblique procrustes problem.}
 \usage{
 oblprocr(data, scores, loadings, maxiter, eps)
 }
@@ -18,10 +18,10 @@ oblprocr(data, scores, loadings, maxiter, eps)
 \item{eps}{Tolerance for difference in loss.}
 }
 \value{
-Orthogonal factor scores matrix NxJ.
+Orthogonal factor scores matrix NxQ.
 }
 \description{
-Function to calculate the solution to the olique procrustes problem.
+Function to calculate the solution to the oblique procrustes problem.
 }
 \examples{
 \dontrun{

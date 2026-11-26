@@ -12,7 +12,8 @@ IS_lasso(
   eps = 10^-4,
   INIT = "semirational",
   nstarts = 50,
-  standardize = TRUE
+  standardize = TRUE,
+  V_s = NULL
 )
 }
 \arguments{
@@ -32,6 +33,10 @@ IS_lasso(
 
 \item{standardize}{Logical. If \code{TRUE} (default), items are scaled to unit variance (N denominator)
 after centering. Centering is applied regardless.}
+
+\item{V_s}{Optional. Variance explained by the \code{lambda = 0} solution on the preprocessed data.
+If \code{NULL} (default), the \code{lambda = 0} model is fitted here; pass it in to avoid refitting
+that model for every candidate penalty.}
 }
 \value{
 A list with

@@ -12,7 +12,7 @@ hardthr(loadings, C_c)
 \item{C_c}{Number of zero loadings.}
 }
 \value{
-Loadings with exactly C_c nonzero loadings.
+Loadings with exactly C_c zero loadings.
 }
 \description{
 Function for hard thresholding.
