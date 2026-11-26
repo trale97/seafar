@@ -13,7 +13,7 @@ ai_usage:
   tools:
     - name: Claude Code
       type: agent
-      hosting: local
+      hosting: cloud
       purpose:
         - code debugging
         - code review
