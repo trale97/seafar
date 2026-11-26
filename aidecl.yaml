@@ -13,11 +13,19 @@ ai_usage:
   tools:
     - name: Claude Code
       type: agent
-      hosting: local
-      purpose: |-
-        code debugging
-        code review
-  summary: Claude Code was used for code debugging and review
+      hosting: cloud
+      purpose:
+        - code debugging
+        - code review
+    - name: ChatGPT
+      type: assistant
+      hosting: cloud_vendor
+      purpose:
+        - package logo generation based on human-provided
+          design specifications and R package logo references
+  summary: >-
+  Claude Code was used for code debugging and review
+  and ChatGPT was used for the generation of the package logo.
 declaration:
   declared_by: Tra le
-  date: '2026-11-21'
+  date: '2026-11-26'
