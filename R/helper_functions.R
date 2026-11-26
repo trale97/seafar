@@ -446,4 +446,37 @@ check_init <- function(INIT) {
     stop("INIT must be one of: ", paste0('"', methods, '"', collapse = ", "), call. = FALSE)
   }
   INIT
+#' Function to validate C argument
+#'
+#' @param C Number of nonzero loadings, or a vector of number of nonzero loadings per factor.
+#' @param J Number of observed variables.
+#' @param nfactors Number of factors.
+#'
+#' @returns \code{C}, unchanged, if it is valid, otherwise an error message.
+#'
+#' @examples
+#' \dontrun{
+#' check_C(C = 9, J = 9, nfactors = 3)
+#' }
+check_C <- function(C, J, nfactors) {
+  if (!is.numeric(C) || length(C) == 0 || anyNA(C) || any(C != round(C))) {
+    stop("C must be an integer or a vector of integers.", call. = FALSE)
+  }
+
+  # Single C for the entire loading matrix
+  if (length(C) == 1) {
+    if (C < 1 || C > J * nfactors) {
+      stop("C must be between 1 and ", J * nfactors, ".", call. = FALSE)
+    }
+  } else {
+    # One C per factor
+    if (length(C) != nfactors) {
+      stop("The length of C must equal nfactors.", call. = FALSE)
+    }
+
+    if (any(C < 1) || any(C > J)) {
+      stop("Each element of C must be between 1 and ", J, ".", call. = FALSE)
+    }
+  }
+  return(C)
 }
