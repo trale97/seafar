@@ -187,7 +187,7 @@ oblprocr_old <- function(data, scores, loadings, maxiter, eps){
 #' @param INIT Methods to initialize loadings c("svd", "random", "rational", "semirational").
 #' Rational start uses the result of Ding and He (2004) to partition the
 #' variables into nfactors clusters.
-#' Semirational start combines random (20%) and SVD (80%).
+#' Semirational start combines random (30%) and SVD (70%).
 #'
 #' @importFrom stats kmeans rnorm
 #' @importFrom utils setTxtProgressBar txtProgressBar
@@ -233,7 +233,7 @@ seafar_init <- function(data,
     B <- pstr(P, TARGET, WEIGHTS, 50, 1e-4)
     P <- P %*% B$Bmatrix
   } else {
-    P <- P2 * 0.8 + P1 * 0.2
+    P <- P2 * 0.7 + P1 * 0.3
   }
   if (length(C) > 1) {
     C_c <- J - C
