@@ -16,7 +16,7 @@ seafar_init(data, nfactors, C, INIT)
 \item{INIT}{Methods to initialize loadings c("svd", "random", "rational", "semirational").
 Rational start uses the result of Ding and He (2004) to partition the
 variables into nfactors clusters.
-Semirational start combines random (20\%) and SVD (80\%).}
+Semirational start combines random (30\%) and SVD (70\%).}
 }
 \value{
 A matrix of initial loadings.
